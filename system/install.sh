@@ -23,12 +23,12 @@ user () {
 fail () {
   printf "\r\033[2K [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
-  echo 'See /tmp/laptop-bootstrap for more information.'
+  echo 'See /tmp/dotfiles-bootstrap for more information.'
   exit 1
 }
 
 successfully() {
-  ($* >> /tmp/laptop-bootstrap 2>&1) || (fail $message 2>&1)
+  ($* >> /tmp/dotfiles-bootstrap 2>&1) || (fail $message 2>&1)
 }
 
 info "Fix OSX zsh environment bug"

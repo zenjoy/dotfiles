@@ -111,14 +111,3 @@ defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
 # Disable local Time Machine backups
 hash tmutil &> /dev/null && sudo tmutil disablelocal
-
-
-# Kill affected applications                                                  #
-###############################################################################
-
-for app in "Address Book" "Calendar" "Contacts" "Dashboard" "Dock" "Finder" \
-        "Mail" "Messages" "Safari" "SizeUp" "SystemUIServer" "Terminal" \
-        "Transmission" "Twitter" "iCal"; do
-        killall "${app}" > /dev/null 2>&1
-done
-echo "Done. Note that some of these changes require a logout/restart to take effect."
