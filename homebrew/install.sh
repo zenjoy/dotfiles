@@ -76,3 +76,7 @@ info "Installing watch, used to execute a program periodically and show the outp
 
 info "Installing mongodb, our beloved database ..."
   successfully brew install mongodb
+
+info "Installing dnsmasq, so we can use beautiful .dev domains for web development ..."
+  successfully brew install dnsmasq
+  successfully ln -s $HOME/.dotfiles/etc/dnsmasq.conf /usr/local/etc/dnsmasq.conf
