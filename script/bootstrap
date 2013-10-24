@@ -7,23 +7,35 @@ DOTFILES_ROOT="`pwd`"
 set -e
 
 echo ''
+echo '' > /tmp/dotfiles-bootstrap
+
+message=""
+
+success () {
+  printf "\r\033[2K [ \033[00;32mok\033[0m ] $1\n"
+}
 
 info () {
-  printf "  [ \033[00;34m..\033[0m ] $1"
+  if [[ -n $message ]]; then
+    success $message
+  fi
+  printf " [ \033[00;34m..\033[0m ] $1"
+  message=$1
 }
 
 user () {
-  printf "\r  [ \033[0;33m?\033[0m ] $1 "
-}
-
-success () {
-  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+  printf "\r\033[2K [ \033[00;33m?\033[0m ] $1"
 }
 
 fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
-  exit
+  echo 'See /tmp/dotfiles-bootstrap for more information.'
+  exit 1
+}
+
+successfully() {
+  ($* >> /tmp/dotfiles-bootstrap 2>&1) || (fail $message 2>&1)
 }
 
 setup_gitconfig () {
@@ -123,17 +135,9 @@ install_dotfiles () {
 setup_gitconfig
 install_dotfiles
 
-# If we're on a Mac, let's install and setup homebrew.
-if [ "$(uname -s)" == "Darwin" ]
-then
-  info "installing dependencies"
-  if . bin/dot > /tmp/dotfiles-dot 2>&1
-  then
-    success "dependencies installed"
-  else
-    fail "error installing dependencies"
-  fi
-fi
+Echo "Installing dependencies:"
+
+. script/install
 
 echo ''
 echo '  All installed!'

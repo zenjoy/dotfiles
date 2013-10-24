@@ -7,14 +7,26 @@ then
 fi
 
 # The rest of my fun git aliases
-alias gl='git pull --prune'
-alias glog="git log --graph --pretty=format:'%Cred%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
-alias gp='git push origin HEAD'
-alias gd='git diff'
-alias gc='git commit'
-alias gca='git commit -a'
-alias gco='git checkout'
+alias ungit="find . -name '.git' -exec rm -rf {} \;"
 alias gb='git branch'
-alias gs='git status -sb' # upgrade your git if -sb breaks for you. it's fun.
-alias grm="git status | grep deleted | awk '{\$1=\$2=\"\"; print \$0}' | \
-           perl -pe 's/^[ \t]*//' | sed 's/ /\\\\ /g' | xargs git rm"
+alias gba='git branch -a'
+alias gc='git commit -v'
+alias gca='git commit -v -a'
+# Commit pending changes and quote all args as message
+function gg() {
+    git commit -v -a -m "$*"
+}
+alias gco='git checkout'
+alias gd='git diff'
+alias gdm='git diff master'
+alias gl='git smart-log'
+alias gnp="git-notpushed"
+alias gp='git push'
+alias gam='git commit --amend -C HEAD'
+alias gst='git status'
+alias gt='git status'
+alias g='git status --short'
+alias gup='git smart-pull'
+alias gm='smart-merge'
+alias eg='subl .git/config'
+alias glog="git log --graph --pretty=format:'%Cred%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
