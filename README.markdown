@@ -1,5 +1,20 @@
 # Zenjoy's Dotfiles
 
+## Requirements
+
+1) Get XCode + Command Line Tools
+
+You can get Xcode from the Mac App Store. You’ll need at least version 4.4 of Xcode for it to work with OS X Mountain Lion. After the installation, open up Xcode in your /Applications folder. 
+You’d want to go to Xcode -> Preferences -> Downloads tab then install the “Command Line Tools.” After you’re done, quit Xcode and fire up Terminal.
+
+2) Set zsh as your default shell and install Oh-My-ZShell
+
+Run `curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh`
+
+3) Install XQuartz, a version of the X.Org X Window System that runs on OS X
+
+http://xquartz.macosforge.org/landing/
+
 ## install
 
 ```sh
