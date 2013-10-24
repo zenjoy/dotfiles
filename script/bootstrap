@@ -7,35 +7,23 @@ DOTFILES_ROOT="`pwd`"
 set -e
 
 echo ''
-echo '' > /tmp/dotfiles-bootstrap
-
-message=""
-
-success () {
-  printf "\r\033[2K [ \033[00;32mok\033[0m ] $1\n"
-}
 
 info () {
-  if [[ -n $message ]]; then
-    success $message
-  fi
-  printf " [ \033[00;34m..\033[0m ] $1"
-  message=$1
+  printf "  [ \033[00;34m..\033[0m ] $1"
 }
 
 user () {
-  printf "\r\033[2K [ \033[00;33m?\033[0m ] $1"
+  printf "\r  [ \033[0;33m?\033[0m ] $1 "
+}
+
+success () {
+  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
 }
 
 fail () {
-  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $1\n"
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
-  echo 'See /tmp/dotfiles-bootstrap for more information.'
-  exit 1
-}
-
-successfully() {
-  ($* >> /tmp/dotfiles-bootstrap 2>&1) || (fail $message 2>&1)
+  exit
 }
 
 setup_gitconfig () {
@@ -135,9 +123,10 @@ install_dotfiles () {
 setup_gitconfig
 install_dotfiles
 
-Echo "Installing dependencies:"
-
-. script/install
+$HOME/.dotfiles/osx/set-defaults.sh
 
 echo ''
-echo '  All installed!'
+echo '  .dotfiles ready & installed!'
+echo ''
+echo '  Want to set up your laptop with the some developer essentials?'
+echo '   => run `script/setup`'

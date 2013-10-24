@@ -1,5 +1,3 @@
-#!/bin/sh
-
 set -e
 
 echo ''
@@ -7,40 +5,90 @@ echo ''
 message=""
 
 success () {
-  printf "\r\033[2K [ \033[00;32mok\033[0m ] $1\n"
+  printf "\r\033[2K [ \033[00;32mok\033[0m ] $*\n"
 }
 
 info () {
   if [[ -n $message ]]; then
     success $message
   fi
-  printf " [ \033[00;34m..\033[0m ] $1"
-  message=$1
+  printf " [ \033[00;34m..\033[0m ] $*"
+  message="$*"
 }
 
 user () {
-  printf "\r\033[2K [ \033[00;33m?\033[0m ] $1"
+  printf "\r\033[2K [ \033[00;33m?\033[0m ] $*"
 }
 
 fail () {
-  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $1\n"
+  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $*\n"
   echo ''
-  echo 'See /tmp/dotfiles-bootstrap for more information.'
+  echo 'See /tmp/dotfiles-setup for more information.'
   exit 1
 }
 
 successfully() {
-  ($* >> /tmp/dotfiles-bootstrap 2>&1) || (fail $message 2>&1)
+  ($* >> /tmp/dotfiles-setup 2>&1) || (fail $message 2>&1)
 }
+
+info "Fix OSX zsh environment bug"
+  if [[ -f /etc/{zshenv} ]]; then
+    successfully sudo mv /etc/{zshenv,zprofile}
+  fi
+
+info "Installing Oh-My-Zsh Prose Theme..."
+  successfully sudo cp -f $HOME/.dotfiles/zsh/prose.zsh-theme $HOME/.oh-my-zsh/themes/prose.zsh-theme
+
+info "Checking for SSH key, generating one if it doesn't exist ..."
+  [[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
+
+info "Copying public key to clipboard. Paste it into your Github account ..."
+  [[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
+  successfully open https://github.com/account/ssh
+
+info "Fixing permissions ..."
+  successfully sudo mkdir -p /usr/local
+  successfully sudo chown -R `whoami` /usr/local
+
+info "Installing Homebrew, the best OS X package manager ..."
+  successfully ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+
+info "Updating brew..."
+  successfully brew update
+
+info "Installing grc coreutils spark..."
+  successfully brew install grc coreutils spark
+
+info "Installing GNU Compiler Collection and dependencies ..."
+  successfully brew tap homebrew/dupes
+  successfully brew install autoconf automake apple-gcc42
+
+info "Installing system libraries recommended for Ruby ..."
+  successfully brew install gdbm libffi libksba libyaml readline
+
+info "Installing ImageMagick, for cropping and re-sizing images ..."
+  successfully brew install imagemagick
+
+info "Installing QT, used by Capybara Webkit for headless Javascript integration testing ..."
+  successfully brew install qt
+
+info "Installing watch, used to execute a program periodically and show the output ..."
+  successfully brew install watch
+
+info "Installing mongodb, our beloved database ..."
+  successfully brew install mongodb
+
+info "Installing Redis, a good key-value database ..."
+  successfully brew install redis
+
+info "Installing dnsmasq, so we can use beautiful .dev domains for web development ..."
+  successfully brew install dnsmasq
+  successfully ln -s $HOME/.dotfiles/etc/dnsmasq.conf /usr/local/etc/dnsmasq.conf
 
 info "Installing rbenv for changing Ruby versions ..."
   successfully git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv
   successfully chgrp -R staff /usr/local/rbenv
   successfully chmod -R g+rwxXs /usr/local/rbenv
-  successfully echo 'export RBENV_ROOT=/usr/local/rbenv' >> ~/.zlogin
-  successfully echo 'export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"' >> ~/.zlogin
-  successfully echo 'eval "$(rbenv init -)"' >> ~/.zlogin
-  successfully source ~/.zlogin
 
 info "Installing ruby-build for installing Rubies ..."
   successfully mkdir /usr/local/rbenv/plugins
@@ -62,6 +110,10 @@ info "Installing rbenv-gem-rehash so the shell automatically picks up binaries a
   successfully git clone https://github.com/sstephenson/rbenv-gem-rehash.git /usr/local/rbenv/plugins/rbenv-gem-rehash
   successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-gem-rehash
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-gem-rehash
+
+export RBENV_ROOT=/usr/local/rbenv
+export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+eval "$(rbenv init -)"
 
 info "Installing Ruby 2.0.0-p247 ..."
   CC=gcc-4.2 successfully rbenv install 2.0.0-p247
