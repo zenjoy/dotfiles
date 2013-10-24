@@ -36,6 +36,9 @@ info "Fix OSX zsh environment bug"
     successfully sudo mv /etc/{zshenv,zprofile}
   fi
 
+info "Installing Oh-My-Zsh Prose Theme..."
+  successfully sudo cp -f $HOME/.dotfiles/zsh/prose.zsh-theme $HOME/.oh-my-zsh/themes/prose.zsh-theme
+
 info "Checking for SSH key, generating one if it doesn't exist ..."
   [[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
 
