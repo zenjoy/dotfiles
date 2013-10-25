@@ -148,15 +148,21 @@ echo "\nOur most used databases :\n"
 
 check "brew package 'mongodb' (nosql)" "brew list mongodb"
   successfully brew install mongodb
+  successfully ln -sfv /usr/local/opt/mongodb/*.plist ~/Library/LaunchAgents
+  successfully launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
 
 check "brew package 'redis' (a good key-value database)" "brew list redis"
   successfully brew install redis
+  successfully ln -sfv /usr/local/opt/redis/*.plist ~/Library/LaunchAgents
+  successfully launchctl load ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
 
 echo "\nInstalling various other software :\n"
 
 check "brew package 'dnsmasq' (to use .dev domains for web development)" "brew list dnsmasq"
   successfully brew install dnsmasq
   successfully ln -sf $HOME/.dotfiles/etc/dnsmasq.conf /usr/local/etc/dnsmasq.conf
+  successfully sudo cp -fv /usr/local/opt/dnsmasq/*.plist /Library/LaunchDaemons
+  successfully sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
 
 echo "\nSetting up Ruby :\n"
 
