@@ -1,6 +1,15 @@
-set -e
+set +e
 
-echo ''
+alias BEGINCOMMENT="if [ ]; then"
+alias ENDCOMMENT="fi"
+
+proceed=1
+
+echo "\n(please type your password if asked)\n"
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `.osx` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 message=""
 
@@ -8,12 +17,11 @@ success () {
   printf "\r\033[2K [ \033[00;32mok\033[0m ] $*\n"
 }
 
+
 info () {
-  if [[ -n $message ]]; then
-    success $message
-  fi
-  printf " [ \033[00;34m..\033[0m ] $*"
-  message="$*"
+  proceed=1
+  printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
+  message="$1"
 }
 
 user () {
@@ -28,12 +36,40 @@ fail () {
 }
 
 successfully() {
-  ($* >> /tmp/dotfiles-setup 2>&1) || (fail $message 2>&1)
+  if [ $proceed -ne 0 ]; then
+    $* >> /tmp/dotfiles-setup 2>&1
+    status=$?
+    if [ $status -ne 0 ]; then
+      fail "$message : failed" 2>&1
+      exit 1
+    else
+      success "$message : installed"
+    fi
+  fi
 }
+
+check() {
+  printf " [ \033[00;34m..\033[0m ] $1 : checking"
+  echo "\n\nChecking $1, running $2:\n" >> /tmp/dotfiles-setup 2>&1
+  eval "$2" > /dev/null 2>&1
+  status=$?
+  if [ $status -ne 0 ]; then
+    proceed=1
+    info "$1 : installing"
+    message="$1"
+  else
+    proceed=0
+    success "$1 : found"
+  fi
+}
+
+echo "\nGeneric stuff first :\n"
 
 info "Fix OSX zsh environment bug"
   if [[ -f /etc/{zshenv} ]]; then
     successfully sudo mv /etc/{zshenv,zprofile}
+  else
+    success $message
   fi
 
 info "Installing Oh-My-Zsh Prose Theme..."
@@ -50,63 +86,102 @@ info "Fixing permissions ..."
   successfully sudo mkdir -p /usr/local
   successfully sudo chown -R `whoami` /usr/local
 
-info "Installing Homebrew, the best OS X package manager ..."
-  successfully ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+echo "\nHomebrew, the best OS X package manager :\n"
 
-info "Updating brew..."
-  successfully brew update
+check "brew core", "which brew"
+  successfully exec bash -c 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
 
-info "Installing grc coreutils spark..."
-  successfully brew install grc coreutils spark
+check "brew package 'grc'" "brew list grc"
+  successfully brew install grc
 
-info "Installing GNU Compiler Collection and dependencies ..."
+check "brew package 'coreutils'" "brew list coreutils"
+  successfully brew install coreutils
+
+check "brew package 'spark'" "brew list spark"
+  successfully brew install spark
+
+check "Tapping homebrew/dupes collection" "ls /usr/local/Library/Taps/homebrew-dupes > /dev/null"
   successfully brew tap homebrew/dupes
-  successfully brew install autoconf automake apple-gcc42
 
-info "Installing system libraries recommended for Ruby ..."
-  successfully brew install gdbm libffi libksba libyaml readline
+echo "\nSystem libraries needed for c-compilation :\n"
 
-info "Installing ImageMagick, for cropping and re-sizing images ..."
+check "brew package 'autoconf'" "brew list autoconf"
+  successfully brew install autoconf
+
+check "brew package 'automake'" "brew list automake"
+  successfully brew install automake
+
+check "brew package 'apple-gcc42'" "brew list apple-gcc42"
+  successfully brew install apple-gcc42
+
+echo "\nSystem libraries recommended for Ruby :\n"
+
+check "brew package 'gdbm'" "brew list gdbm"
+  successfully brew install gdbm
+
+check "brew package 'libffi'" "brew list libffi"
+  successfully brew install libffi
+
+check "brew package 'libksba'" "brew list libksba"
+  successfully brew install libksba
+
+check "brew package 'libyaml'" "brew list libyaml"
+  successfully brew install libyaml
+
+check "brew package 'readline'" "brew list readline"
+  successfully brew install readline
+
+echo "\nInstalling support programs recommended for Ruby :\n"
+
+check "brew package 'imagemagick' (for cropping and re-sizing images)" "brew list imagemagick"
   successfully brew install imagemagick
 
+BEGINCOMMENT
 info "Installing QT, used by Capybara Webkit for headless Javascript integration testing ..."
   successfully brew install qt
+ENDCOMMENT
 
-info "Installing watch, used to execute a program periodically and show the output ..."
+check "brew package 'watch' (used to execute a program periodically and show the output)" "brew list watch"
   successfully brew install watch
 
-info "Installing mongodb, our beloved database ..."
+echo "\nOur most used databases :\n"
+
+check "brew package 'mongodb' (nosql)" "brew list mongodb"
   successfully brew install mongodb
 
-info "Installing Redis, a good key-value database ..."
+check "brew package 'redis' (a good key-value database)" "brew list redis"
   successfully brew install redis
 
-info "Installing dnsmasq, so we can use beautiful .dev domains for web development ..."
-  successfully brew install dnsmasq
-  successfully ln -s $HOME/.dotfiles/etc/dnsmasq.conf /usr/local/etc/dnsmasq.conf
+echo "\nInstalling various other software :\n"
 
-info "Installing rbenv for changing Ruby versions ..."
+check "brew package 'dnsmasq' (to use .dev domains for web development)" "brew list dnsmasq"
+  successfully brew install dnsmasq
+  successfully ln -sf $HOME/.dotfiles/etc/dnsmasq.conf /usr/local/etc/dnsmasq.conf
+
+echo "\nSetting up Ruby :\n"
+
+check "rbenv (for changing Ruby versions)" "which rbenv"
   successfully git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv
   successfully chgrp -R staff /usr/local/rbenv
   successfully chmod -R g+rwxXs /usr/local/rbenv
 
-info "Installing ruby-build for installing Rubies ..."
+check "ruby-build (for installing Rubies)" "ls /usr/local/rbenv/plugins/ruby-build > /dev/null"
   successfully mkdir /usr/local/rbenv/plugins
   successfully git clone git://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build
   successfully chgrp -R staff /usr/local/rbenv/plugins/ruby-build
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/ruby-build
 
-info "Installing rbenv-sudo for running Ruby as root ..."
+check "rbenv-sudo (for running Ruby as root)" "ls /usr/local/rbenv/plugins/rbenv-sudo > /dev/null"
   successfully git clone git://github.com/dcarley/rbenv-sudo.git /usr/local/rbenv/plugins/rbenv-sudo
   successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-sudo
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-sudo
 
-info "Installing rbenv-binstubs ..."
+info "rbenv-binstubs (automatically detect binstubs)", "ls /usr/local/rbenv/plugins/rbenv-binstubs > /dev/null"
   successfully git clone git://github.com/ianheggie/rbenv-binstubs.git /usr/local/rbenv/plugins/rbenv-binstubs
   successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-binstubs
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-binstubs
 
-info "Installing rbenv-gem-rehash so the shell automatically picks up binaries after installing gems with binaries..."
+info "rbenv-gem-rehash (to automatically pick up binaries after installing gems with binaries)", "ls /usr/local/rbenv/plugins/rbenv-gem-rehash > /dev/null"
   successfully git clone https://github.com/sstephenson/rbenv-gem-rehash.git /usr/local/rbenv/plugins/rbenv-gem-rehash
   successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-gem-rehash
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-gem-rehash
@@ -115,27 +190,43 @@ export RBENV_ROOT=/usr/local/rbenv
 export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
 eval "$(rbenv init -)"
 
-info "Installing Ruby 2.0.0-p247 ..."
-  CC=gcc-4.2 successfully rbenv install 2.0.0-p247
+check "OpenSSL 1.0.1e" "brew list openssl"
+  successfully brew install openssl
 
-info "Setting Ruby 1.9.3-p392 as global default Ruby ..."
+BEGINCOMMENT
+info "Installing Ruby 2.0.0-p247 ..."
+  CC=gcc-4.2 RUBY_CONFIGURE_OPTS="--with-openssl-dir=/usr/local/opt/openssl" rbenv install 2.0.0-p247
+ENDCOMMENT
+
+info "Setting Ruby 2.0.0-p247 as global default Ruby ..."
   successfully rbenv global 2.0.0-p247
   successfully rbenv shell 2.0.0-p247
 
 info "Update to latest Rubygems version ..."
   successfully gem update --system
 
-info "Installing necessary Ruby gems for Rails & Web development ..."
-  successfully gem install bundler foreman rails thin compass sass haml --no-document
+echo "\nInstalling necessary Rubygems for Rails & Web development :\n"
 
-info "Installing Ghost gem for easy hosts management ..."
+info "gem 'bundler'"
+  successfully gem install bundler --no-document
+
+info "gem 'foreman'"
+  successfully gem install foreman --no-document
+
+info "gem 'rails'"
+  successfully gem install rails --no-document
+
+info "gem 'ghost' (for easy hosts management)"
   successfully gem install ghost --pre --no-document
 
-info "Installing Nimbu CLI client ..."
+info "gem 'lunchy' (osx launch management)"
+  successfully gem install lunchy --no-document
+
+info "the Nimbu gem"
   successfully gem install nimbu --no-document
 
-info "Installing GitHub CLI client ..."
+info "the GitHub CLI client"
   successfully gem install hub --no-document
 
-info "Installing Git-Smart gem ..."
+info "the Git-Smart gem"
   successfully gem install git-smart --no-document
