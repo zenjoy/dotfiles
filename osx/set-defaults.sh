@@ -70,6 +70,16 @@ defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
 defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
 ###############################################################################
+# Quicklook                                                                   #
+###############################################################################
+
+# Use OSX Finder Quicklook to preview all plain text files
+sudo ln -sf ~/.dotfiles/osx/QLStephen.qlgenerator /Library/QuickLook/QLStephen.qlgenerator
+
+# Copy text/code from OSX QuickLook directly
+defaults write com.apple.finder QLEnableTextSelection -bool true;
+
+###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################
 
@@ -111,3 +121,7 @@ defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
 # Disable local Time Machine backups
 hash tmutil &> /dev/null && sudo tmutil disablelocal
+
+## Restart Finder
+qlmanage -r
+killall Finder

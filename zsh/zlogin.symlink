@@ -1,5 +1,5 @@
 if [ -d "/usr/local/rbenv" ]; then
-  export RBENV_ROOT=/usr/local/rbenv
+  export RBENV_ROOT="/usr/local/rbenv"
   export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
   eval "$(rbenv init -)"
 fi

@@ -199,10 +199,8 @@ eval "$(rbenv init -)"
 check "OpenSSL 1.0.1e" "brew list openssl"
   successfully brew install openssl
 
-BEGINCOMMENT
 info "Installing Ruby 2.0.0-p247 ..."
-  CC=gcc-4.2 RUBY_CONFIGURE_OPTS="--with-openssl-dir=/usr/local/opt/openssl" rbenv install 2.0.0-p247
-ENDCOMMENT
+  CC=gcc-4.2 RUBY_CONFIGURE_OPTS="--with-readline-dir=/usr/local/opt/readline --with-openssl-dir=/usr/local/opt/openssl" rbenv install 2.0.0-p247
 
 info "Setting Ruby 2.0.0-p247 as global default Ruby ..."
   successfully rbenv global 2.0.0-p247
