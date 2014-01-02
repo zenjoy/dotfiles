@@ -6,6 +6,7 @@
 #   https://github.com/mathiasbynens/dotfiles/blob/master/.osx
 #
 # Run ./set-defaults.sh and you'll be good to go.
+sudo -v
 
 # Ask for the administrator password upfront
 
@@ -125,3 +126,4 @@ hash tmutil &> /dev/null && sudo tmutil disablelocal
 ## Restart Finder
 qlmanage -r
 killall Finder
+killall Dock
