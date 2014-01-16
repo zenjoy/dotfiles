@@ -131,6 +131,16 @@ check "brew package 'libyaml'" "brew list libyaml"
 check "brew package 'readline'" "brew list readline"
   successfully brew install readline
 
+echo "\nInstalling node.js and coffeescript :\n"
+
+check "brew package 'node'" "brew list node"
+  successfully brew install node
+
+info "installing coffeescript and jslint"
+  successfully npm install -g coffee
+  successfully npm install -g coffee-script
+  successfully npm install -g jslint
+
 echo "\nInstalling support programs recommended for Ruby :\n"
 
 check "brew package 'imagemagick' (for cropping and re-sizing images)" "brew list imagemagick"
