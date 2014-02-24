@@ -100,6 +100,9 @@ check "brew package 'coreutils'" "brew list coreutils"
 check "brew package 'spark'" "brew list spark"
   successfully brew install spark
 
+check "brew package 'icu4c'" "brew list icu4c"
+  successfully brew install icu4c
+
 check "Tapping homebrew/dupes collection" "ls /usr/local/Library/Taps/homebrew-dupes > /dev/null"
   successfully brew tap homebrew/dupes
 
