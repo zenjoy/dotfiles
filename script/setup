@@ -86,6 +86,9 @@ info "Fixing permissions ..."
   successfully sudo mkdir -p /usr/local
   successfully sudo chown -R `whoami` /usr/local
 
+info "Symlinking Sublime Text"
+  successfully sudo ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
+
 echo "\nHomebrew, the best OS X package manager :\n"
 
 check "brew core", "which brew"
@@ -143,6 +146,7 @@ info "installing coffeescript and jslint"
   successfully npm install -g coffee
   successfully npm install -g coffee-script
   successfully npm install -g jslint
+  successfully npm install -g ios-sim
 
 echo "\nInstalling support programs recommended for Ruby :\n"
 
@@ -184,26 +188,29 @@ check "rbenv (for changing Ruby versions)" "which rbenv"
   successfully chgrp -R staff /usr/local/rbenv
   successfully chmod -R g+rwxXs /usr/local/rbenv
 
+successfully cd /usr/local/rbenv && git pull
+
 check "ruby-build (for installing Rubies)" "ls /usr/local/rbenv/plugins/ruby-build > /dev/null"
   successfully mkdir /usr/local/rbenv/plugins
   successfully git clone git://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build
   successfully chgrp -R staff /usr/local/rbenv/plugins/ruby-build
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/ruby-build
 
+successfully cd /usr/local/rbenv/plugins/ruby-build && git pull
+
 check "rbenv-sudo (for running Ruby as root)" "ls /usr/local/rbenv/plugins/rbenv-sudo > /dev/null"
   successfully git clone git://github.com/dcarley/rbenv-sudo.git /usr/local/rbenv/plugins/rbenv-sudo
   successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-sudo
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-sudo
+
+successfully cd /usr/local/rbenv/plugins/rbenv-sudo && git pull
 
 info "rbenv-binstubs (automatically detect binstubs)", "ls /usr/local/rbenv/plugins/rbenv-binstubs > /dev/null"
   successfully git clone git://github.com/ianheggie/rbenv-binstubs.git /usr/local/rbenv/plugins/rbenv-binstubs
   successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-binstubs
   successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-binstubs
 
-info "rbenv-gem-rehash (to automatically pick up binaries after installing gems with binaries)", "ls /usr/local/rbenv/plugins/rbenv-gem-rehash > /dev/null"
-  successfully git clone https://github.com/sstephenson/rbenv-gem-rehash.git /usr/local/rbenv/plugins/rbenv-gem-rehash
-  successfully chgrp -R staff /usr/local/rbenv/plugins/rbenv-gem-rehash
-  successfully chmod -R g+rwxs /usr/local/rbenv/plugins/rbenv-gem-rehash
+successfully cd /usr/local/rbenv/plugins/rbenv-binstubs && git pull
 
 export RBENV_ROOT=/usr/local/rbenv
 export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
@@ -212,12 +219,12 @@ eval "$(rbenv init -)"
 check "OpenSSL 1.0.1e" "brew list openssl"
   successfully brew install openssl
 
-info "Installing Ruby 2.0.0-p247 ..."
-  CC=gcc-4.2 RUBY_CONFIGURE_OPTS="--with-readline-dir=/usr/local/opt/readline --with-openssl-dir=/usr/local/opt/openssl" rbenv install 2.0.0-p247
+check "Check for Ruby 2.1.2-p95" "ruby -v "
+  CC=gcc-4.2 RUBY_CONFIGURE_OPTS="--with-readline-dir=/usr/local/opt/readline --with-openssl-dir=/usr/local/opt/openssl" rbenv install 2.1.2-p95
 
-info "Setting Ruby 2.0.0-p247 as global default Ruby ..."
-  successfully rbenv global 2.0.0-p247
-  successfully rbenv shell 2.0.0-p247
+info "Setting Ruby 2.1.2-p95 as global default Ruby ..."
+  successfully rbenv global 2.1.2-p95
+  successfully rbenv shell 2.1.2-p95
 
 info "Update to latest Rubygems version ..."
   successfully gem update --system

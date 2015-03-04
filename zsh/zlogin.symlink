@@ -3,3 +3,6 @@ if [ -d "/usr/local/rbenv" ]; then
   export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
   eval "$(rbenv init -)"
 fi
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"

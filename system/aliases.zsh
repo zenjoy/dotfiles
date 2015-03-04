@@ -10,3 +10,9 @@ then
 fi
 
 alias k9="killall -9"
+
+alias iphone4s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-4s"
+alias iphone5s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-5"
+alias ipad="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPad-Air"
+alias iphone6plus="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus"
+alias iphone6="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-6"
