@@ -87,12 +87,12 @@ info "Fixing permissions ..."
   successfully sudo chown -R `whoami` /usr/local
 
 info "Symlinking Sublime Text"
-  successfully sudo ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
+  successfully sudo mkdir -p /usr/local/bin && ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
 
 echo "\nHomebrew, the best OS X package manager :\n"
 
 check "brew core", "which brew"
-  successfully exec bash -c 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
+  successfully exec bash -c 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
 check "brew package 'grc'" "brew list grc"
   successfully brew install grc
@@ -220,11 +220,11 @@ check "OpenSSL 1.0.1e" "brew list openssl"
   successfully brew install openssl
 
 check "Check for Ruby 2.1.2-p95" "ruby -v "
-  CC=gcc-4.2 RUBY_CONFIGURE_OPTS="--with-readline-dir=/usr/local/opt/readline --with-openssl-dir=/usr/local/opt/openssl" rbenv install 2.1.2-p95
+  rbenv install 2.1.2
 
 info "Setting Ruby 2.1.2-p95 as global default Ruby ..."
-  successfully rbenv global 2.1.2-p95
-  successfully rbenv shell 2.1.2-p95
+  successfully rbenv global 2.1.2
+  successfully rbenv shell 2.1.2
 
 info "Update to latest Rubygems version ..."
   successfully gem update --system
