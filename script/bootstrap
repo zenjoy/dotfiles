@@ -53,6 +53,10 @@ link_files () {
   success "linked $1 to $2"
 }
 
+install_zshmarks () {
+  git clone git://github.com/jocelynmallon/zshmarks.git ~/.oh-my-zsh/custom/plugins/zshmarks
+}
+
 install_dotfiles () {
   info 'installing dotfiles'
 
@@ -122,6 +126,7 @@ install_dotfiles () {
 
 setup_gitconfig
 install_dotfiles
+install_zshmarks
 
 $HOME/.dotfiles/osx/set-defaults.sh
 
