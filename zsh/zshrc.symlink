@@ -9,7 +9,7 @@ ZSH_THEME="prose"
 COMPLETION_WAITING_DOTS="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-plugins=(brew gem nyan sublime extract)
+plugins=(brew gem nyan sublime extract zshmarks)
 
 # Load them all
 source $ZSH/oh-my-zsh.sh
