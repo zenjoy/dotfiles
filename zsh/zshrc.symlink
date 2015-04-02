@@ -1,18 +1,43 @@
-# Path to your oh-my-zsh configuration.
-ZSH=$HOME/.oh-my-zsh
+if [[ -a $HOME/.antigen/antigen.zsh ]]
+then # antigen -> also install oh-my-git :-)
+	source "$HOME/.antigen/antigen.zsh"
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-ZSH_THEME="prose"
+	# Use oh-my-zsh
+	antigen use oh-my-zsh
 
-# Comment following line if you do not want red dots to be displayed while waiting for completion
-COMPLETION_WAITING_DOTS="true"
+	# Install bundles from deafult repo
+	antigen bundle brew
+	antigen bundle gem
+	antigen bundle nyan
+	antigen bundle sublime
+	antigen bundle extract
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-plugins=(brew gem nyan sublime extract zshmarks)
+	# Install and use zshmarks
+	antigen bundle jocelynmallon/zshmarks
 
-# Load them all
-source $ZSH/oh-my-zsh.sh
+	# Install and use oh-my-git
+	antigen bundle arialdomartini/oh-my-git
+
+	antigen theme arialdomartini/oh-my-git-themes oppa-lana-style
+
+	antigen-apply
+else # plain oh-my-zsh
+	# Path to your oh-my-zsh configuration.
+	ZSH=$HOME/.oh-my-zsh
+
+	# Set name of the theme to load.
+	# Look in ~/.oh-my-zsh/themes/
+	ZSH_THEME="prose"
+	
+	# Comment following line if you do not want red dots to be displayed while waiting for completion
+	COMPLETION_WAITING_DOTS="true"
+	
+	# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+	plugins=(brew gem nyan sublime extract zshmarks)
+	
+	# Load them all
+	source $ZSH/oh-my-zsh.sh
+fi
 
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
