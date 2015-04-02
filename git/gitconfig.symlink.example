@@ -15,6 +15,7 @@
         rank-contributers = !$DOTFILES/bin/git-rank-contributers
         count   = !git shortlog -sn
         lg      = !git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+        ls = ls-tree -r --full-tree HEAD
 
 [color]
         diff = auto
@@ -39,3 +40,6 @@
         #
         # Setting to git 2.0 default to surpress warning message
         default = simple
+
+[include]
+        path = ~/.gitconfig.local
