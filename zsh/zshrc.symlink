@@ -89,3 +89,9 @@ unset config_files
 
 export CC=/usr/bin/gcc
 unsetopt correct_all
+
+# Put local stuff that you want at the end of everything in here
+if [[ -a ~/.localrc.late ]]
+then
+	source ~/.localrc.late
+fi
