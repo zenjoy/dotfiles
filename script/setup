@@ -87,7 +87,7 @@ info "Fixing permissions ..."
   successfully sudo chown -R `whoami` /usr/local
 
 info "Symlinking Sublime Text"
-  successfully sudo mkdir -p /usr/local/bin && ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
+  successfully sudo mkdir -p /usr/local/bin && sudo ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
 
 echo "\nHomebrew, the best OS X package manager :\n"
 
@@ -117,8 +117,10 @@ check "brew package 'autoconf'" "brew list autoconf"
 check "brew package 'automake'" "brew list automake"
   successfully brew install automake
 
+BEGINCOMMENT
 check "brew package 'apple-gcc42'" "brew list apple-gcc42"
   successfully brew install apple-gcc42
+ENDCOMMENT
 
 echo "\nSystem libraries recommended for Ruby :\n"
 
@@ -219,12 +221,12 @@ eval "$(rbenv init -)"
 check "OpenSSL 1.0.1e" "brew list openssl"
   successfully brew install openssl
 
-check "Check for Ruby 2.1.2-p95" "ruby -v "
-  rbenv install 2.1.2
+check "Check for Ruby 2.2.2" "ruby -v "
+  rbenv install 2.2.2
 
-info "Setting Ruby 2.1.2-p95 as global default Ruby ..."
-  successfully rbenv global 2.1.2
-  successfully rbenv shell 2.1.2
+info "Setting Ruby 2.2.2-p95 as global default Ruby ..."
+  successfully rbenv global 2.2.2
+  successfully rbenv shell 2.2.2
 
 info "Update to latest Rubygems version ..."
   successfully gem update --system
