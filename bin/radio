@@ -1,0 +1,249 @@
+
+
+echo "###############################"
+echo "# INTERNET RADIO STREAMS 2007 #"
+echo "#             by Peter Dedene #"
+echo "###############################"
+echo ""
+#!/bin/sh
+
+if [ "$1" == "" ]; then
+echo "Please select your radio station:
+
+[N] Latest VRT News Report
+
+[1] Radio 1                     [10] Nostalgie            [19] BeOne Radio
+[2] Radio 2 Antwerpen           [11] QMusic               [20] Musique3
+[3] Radio 2 Vlaams-Brabant      [12] Klara                [21] 21Classic
+[4] Radio 2 Limburg             [13] Klara Continuo       [22] PureFM
+[5] Radio 2 Oost-Vlaanderen     [14] De Foute Radio       [23] CrazyFM
+[6] Radio 2 West-Vlaanderen     [15] Sporza               [24] Radio 80
+[7] MNM                         [16] MixFM                [25] FunRadio
+[8] Studio Brussel              [17] RGR fm
+[9] Joe FM       	 					    [18] SlowRadio
+
+Non-Belgian Radio Station:
+
+[26] Digitally-Imported
+[27] Groove Salad
+[28] Space Station Soma
+[29] Beat Blender
+[30] Ministry Of Sound HQ
+[31] Nectarine
+[32] TropicanaFM
+[33] Christmas Radio
+[34] Smooth Jazz
+[35] Love Music
+[36] Top Hits Music
+[37] New Age Radio
+[38] Mostly Classical
+[39] Salsa Radio
+[40] Chillout Radio
+[41] EuroDance Station
+[42] Roots Raggae
+[43] Classic Rock
+[44] Solo Piano
+[45] Best of 80s
+[46] Best of 70s
+[47] Oldies
+[48] Beatles Tribute
+[49] DaTempo Loung
+[50] Country
+[51] Bossa Nova Jazz
+[52] Electro House
+[53] Soulful House
+[54] Trance
+[55] BBC World
+[56] AfterHours.fm
+
+Extra:
+[57] Radio Scorpio
+"
+echo "Type the number of your station: "
+read choice
+else
+choice="$1"
+fi
+echo "---------------------------------------------------------------------------"
+case "$choice" in
+	N) station="http://download.streampower.be/vrt/radio1/11_11niws-snip_hi.mp3"
+	echo "Listening to the latest VRT news report"
+	;;
+	1) station="http://mp3.streampower.be/radio1-high"
+	echo "Tuning in to RADIO 1"
+     	;;
+	2) station="http://mp3.streampower.be/ra2ant-high"
+	echo "Tuning in to RADIO 2 ANTWERPEN"
+	;;
+	3) station="http://mp3.streampower.be/ra2vlb-high"
+	echo "Tuning in to RADIO 2 VLAAMS-BRABANT"
+	;;
+	4) station="http://mp3.streampower.be/ra2lim-high"
+	echo "Tuning in to RADIO 2 LIMBURG"
+	;;
+	5) station="http://mp3.streampower.be/ra2ovl-high"
+	echo "Tuning in to RADIO 2 OOST-VLAANDEREN"
+	;;
+	6) station="http://mp3.streampower.be/ra2wvl-high"
+	echo "Tuning in to RADIO 2 WEST-VLAANDEREN"
+	;;
+	7) station="http://mp3.streampower.be/mnm-high"
+	echo "Tuning in to MNM"
+	;;
+	8) station="http://mp3.streampower.be/stubru-high"
+	echo "Tuning in to STUDIO BRUSSEL"
+	;;
+	9) station="http://icecast-qmusic.cdp.triple-it.nl:80/JOEfm_be_live_128.mp3"
+	echo "Tuning in to JOE FM"
+	;;
+	10) station="http://nostalgiewhatafeeling.ice.infomaniak.ch/nostalgiewhatafeeling-128.mp3"
+	echo "Tuning in to Nostalgie"
+	;;
+	11) station="http://icecast-qmusic.cdp.triple-it.nl:80/Qmusic_be_live_128.mp3"
+	echo "Tuning in to Q-MUSIC"
+	;;
+	12) station="http://mp3.streampower.be/klara-high"
+	echo "Tuning in to KLARA"
+	;;
+	13) station="http://mp3.streampower.be/klaracontinuo-high"
+	echo "Tuning in to KLARA CONTINUO"
+	;;
+	14) station="http://icecast-qmusic.cdp.triple-it.nl/Qmusic_be_fouteuur_128.mp3"
+	echo "Tuning in to TOPRADIO"
+	;;
+	15) station="http://mp3.streampower.be/sporza-high"
+	echo "Tuning in to SPORZA"
+	;;
+	16) station="http://mixfm.compea.com:8006"
+	echo "Tuning in to MixFM"
+	;;
+	17) station="http://streams.lazernet.be:2620/"
+	echo "Tuning in to RGR BoenkStation"
+	;;
+	18) station="http://193.239.120.188:8406"
+	echo Tuning in to SlowRadio
+	;;
+	19) station="http://streams.lazernet.be:3660"
+	echo "Tuning in to BeOne Radio"
+	;;
+	20) station="-playlist http://old.rtbf.be/rtbf_2000/radios/mus3128.m3u"
+	echo "Tuning in to Musique3"
+	;;
+	21) station="-playlist http://old.rtbf.be/rtbf_2000/radios/21128.m3u"
+	echo "Tuning in to Classic21"
+	;;
+	22) station="-playlist http://old.rtbf.be/rtbf_2000/radios/pure128.m3u"
+	echo "Tuning in to PureFM"
+	;;
+	23) station="http://streaming.cashmoneybrothers.be:8002"
+	echo "Tuning in to Crazy FM"
+	;;
+	24) station="http://stream1.fluoline.net:8008"
+	echo "Tuning in to Radio 80"
+	;;
+	25) station="http://broadcast.infomaniak.net:80/funradiobe-high.mp3"
+	echo "Tuning in to FunRadio"
+	;;
+	26) station="http://64.236.36.54:80/stream/1003"
+	echo "Tuning in to Digitally Imported Radio"
+	;;
+	27) station="http://207.200.96.232:8012"
+	echo "Tuning in to Groove Salad - A nicely chilled plate of ambient beats and grooves."
+	;;
+	28) station="http://160.79.128.242:8206"
+	echo "Space Station Soma - Tune in, turn on, space out. Spaced-out ambient and mid-tempo electronica."
+	;;
+	29) station="http://160.79.128.242:8388"
+	echo "Beat Blender - A late night blend of deep-house and downtempo chill."
+	;;
+	30) station="http://mosradio-livetest.wm.llnwd.net/mosradio_livetest"
+	echo "Tuning in on Ministry Of Sound HQ"
+	;;
+        31) station="http://bombastix.soundbomb.net:8000/nectarine.ogg"
+	echo "Tuning in on Nectarine"
+	;;
+	32) station="http://66.175.96.10/cotropi"
+	echo "Tuning in on TropicanaFM"
+	;;
+	33) station="-playlist http://www.sky.fm/mp3/christmas.pls"
+	echo "Tuning in on Christmas Radio"
+	;;
+	34) station="-playlist http://www.sky.fm/mp3/smoothjazz.pls"
+	echo "Tuning in on Smooth Jazz Radio"
+	;;
+	35) station="-playlist http://www.sky.fm/mp3/lovemusic.pls"
+	echo "Tuning in on Love Music"
+	;;
+	36) station="-playlist http://www.sky.fm/mp3/tophits.pls"
+	echo "Tuning in on Top Hits Music"
+	;;
+	37) station="-playlist http://www.sky.fm/mp3/newage.pls"
+	echo "Tuning in on New Age Radio"
+	;;
+	38) station="-playlist http://www.sky.fm/mp3/classical.pls"
+	echo "Tuning in on Mostly Classical"
+	;;
+	39) station="-playlist http://www.sky.fm/mp3/salsa.pls"
+	echo "Tuning in on Salsa"
+	;;
+	40) station="-playlist http://www.di.fm/mp3/chillout.pls"
+	echo "Tuning in on Chillout Radio"
+	;;
+	41) station="-playlist http://www.di.fm/mp3/eurodance.pls"
+	echo "Tuning in on EuroDance Station"
+	;;
+	42) station="-playlist http://www.sky.fm/mp3/rootsreggae.pls"
+	echo "Tuning in on Roots Raggae"
+	;;
+	43) station="-playlist http://www.sky.fm/mp3/classicrock.pls"
+	echo "Tuning in on Classic Rock"
+	;;
+	44) station="-playlist http://www.sky.fm/mp3/solopiano.pls"
+	echo "Tuning in on Solo Piano"
+	;;
+	45) station="-playlist http://www.sky.fm/mp3/the80s.pls"
+	echo "Tuning in on Best of 80s"
+	;;
+	46) station="-playlist http://www.sky.fm/mp3/hit70s.pls"
+	echo "Tuning in on Best of 70s"
+	;;
+	47) station="-playlist http://www.sky.fm/mp3/oldies.pls"
+	echo "Tuning in on Oldies"
+	;;
+	48) station="-playlist http://www.sky.fm/mp3/beatles.pls"
+	echo "Tuning in on Beatles Tribute"
+	;;
+	49) station="-playlist http://www.sky.fm/mp3/datempolounge.pls"
+	echo "Tuning in on DaTempo Lounge"
+	;;
+	50) station="-playlist http://www.sky.fm/mp3/country.pls"
+	echo "Tuning in on Country"
+	;;
+	51) station="-playlist http://www.sky.fm/mp3/bossanova.pls"
+	echo "Tuning in on Bossa Nova Jazz"
+	;;
+	52) station="-playlist http://www.di.fm/mp3/electro.pls"
+	echo "Tuning in on Electro House"
+	;;
+	53) station="-playlist http://www.di.fm/mp3/soulfulhouse.pls"
+	echo "Tuning in on Soulfull House"
+	;;
+	54) station="-playlist http://www.di.fm/mp3/trance.pls"
+	echo "Tuning in on Trance"
+	;;
+	55) station="mms://livewmstream-ws.bbc.co.uk.edgestreams.net/reflector:38968"
+	echo "Tuning in on BBC World"
+	;;
+	56) station="-playlist http://www.ah.fm/192k.m3u"
+	;;
+	57) station="http://193.190.253.57:8000/stream"
+	echo "Tuning in on Radio Scorpio"
+	;;
+	*) echo "Wrong Choice"
+	exit 0
+ 	;;
+esac
+echo "---------------------------------------------------------------------------
+"
+mplayer $station -quiet -cache 256
+exit 0
