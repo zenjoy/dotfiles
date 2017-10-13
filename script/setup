@@ -84,7 +84,7 @@ info "Copying public key to clipboard. Paste it into your Github account ..."
 
 info "Fixing permissions ..."
   successfully sudo mkdir -p /usr/local
-  successfully sudo chown -R `whoami` /usr/local
+  successfully sudo chown -R $(whoami) $(brew --prefix)/*
 
 info "Symlinking Sublime Text"
   successfully sudo mkdir -p /usr/local/bin && sudo ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
@@ -186,9 +186,9 @@ check "brew package 'dnsmasq' (to use .dev domains for web development)" "brew l
 echo "\nSetting up Ruby :\n"
 
 check "rbenv (for changing Ruby versions)" "which rbenv"
-  successfully git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv
-  successfully chgrp -R staff /usr/local/rbenv
-  successfully chmod -R g+rwxXs /usr/local/rbenv
+  successfully sudo git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv
+  successfully sudo chgrp -R staff /usr/local/rbenv
+  successfully sudo chmod -R g+rwxXs /usr/local/rbenv
 
 successfully cd /usr/local/rbenv && git pull
 
@@ -221,12 +221,12 @@ eval "$(rbenv init -)"
 check "OpenSSL 1.0.1e" "brew list openssl"
   successfully brew install openssl
 
-check "Check for Ruby 2.2.2" "ruby -v "
-  rbenv install 2.2.2
+check "Check for Ruby 2.3.5" "ruby -v "
+  rbenv install 2.3.5
 
-info "Setting Ruby 2.2.2-p95 as global default Ruby ..."
-  successfully rbenv global 2.2.2
-  successfully rbenv shell 2.2.2
+info "Setting Ruby 2.3.5-p95 as global default Ruby ..."
+  successfully rbenv global 2.3.5
+  successfully rbenv shell 2.3.5
 
 info "Update to latest Rubygems version ..."
   successfully gem update --system
