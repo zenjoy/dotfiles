@@ -106,9 +106,6 @@ check "brew package 'spark'" "brew list spark"
 check "brew package 'icu4c'" "brew list icu4c"
   successfully brew install icu4c
 
-check "Tapping homebrew/dupes collection" "ls /usr/local/Library/Taps/homebrew-dupes > /dev/null"
-  successfully brew tap homebrew/dupes
-
 echo "\nSystem libraries needed for c-compilation :\n"
 
 check "brew package 'autoconf'" "brew list autoconf"
