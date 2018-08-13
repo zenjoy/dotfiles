@@ -12,7 +12,6 @@ then # antigen -> also install oh-my-git :-)
 	antigen bundle brew
 	antigen bundle gem
 	antigen bundle nyan
-	antigen bundle sublime
 	antigen bundle extract
 
 	# Install and use zshmarks
@@ -43,7 +42,7 @@ else # plain oh-my-zsh
 	COMPLETION_WAITING_DOTS="true"
 	
 	# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-	plugins=(brew gem nyan sublime extract zshmarks)
+	plugins=(brew gem nyan extract zshmarks)
 	
 	# Load them all
 	source $ZSH/oh-my-zsh.sh

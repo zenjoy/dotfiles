@@ -24,7 +24,7 @@
         ui = true
 [core]
         excludesfile = ~/.gitignore
-        editor = subl -n -w
+        editor = code --wait
         ignorecase = false
 [apply]
         whitespace = nowarn

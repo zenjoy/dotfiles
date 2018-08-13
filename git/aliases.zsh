@@ -28,5 +28,5 @@ alias gt='git status'
 alias g='git status --short'
 alias gup='git smart-pull'
 alias gm='smart-merge'
-alias eg='subl .git/config'
+alias eg='code .git/config'
 alias glog="git log --graph --pretty=format:'%Cred%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"

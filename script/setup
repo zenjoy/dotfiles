@@ -86,9 +86,6 @@ info "Fixing permissions ..."
   successfully sudo mkdir -p /usr/local
   successfully sudo chown -R $(whoami) $(brew --prefix)/*
 
-info "Symlinking Sublime Text"
-  successfully sudo mkdir -p /usr/local/bin && sudo ln -f -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
-
 echo "\nHomebrew, the best OS X package manager :\n"
 
 check "brew core", "which brew"
