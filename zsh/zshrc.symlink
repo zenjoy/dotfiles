@@ -94,3 +94,17 @@ if [[ -a ~/.localrc.late ]]
 then
 	source ~/.localrc.late
 fi
+
+# support asdf
+if [[ -a /usr/local/opt/asdf/asdf.sh ]]
+then
+	source /usr/local/opt/asdf/asdf.sh
+fi
+
+if [[ -a /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash ]]
+then
+	source /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash
+fi
+
+# allow zeus and unicorn to fork
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
