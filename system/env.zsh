@@ -4,4 +4,4 @@ if [[ "$EDITOR" == "" ]] ; then
   export EDITOR='code'
 fi
 
-
+export OPENFAAS_URL=https://fn.zenjoy.be

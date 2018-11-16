@@ -42,7 +42,7 @@ else # plain oh-my-zsh
 	COMPLETION_WAITING_DOTS="true"
 	
 	# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-	plugins=(brew gem extract zshmarks)
+	plugins=(brew gem extract zshmarks zsh-autosuggestions kubectl)
 	
 	# Load them all
 	source $ZSH/oh-my-zsh.sh
@@ -108,3 +108,4 @@ fi
 
 # allow zeus and unicorn to fork
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
