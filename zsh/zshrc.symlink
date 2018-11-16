@@ -1,5 +1,6 @@
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
+export ZSH_CACHE_DIR=$HOME/.zcompcache
 
 if [[ -a $HOME/.antigen/antigen.zsh ]]
 then # antigen -> also install oh-my-git :-)
@@ -11,8 +12,8 @@ then # antigen -> also install oh-my-git :-)
 	# Install bundles from deafult repo
 	antigen bundle brew
 	antigen bundle gem
-	antigen bundle nyan
 	antigen bundle extract
+  antigen bundle kubectl
 
 	# Install and use zshmarks
 	antigen bundle jocelynmallon/zshmarks
