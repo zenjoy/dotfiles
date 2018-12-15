@@ -1,0 +1,8 @@
+# before you can run this, first setup the 1Password CLI:
+# - go to https://zenjoy.1password.com/profile and copy the Secret Key
+# - run: op "signin zenjoy.1password.com", paste the secret key and login with your password
+# the name of the item containing the AWS keys can be modified by using the AWS_1PASSWORD_ITEM
+
+function setup-aws () {
+  eval $(op signin zenjoy) && eval $(eval echo $(op get item ${AWS_1PASSWORD_ITEM:-'AWS Credentials'} | jq '.details.sections[] | select(.fields != null) | .fields | map("export \(.t)=\(.v)")  | join("\n")'))
+}
