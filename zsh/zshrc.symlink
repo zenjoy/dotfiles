@@ -1,6 +1,10 @@
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
-export ZSH_CACHE_DIR=$HOME/.zcompcache
+
+if [[ -d "$HOME/.zcompcache" ]]
+then
+	export ZSH_CACHE_DIR=$HOME/.zcompcache
+fi
 
 if [[ -a $HOME/.antigen/antigen.zsh ]]
 then # antigen -> also install oh-my-git :-)
