@@ -109,3 +109,6 @@ fi
 # allow zeus and unicorn to fork
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Fix direcory autocompletion when using autosuggestions
+ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(expand-or-complete)
