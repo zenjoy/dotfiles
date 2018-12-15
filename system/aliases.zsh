@@ -19,3 +19,6 @@ alias iphone6="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceTyp
 alias iphone6s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-6s"
 alias iphone7="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-7"
 alias iphoneSE="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-SE"
+
+# see https://github.com/fcambus/ansiweather for installation anc customization
+alias we="ansiweather"
