@@ -22,6 +22,7 @@ alias gdm='git diff master'
 alias gl='git smart-log'
 alias gnp="git-notpushed"
 alias gp='git push'
+alias gpr='git open-pr'
 alias gam='git commit --amend -C HEAD'
 alias gst='git status'
 alias gt='git status'
