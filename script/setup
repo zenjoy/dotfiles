@@ -94,6 +94,10 @@ check "brew core", "which brew"
 check "brew package 'grc'" "brew list grc"
   successfully brew install grc
 
+check "brew package 'fzf'" "brew list fzf"
+  successfully brew install fzf
+  successfully $(brew --prefix)/opt/fzf/install --all
+
 check "brew package 'coreutils'" "brew list coreutils"
   successfully brew install coreutils
 

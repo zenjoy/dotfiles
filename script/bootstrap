@@ -26,7 +26,15 @@ fail () {
   exit
 }
 
+title () {
+  echo ''
+  printf "  $1\n"
+  echo ''
+}
+
 setup_gitconfig () {
+  title 'Checking Git Config'
+
   if ! [ -f git/gitconfig.symlink ]
   then
     info 'setup gitconfig'
@@ -45,6 +53,8 @@ setup_gitconfig () {
     sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.symlink.example > git/gitconfig.symlink
 
     success 'gitconfig'
+  else
+    success 'Git already configured!'
   fi
 }
 
@@ -53,12 +63,36 @@ link_files () {
   success "linked $1 to $2"
 }
 
-install_zshmarks () {
-  git clone git://github.com/jocelynmallon/zshmarks.git ~/.oh-my-zsh/custom/plugins/zshmarks
+install_zshplugins () {
+  title 'Installing ZSH plugins'
+
+  declare -a plugins=("jocelynmallon/zshmarks" 
+                      "iam4x/zsh-iterm-touchbar"
+                      "zsh-users/zsh-autosuggestions")
+
+  for plugin in "${plugins[@]}"
+  do
+    source="git://github.com/${plugin}.git"
+    target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${plugin#*/}
+
+    if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${plugin#*/} ] 
+    then
+      info "Cloning ${source} into ${target}"
+      eval $(echo "git clone ${source} ${target}")
+      success "Cloned ${source} into ${target}"
+    else
+      success "skipping ${target}: already installed"
+    fi
+  done
+
+  echo ''
+  echo '  To complete the iTerm TouchBar integration:'
+  echo '    Menu -> go into View -> Customize Tool Bar... and drag & drop the Fn module on the Touchbar'
+  echo ''
 }
 
 install_dotfiles () {
-  info 'installing dotfiles'
+  title 'Installing dotfiles'
 
   overwrite_all=false
   backup_all=false
@@ -94,7 +128,7 @@ install_dotfiles () {
           S )
             skip_all=true;;
           * )
-            ;;
+            skip=true;;
         esac
       fi
 
@@ -124,14 +158,37 @@ install_dotfiles () {
   done
 }
 
+setup_macos() {
+  title 'macOS defaults setup'
+  user 'Want to setup macOS with some nice defaults? [Y/n]'
+  read -n 1 action
+  continue=false
+  case "$action" in
+    n )
+      continue=false;;
+    N )
+      continue=false;;
+    * )
+      continue=true;;
+  esac
+
+  if [ "$continue" == "true" ]
+  then
+    success "Fine, let's continue the setup... You will be asked for your password.\n"  
+    $HOME/.dotfiles/osx/set-defaults.sh
+  else
+    success "Ok, skipping macOS setup.\n"  
+  fi
+}
+
 setup_gitconfig
 install_dotfiles
-install_zshmarks
+install_zshplugins
+setup_macos
 
-$HOME/.dotfiles/osx/set-defaults.sh
-
-echo ''
-echo '  .dotfiles ready & installed!'
-echo ''
+title '.dotfiles ready & installed!'
 echo '  Want to set up your laptop with the some developer essentials?'
 echo '   => run `script/setup`'
+echo ''
+echo '  Want to reload your ZSH environment?'
+echo '   => run `reload!`'
