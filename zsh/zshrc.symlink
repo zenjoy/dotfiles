@@ -50,7 +50,38 @@ else # plain oh-my-zsh
 	COMPLETION_WAITING_DOTS="true"
 	
 	# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-	plugins=(brew gem extract zshmarks zsh-autosuggestions kubectl zsh-iterm-touchbar git-open-pr)
+	plugins=(brew 
+					 droplr
+					 docker
+					 docker-compose
+					 extract
+					 gem
+					 git
+					 gitfast
+					 gitignore
+					 git-open-pr
+					 git-extras
+					 git-hubflow
+					 git-remote-branch
+					 git-it-on
+					 helm
+					 httpie
+					 iterm2
+					 kubectl
+					 oh-my-matrix
+					 npm
+					 osx
+					 react-native
+					 vagrant
+					 xcode
+					 vault
+					 zshmarks
+					 zsh-brew-services
+					 zsh-dropbox
+					 zsh-iterm-touchbar
+					 zsh-autosuggestions
+					 zsh-yarn-autocompletions
+					 zsh-completions)
 	
 	# Load them all
 	source $ZSH/oh-my-zsh.sh

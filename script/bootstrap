@@ -68,17 +68,27 @@ install_zshplugins () {
 
   declare -a plugins=("jocelynmallon/zshmarks" 
                       "iam4x/zsh-iterm-touchbar"
-                      "zsh-users/zsh-autosuggestions")
+                      "zsh-users/zsh-autosuggestions"
+                      "amstrad/oh-my-matrix"
+                      "vasyharan/zsh-brew-services"
+                      "horosgrisa/zsh-dropbox"
+                      "zsh-users/zsh-completions"
+                      "g-plane/zsh-yarn-autocompletions"
+                      "peterhurford/git-it-on.zsh")
+
+  declare -A rename=(["git-it-on.zsh"]="git-it-on")
 
   for plugin in "${plugins[@]}"
   do
     source="git://github.com/${plugin}.git"
-    target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${plugin#*/}
+    directory=${plugin#*/}
+    directory=${rename[$directory]:-$directory}
+    target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}
 
-    if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${plugin#*/} ] 
+    if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory} ] 
     then
       info "Cloning ${source} into ${target}"
-      eval $(echo "git clone ${source} ${target}")
+      eval $(echo "git clone ${source} ${target}") &> /dev/null
       success "Cloned ${source} into ${target}"
     else
       success "skipping ${target}: already installed"

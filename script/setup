@@ -137,6 +137,18 @@ check "brew package 'libyaml'" "brew list libyaml"
 check "brew package 'readline'" "brew list readline"
   successfully brew install readline
 
+check "brew package 'jq'" "brew list jq"
+  successfully brew install jq
+
+check "brew package 'fortune'" "brew list fortune"
+  successfully brew install fortune
+
+check "brew package 'cowsay'" "brew list cowsay"
+  successfully brew install cowsay
+
+check "brew package 'httpie'" "brew list httpie"
+  successfully brew install httpie
+
 echo "\nInstalling node.js and coffeescript :\n"
 
 check "brew package 'node'" "brew list node"
@@ -147,6 +159,9 @@ info "installing coffeescript and jslint"
   successfully npm install -g coffee-script
   successfully npm install -g jslint
   successfully npm install -g ios-sim
+
+info "installing add-gitignore"
+  successfully npm install -g add-gitignore
 
 echo "\nInstalling support programs recommended for Ruby :\n"
 
@@ -161,6 +176,7 @@ ENDCOMMENT
 check "brew package 'watch' (used to execute a program periodically and show the output)" "brew list watch"
   successfully brew install watch
 
+BEGINCOMMENT
 echo "\nOur most used databases :\n"
 
 check "brew package 'mongodb' (nosql)" "brew list mongodb"
@@ -180,6 +196,7 @@ check "brew package 'dnsmasq' (to use .dev domains for web development)" "brew l
   successfully ln -sf $HOME/.dotfiles/etc/dnsmasq.conf /usr/local/etc/dnsmasq.conf
   successfully sudo cp -fv /usr/local/opt/dnsmasq/*.plist /Library/LaunchDaemons
   successfully sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+ENDCOMMENT
 
 echo "\nSetting up Ruby :\n"
 
@@ -219,26 +236,20 @@ eval "$(rbenv init -)"
 check "OpenSSL 1.0.1e" "brew list openssl"
   successfully brew install openssl
 
-check "Check for Ruby 2.3.5" "ruby -v "
-  rbenv install 2.3.5
+check "Check for Ruby 2.5.3" "ruby -v "
+  rbenv install 2.5.3
 
-info "Setting Ruby 2.3.5-p95 as global default Ruby ..."
-  successfully rbenv global 2.3.5
-  successfully rbenv shell 2.3.5
+info "Setting Ruby 2.5.3-p95 as global default Ruby ..."
+  successfully rbenv global 2.5.3
+  successfully rbenv shell 2.5.3
 
-info "Update to latest Rubygems version ..."
-  successfully gem update --system
-
-echo "\nInstalling necessary Rubygems for Rails & Web development :\n"
+echo "\nInstalling some nice Gems for our development :\n"
 
 info "gem 'bundler'"
   successfully gem install bundler --no-document
 
 info "gem 'foreman'"
   successfully gem install foreman --no-document
-
-info "gem 'rails'"
-  successfully gem install rails --no-document
 
 info "gem 'ghost' (for easy hosts management)"
   successfully gem install ghost --pre --no-document
@@ -254,3 +265,6 @@ info "the GitHub CLI client"
 
 info "the Git-Smart gem"
   successfully gem install git-smart --no-document
+
+info "Rainbows and unicorns..."
+  successfully gem install lolcat --no-document
