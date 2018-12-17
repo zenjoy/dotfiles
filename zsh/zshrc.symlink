@@ -56,8 +56,6 @@ else # plain oh-my-zsh
 					 docker-compose
 					 extract
 					 gem
-					 git
-					 gitfast
 					 gitignore
 					 git-open-pr
 					 git-extras
@@ -163,4 +161,3 @@ export YARN_ENABLED=true
 
 # Fix direcory autocompletion when using autosuggestions
 ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(expand-or-complete)
-
