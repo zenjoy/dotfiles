@@ -1,0 +1,3 @@
+function show-kubecontext () {
+  export SPACESHIP_KUBECONTEXT_SHOW=true
+}

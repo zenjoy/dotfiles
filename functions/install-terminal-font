@@ -1,0 +1,3 @@
+install-terminal-font() {
+  brew cask install font-firacode-nerd-font
+}

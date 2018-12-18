@@ -78,9 +78,27 @@ info "Installing Oh-My-Zsh Prose Theme..."
 info "Checking for SSH key, generating one if it doesn't exist ..."
   [[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
 
-info "Copying public key to clipboard. Paste it into your Github account ..."
-  [[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
-  successfully open https://github.com/account/ssh
+user 'Do you want to copy the public key to Github? [Y/n]'
+  read -n 1 action
+  continue=false
+  case "$action" in
+    n )
+      continue=false;;
+    N )
+      continue=false;;
+    * )
+      continue=true;;
+  esac
+
+  if [ "$continue" == "true" ]
+  then
+    info "Copying public key to clipboard. Paste it into your Github account ..."
+    [[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
+    successfully open https://github.com/account/ssh
+
+  else
+    info  "Ok, skipping public key copy.\n"  
+  fi
 
 info "Fixing permissions ..."
   successfully sudo mkdir -p /usr/local
@@ -88,8 +106,8 @@ info "Fixing permissions ..."
 
 echo "\nHomebrew, the best OS X package manager :\n"
 
-check "brew core", "which brew"
-  successfully exec bash -c 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+check "homebrew", "which brew"
+  successfully exec bash -c 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
 check "brew package 'grc'" "brew list grc"
   successfully brew install grc

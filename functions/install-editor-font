@@ -1,0 +1,3 @@
+install-editor-font() {
+  brew cask install font-fira-code
+}

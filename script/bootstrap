@@ -87,13 +87,23 @@ install_zshplugins () {
 
     if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory} ] 
     then
-      info "Cloning ${source} into ${target}"
+      info "Cloning plugin ${source} into ${target}"
       eval $(echo "git clone ${source} ${target}") &> /dev/null
-      success "Cloned ${source} into ${target}"
+      success "Cloned plugin ${source} into ${target}"
     else
-      success "skipping ${target}: already installed"
+      success "skipping plugin ${target}: already installed"
     fi
   done
+
+  if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt ] 
+  then
+    info "Installing spaceship-prompt theme"
+    eval $(echo "git clone git://github.com/denysdovhan/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt") &> /dev/null
+    eval $(echo "ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme") &> /dev/null
+    success "Installed spaceship-prompt theme. Enjoy! (See https://git.io/fpxOn for all customization options: put this in your ~/.localrc)"
+  else
+    success "skipping theme ${target}: already installed"
+  fi
 
   echo ''
   echo '  To complete the iTerm TouchBar integration:'
