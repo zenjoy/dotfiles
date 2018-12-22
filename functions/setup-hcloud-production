@@ -4,5 +4,5 @@
 # the name of the item containing the AWS keys can be modified by using the AWS_1PASSWORD_ITEM
 
 function setup-hcloud-production () {
-  eval $(op signin zenjoy) && eval $(eval echo $(op get item ${AWS_1PASSWORD_ITEM:-'Hetzner Cloud Production'} | jq '.details.sections[] | select(.fields != null) | .fields | map("echo \"Export \(.t) environment variable\" && export \(.t)=\(.v)")  | join(" && ")'))
+  eval $(op signin zenjoy) && eval $(eval echo $(op get item ${HCLOUD_PRODUCTION_1PASSWORD_ITEM:-'Hetzner Cloud Production'} | jq '.details.sections[] | select(.fields != null) | .fields | map("echo \"Export \(.t) environment variable\" && export \(.t)=\(.v)")  | join(" && ")'))
 }
