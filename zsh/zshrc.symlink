@@ -46,16 +46,18 @@ else # plain oh-my-zsh
 	# Look in ~/.oh-my-zsh/themes/
 	ZSH_THEME="spaceship"
 
-	# Spaceship customization
+	# Spaceship customization 
+	# from https://github.com/denysdovhan/spaceship-prompt/blob/master/docs/Options.md
 	SPACESHIP_TIME_SHOW=true
 	SPACESHIP_PROMPT_FIRST_PREFIX_SHOW=true
 	SPACESHIP_CHAR_SYMBOL="○"
 	SPACESHIP_CHAR_SUFFIX=(" ")
 	SPACESHIP_DIR_COLOR="green"
-	SPACESHIP_GIT_SYMBOL="\ue725"
-	SPACESHIP_KUBECONTEXT_SYMBOL="\ue7b2"
+	SPACESHIP_GIT_SYMBOL="\ue725 "
+	SPACESHIP_KUBECONTEXT_SYMBOL="\ue7b2 "
 	SPACESHIP_KUBECONTEXT_SHOW=false
-	SPACESHIP_TERRAFORM_SYMBOL="\uf9fd"
+	SPACESHIP_TERRAFORM_SYMBOL="\uf9fd "
+	SPACESHIP_DIR_TRUNC="0"
 
 	SPACESHIP_PROMPT_ORDER=(
 		time        	# Time stamps section

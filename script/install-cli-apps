@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#
+# install a few interesting terminal apps
+
+set +e
+
+success () {
+  printf "\r\033[2K [ \033[00;32mok\033[0m ] $*\n"
+}
+
+info () {
+  proceed=1
+  printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
+  message="$1"
+}
+
+user () {
+  printf "\r\033[2K [ \033[00;33m?\033[0m ] $*"
+}
+
+fail () {
+  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $*\n"
+  echo ''
+  echo 'See /tmp/dotfiles-setup for more information.'
+  exit 1
+}
+
+successfully() {
+  if [ $proceed -ne 0 ]; then
+    $* >> /tmp/dotfiles-setup 2>&1
+    status=$?
+    if [ $status -ne 0 ]; then
+      fail "$message : failed" 2>&1
+      exit 1
+    else
+      success "$message : installed"
+    fi
+  fi
+}
+
+check() {
+  printf " [ \033[00;34m..\033[0m ] $1 : checking"
+  echo "\n\nChecking $1, running $2:\n" >> /tmp/dotfiles-setup 2>&1
+  eval "$2" > /dev/null 2>&1
+  status=$?
+  if [ $status -ne 0 ]; then
+    proceed=1
+    info "$1 : installing"
+    message="$1"
+  else
+    proceed=0
+    success "$1 : found"
+  fi
+}
+
+echo "\nHomebrew, the best OS X package manager :\n"
+
+check "homebrew", "which brew"
+  successfully exec bash -c 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+
+brew install jq
+pip install howdoi
+pip install haxor-news
+pip3 install asciinema
+brew install googler
+gem install colorls

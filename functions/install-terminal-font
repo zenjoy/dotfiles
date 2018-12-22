@@ -1,3 +1,4 @@
 install-terminal-font() {
+  brew tap homebrew/cask-fonts
   brew cask install font-firacode-nerd-font
 }
