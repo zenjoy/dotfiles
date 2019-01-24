@@ -7,7 +7,7 @@ fi
 
 DOMAIN=$1
 COMMON_NAME=${2:-*.$1}
-SUBJECT="/C=CA/ST=None/L=NB/O=None/CN=$COMMON_NAME"
+SUBJECT="/C=BE/ST=Vlaams-Brabant/L=Leuven/O=Zenjoy/OU=IT Department/CN=$COMMON_NAME"
 NUM_OF_DAYS=9999
 openssl req -new -newkey rsa:2048 -sha256 -nodes -keyout device.key -subj "$SUBJECT" -out device.csr
 cat ~/.dotfiles/ssl/v3.ext | sed s/%%DOMAIN%%/$COMMON_NAME/g > /tmp/__v3.ext
