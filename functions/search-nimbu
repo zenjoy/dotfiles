@@ -1,0 +1,8 @@
+function search-nimbu () {
+  if lsof -Pi :9200 -sTCP:LISTEN -t >/dev/null ; then
+    echo "Connection to Elasticsearch detected... proceeding with Elktail"
+    elktail -i "nimbu-logs-*" -f "%@timestamp %message" "$@"
+  else
+    echo "No connection with k8s cluster. \n\nPlease start port-forwarding first (in another terminal):\nkubectl port-forward -n elk svc/elk-master 9200:9200"
+  fi
+}
