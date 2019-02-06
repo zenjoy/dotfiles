@@ -2,11 +2,13 @@ localtunnel () {
   if ! [ -x "$(command -v lt-zenjoy)" ]; then
     echo "localtunnel-zenjoy is not yet installed. Let's get it from npm..." >&2
     npm install -g localtunnel-zenjoy
+    echo ""
   fi
 
   if [[ -z "${LOCALTUNNEL_AUTH_TOKEN}" ]]; then
     echo "Fetching the authentication token from 1Password.\n"
     eval $(op signin zenjoy) && eval $(eval echo $(op get item 'Localtunnel Secrets' | jq ".details.sections[] | select(.fields != null) | .fields | map(\"export \(.t)='\(.v)'\")  | join(\" && \")")) 
+    echo ""
   fi
 
   lt-zenjoy --host https://tunnel.zenjoy.be $*
