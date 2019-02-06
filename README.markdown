@@ -17,16 +17,12 @@ http://xquartz.macosforge.org/landing/
 
 ## install
 
-```sh
-sh -c "`curl -fsSL https://raw.github.com/zenjoy/dotfiles/master/go.sh`"
-```
-
-Run this if you want to do this manually:
+Run this:
 
 ```sh
 git clone https://github.com/zenjoy/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-script/bootstrap
+./script/bootstrap
 ```
 
 This will symlink the appropriate files in `.dotfiles` to your home directory.

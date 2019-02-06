@@ -230,3 +230,8 @@ if [[ -a /usr/local/opt/gnu-getopt/bin/getopt ]]
 then
   export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"
 fi
+
+# Check for update of the dotfiles
+if [ "$DISABLE_AUTO_UPDATE" != "true" ]; then
+  env DOTFILES=$DOTFILES DISABLE_UPDATE_PROMPT=$DISABLE_UPDATE_PROMPT zsh -f $DOTFILES/tools/check_for_upgrade.sh
+fi

@@ -22,3 +22,5 @@ alias iphoneSE="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceTy
 
 # see https://github.com/fcambus/ansiweather for installation anc customization
 alias we="ansiweather"
+
+alias lt="localtunnel"
