@@ -1,12 +1,37 @@
-#!/usr/bin/env bash
-#
-# install a few interesting terminal apps
-
+#!/usr/bin/env sh
 set +e
+proceed=1
+result=0
+
+echo "\033[1;30m=================================================================
+\033[0;37m               _                   _       _    __ _ _           
+              (_)                 | |     | |  / _(_) |          
+ _______ _ __  _  ___  _   _    __| | ___ | |_| |_ _| | ___  ___ 
+|_  / _ \ '_ \| |/ _ \| | | |  / _\` |/ _ \| __|  _| | |/ _ \/ __|
+ / /  __/ | | | | (_) | |_| | | (_| | (_) | |_| | | | |  __/\__ \\
+/___\___|_| |_| |\___/ \__, |  \__,_|\___/ \__|_| |_|_|\___||___/
+             _/ |       __/ |                                    
+            |__/       |___/
+
+\033[1;30m*****************************************************************
+\033[1;37m         Let's install some interesting cli apps ...
+\033[1;30m=================================================================
+\033[1;37m"
+
+while :; do
+  case $1 in
+    -h|--help) showhelp=1
+    ;;
+    *) break
+  esac
+  shift
+done
+
 
 success () {
   printf "\r\033[2K [ \033[00;32mok\033[0m ] $*\n"
 }
+
 
 info () {
   proceed=1
@@ -21,15 +46,16 @@ user () {
 fail () {
   printf "\r\033[2K [\033[0;31mFAIL\033[0m] $*\n"
   echo ''
-  echo 'See /tmp/dotfiles-setup for more information.'
+  echo 'See /tmp/cli-tools-setup for more information.'
   exit 1
 }
 
 successfully() {
-  if [ $proceed -ne 0 ]; then
-    $* >> /tmp/dotfiles-setup 2>&1
-    status=$?
-    if [ $status -ne 0 ]; then
+  if [[ $proceed -ne 0 ]]; then
+    echo "We are proceeding with the command: $*" >> /tmp/cli-tools-setup 2>&1
+    eval "$*" >> /tmp/cli-tools-setup 2>&1
+    result=$?
+    if [[ $result -ne 0 ]]; then
       fail "$message : failed" 2>&1
       exit 1
     else
@@ -40,10 +66,10 @@ successfully() {
 
 check() {
   printf " [ \033[00;34m..\033[0m ] $1 : checking"
-  echo "\n\nChecking $1, running $2:\n" >> /tmp/dotfiles-setup 2>&1
+  echo "Checking $1, running $2:\n" >> /tmp/cli-tools-setup 2>&1
   eval "$2" > /dev/null 2>&1
-  status=$?
-  if [ $status -ne 0 ]; then
+  result=$?
+  if [[ $result -ne 0 ]]; then
     proceed=1
     info "$1 : installing"
     message="$1"
@@ -53,14 +79,38 @@ check() {
   fi
 }
 
-echo "\nHomebrew, the best OS X package manager :\n"
+echo "Feel free to follow the details by running:\n"
+echo "\033[0m  tail -f /tmp/cli-tools-setup in another terminal"
+message=""
+echo ""
+current_dir=$(pwd)
+echo "\033[0;37mFirst some base stuff we need:\n"
 
-check "homebrew", "which brew"
-  successfully exec bash -c 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+check "homebrew" "command -v brew"
+  successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
 
-brew install jq
-pip install howdoi
-pip install haxor-news
-pip3 install asciinema
-brew install googler
-gem install colorls
+check "python 2.x" "brew info python@2"
+  successfully "brew install python@2"
+
+check "python 3.x" "brew info python"
+  successfully "brew install python"
+
+echo "\n\033[1;37mNow the interesting things:\n"
+
+check "jq (json processor)" "brew info jq"
+  successfully "brew install jq"
+
+check "howdoi (check stackoverflow)" "command -v howdoi"
+  successfully "pip install howdoi"
+
+check "haxor-news (hacker news reader)" "command -v hn"
+  successfully "pip install haxor-news"
+
+check "colorls (colorized ls command)" "gem list colorls | grep colorls"
+  successfully "gem install colorls"
+
+check "asciinema (record and share what happens in terminal)" "command -v asciinema"
+  successfully "pip3 install asciinema"
+
+check "googler (google cli)" "brew info googler"
+  successfully "brew install googler"

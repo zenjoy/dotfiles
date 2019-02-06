@@ -1,0 +1,3 @@
+function install-cli-apps() {
+  $DOTFILES/script/install-cli-apps
+}
