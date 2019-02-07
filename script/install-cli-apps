@@ -46,8 +46,8 @@ user () {
 fail () {
   printf "\r\033[2K [\033[0;31mFAIL\033[0m] $*\n"
   echo ''
-  echo 'See /tmp/cli-tools-setup for more information.'
-  exit 1
+  echo "See /tmp/cli-tools-setup for more information.\n"
+  return 1
 }
 
 successfully() {
@@ -57,7 +57,7 @@ successfully() {
     result=$?
     if [[ $result -ne 0 ]]; then
       fail "$message : failed" 2>&1
-      exit 1
+      return 1
     else
       success "$message : installed"
     fi
@@ -89,7 +89,7 @@ echo "\033[0;37mFirst some base stuff we need:\n"
 check "homebrew" "command -v brew"
   successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
 
-check "node / npm" "brew info npm"
+check "node / npm" "command -v npm"
   successfully "brew install npm"
 
 check "python 2.x" "brew info python@2"
@@ -100,13 +100,13 @@ check "python 3.x" "brew info python"
 
 echo "\n\033[1;37mNow the interesting things:\n"
 
-check "httpie (a user-friendly http client)" "brew info httpie"
+check "httpie (a user-friendly http client)" "command -v http"
   successfully "brew install httpie"
 
-check "jq (json processor)" "brew info jq"
+check "jq (json processor)" "command -v jq"
   successfully "brew install jq"
 
-check "fx (json processor)" "brew info fx"
+check "fx (json processor)" "command -v fx"
   successfully "brew install fx"
 
 check "howdoi (check stackoverflow)" "command -v howdoi"
@@ -118,10 +118,10 @@ check "haxor-news (hacker news reader)" "command -v hn"
 check "colorls (colorized ls command)" "gem list colorls | grep colorls"
   successfully "gem install colorls"
 
-check "googler (google cli)" "brew info googler"
+check "googler (google cli)" "command -v googler"
   successfully "brew install googler"
 
-check "youtube-dl (youtube downloader)" "brew info youtube-dl"
+check "youtube-dl (youtube downloader)" "command -v youtube-dl"
   successfully "brew install youtube-dl"
 
 check "caniuse (check caniuse.com)" "command -v caniuse"
@@ -184,7 +184,7 @@ check "mapscii (google maps in your terminal)" "command -v mapscii"
 check "carbon-now (beautiful images of your code)" "command -v carbon-now"
   successfully "npm i -g carbon-now-cli"
 
-check "fuck (autocorrects error in previous command)" "brew info thefuck"
+check "fuck (autocorrects error in previous command)" "command -v fuck"
   successfully "brew install thefuck"
 
 check "organize (auto organize files based on file type)" "command -v organize"
@@ -202,7 +202,7 @@ check "rename (utility for renaming files)" "command -v rename"
 check "undollar (undollar strips the dollar sign from copy/pasted commands)" "command -v $"
   successfully "npm install -g undollar"
 
-check "hub (tool that wraps git)" "brew info hub"
+check "hub (tool that wraps git)" "command -v hub"
   successfully "brew install hub"
 
 check "git-secret (stores private data inside a git repo)" "brew info git-secret"
@@ -218,7 +218,7 @@ check "asciinema (record and share what happens in terminal)" "command -v asciin
   successfully "pip3 install asciinema"
 
 check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
-  successfully "brew install jarun/imgp/imgp"
+  successfully "pip3 install pillow"
 
 check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill-tabs"
   successfully "npm install --global kill-tabs"
