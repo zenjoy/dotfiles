@@ -211,8 +211,8 @@ check "git-secret (stores private data inside a git repo)" "brew info git-secret
 check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew info git-extras"
   successfully "brew install git-extras"
 
-check "ttystudio (record and create terminal gif recordings)" "command -v ttystudio"
-  successfully "npm install -g ttystudio"
+# check "ttystudio (record and create terminal gif recordings)" "command -v ttystudio"
+#   successfully "npm install -g ttystudio"
 
 check "asciinema (record and share what happens in terminal)" "command -v asciinema"
   successfully "pip3 install asciinema"
