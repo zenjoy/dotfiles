@@ -89,6 +89,9 @@ echo "\033[0;37mFirst some base stuff we need:\n"
 check "homebrew" "command -v brew"
   successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
 
+check "node / npm" "brew info npm"
+  successfully "brew install npm"
+
 check "python 2.x" "brew info python@2"
   successfully "brew install python@2"
 
@@ -97,8 +100,14 @@ check "python 3.x" "brew info python"
 
 echo "\n\033[1;37mNow the interesting things:\n"
 
+check "httpie (a user-friendly http client)" "brew info httpie"
+  successfully "brew install httpie"
+
 check "jq (json processor)" "brew info jq"
   successfully "brew install jq"
+
+check "fx (json processor)" "brew info fx"
+  successfully "brew install fx"
 
 check "howdoi (check stackoverflow)" "command -v howdoi"
   successfully "pip install howdoi"
@@ -109,8 +118,116 @@ check "haxor-news (hacker news reader)" "command -v hn"
 check "colorls (colorized ls command)" "gem list colorls | grep colorls"
   successfully "gem install colorls"
 
+check "googler (google cli)" "brew info googler"
+  successfully "brew install googler"
+
+check "youtube-dl (youtube downloader)" "brew info youtube-dl"
+  successfully "brew install youtube-dl"
+
+check "caniuse (check caniuse.com)" "command -v caniuse"
+  successfully "npm install -g caniuse-cmd"
+
+check "is-up (check website via isitup.org)" "command -v is-up"
+  successfully "npm install -g is-up-cli"
+
+check "pageres (capture screenshots of websites)" "command -v pageres"
+  successfully "npm install -g pageres-cli"
+
+check "splash (beautiful wallpapers from unsplash)" "command -v splash"
+  successfully "npm install -g splash-cli"
+
+check "dockly (managing Docker containers)" "command -v dockly"
+  successfully "npm install -g dockly"
+
+check "viewport-list (list of devices and their viewports)" "command -v viewport-list"
+  successfully "npm install -g viewport-list-cli"
+
+check "loadtest (run a load test on the selected url)" "command -v loadtest"
+  successfully "npm install -g loadtest"
+
+check "serve (easy to use static file server)" "command -v serve"
+  successfully "npm install -g serve"
+
+check "add-gitignore (generates a .gitignore for your project)" "command -v add-gitignore"
+  successfully "npm install -g add-gitignore"
+
+check "mobicon (mobile app icon generator)" "command -v mobicon"
+  successfully "npm install -g mobicon-cli"
+
+check "mobisplash (mobile app splash screen generator)" "command -v mobisplash"
+  successfully "npm install -g mobisplash-cli"
+
+check "dframe (put device frames around app screenshots)" "command -v dframe"
+  successfully "npm install -g deviceframe"
+
+check "aws (universal cli for amazon web services)" "command -v aws"
+  successfully "pip install awscli"
+
+check "s3cmd (fully-featured s3 client)" "command -v s3cmd"
+  successfully "pip install s3cmd"
+
+check "bitly-client (make and manage bitly/zenjoy.me shortlinks)" "command -v bitly-client"
+  successfully "npm install -g bitly-client"
+
+check "cash (convert currency rates)" "command -v cash"
+  successfully "npm install -g cash-cli"
+
+check "gfi (google font installer)" "command -v gfi"
+  successfully "npm install -g google-font-installer"
+
+check "mklicense (cli tool for generating licenses)" "command -v mklicense"
+  successfully "npm install -g mklicense"
+
+check "mapscii (google maps in your terminal)" "command -v mapscii"
+  successfully "npm install -g mapscii"
+
+check "carbon-now (beautiful images of your code)" "command -v carbon-now"
+  successfully "npm i -g carbon-now-cli"
+
+check "fuck (autocorrects error in previous command)" "brew info thefuck"
+  successfully "brew install thefuck"
+
+check "organize (auto organize files based on file type)" "command -v organize"
+  successfully "npm install -g organize-cli"
+
+check "trash (move files and folders to the trash)" "command -v trash"
+  successfully "npm install --global trash-cli"
+
+check "empty-trash (empty the trash)" "command -v empty-trash"
+  successfully "npm install --global empty-trash-cli"
+
+check "rename (utility for renaming files)" "command -v rename"
+  successfully "npm install --global rename-cli"
+
+check "undollar (undollar strips the dollar sign from copy/pasted commands)" "command -v $"
+  successfully "npm install -g undollar"
+
+check "hub (tool that wraps git)" "brew info hub"
+  successfully "brew install hub"
+
+check "git-secret (stores private data inside a git repo)" "brew info git-secret"
+  successfully "brew install git-secret"
+
+check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew info git-extras"
+  successfully "brew install git-extras"
+
+check "ttystudio (record and create terminal gif recordings)" "command -v ttystudio"
+  successfully "npm install -g ttystudio"
+
 check "asciinema (record and share what happens in terminal)" "command -v asciinema"
   successfully "pip3 install asciinema"
 
-check "googler (google cli)" "brew info googler"
-  successfully "brew install googler"
+check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
+  successfully "brew install jarun/imgp/imgp"
+
+check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill-tabs"
+  successfully "npm install --global kill-tabs"
+
+check "speedtest-net (test your internet speed)" "command -v speedtest-net"
+  successfully "npm install --global speedtest-net"
+
+check "cowsay (talk like a cow)" "command -v cowsay"
+  successfully "brew install cowsay"
+
+check "lolcat (talk in rainbows)" "command -v lolcat"
+  successfully "gem install lolcat"
