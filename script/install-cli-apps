@@ -84,7 +84,7 @@ echo "\033[0m  tail -f /tmp/cli-tools-setup in another terminal"
 message=""
 echo ""
 current_dir=$(pwd)
-echo "\033[0;37mFirst some base stuff we need:\n"
+echo "\033[0;37mFirst some base stuff we just need:\n"
 
 check "homebrew" "command -v brew"
   successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
@@ -98,7 +98,11 @@ check "python 2.x" "brew info python@2"
 check "python 3.x" "brew info python"
   successfully "brew install python"
 
-echo "\n\033[1;37mNow the interesting things:\n"
+echo "\n\033[1;37mNow the interesting things...\n"
+
+## GENERAL DEVELOPMENT TOOLS ##
+
+echo "\n\033[1;37mDevelopment Tools:\n"
 
 check "httpie (a user-friendly http client)" "command -v http"
   successfully "brew install httpie"
@@ -112,44 +116,37 @@ check "fx (json processor)" "command -v fx"
 check "howdoi (check stackoverflow)" "command -v howdoi"
   successfully "pip install howdoi"
 
-check "haxor-news (hacker news reader)" "command -v hn"
-  successfully "pip install haxor-news"
-
-check "colorls (colorized ls command)" "gem list colorls | grep colorls"
-  successfully "gem install colorls"
-
-check "googler (google cli)" "command -v googler"
-  successfully "brew install googler"
-
-check "youtube-dl (youtube downloader)" "command -v youtube-dl"
-  successfully "brew install youtube-dl"
-
-check "caniuse (check caniuse.com)" "command -v caniuse"
-  successfully "npm install -g caniuse-cmd"
-
-check "is-up (check website via isitup.org)" "command -v is-up"
-  successfully "npm install -g is-up-cli"
-
-check "pageres (capture screenshots of websites)" "command -v pageres"
-  successfully "npm install -g pageres-cli"
-
-check "splash (beautiful wallpapers from unsplash)" "command -v splash"
-  successfully "npm install -g splash-cli"
+check "mklicense (cli tool for generating licenses)" "command -v mklicense"
+  successfully "npm install -g mklicense"
 
 check "dockly (managing Docker containers)" "command -v dockly"
   successfully "npm install -g dockly"
-
-check "viewport-list (list of devices and their viewports)" "command -v viewport-list"
-  successfully "npm install -g viewport-list-cli"
-
-check "loadtest (run a load test on the selected url)" "command -v loadtest"
-  successfully "npm install -g loadtest"
 
 check "serve (easy to use static file server)" "command -v serve"
   successfully "npm install -g serve"
 
 check "add-gitignore (generates a .gitignore for your project)" "command -v add-gitignore"
   successfully "npm install -g add-gitignore"
+
+check "carbon-now (beautiful images of your code)" "command -v carbon-now"
+  successfully "npm i -g carbon-now-cli"
+
+## FRONTEND DEVELOPMENT TOOLS ##
+
+echo "\n\033[1;37mFrontend Development:\n"
+
+check "caniuse (check caniuse.com)" "command -v caniuse"
+  successfully "npm install -g caniuse-cmd"
+
+check "pageres (capture screenshots of websites)" "command -v pageres"
+  successfully "npm install -g pageres-cli"
+
+check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
+  successfully "pip3 install pillow"  
+
+## MOBILE DEVELOPMENT ##
+
+echo "\n\033[1;37mMobile Development:\n"
 
 check "mobicon (mobile app icon generator)" "command -v mobicon"
   successfully "npm install -g mobicon-cli"
@@ -160,29 +157,47 @@ check "mobisplash (mobile app splash screen generator)" "command -v mobisplash"
 check "dframe (put device frames around app screenshots)" "command -v dframe"
   successfully "npm install -g deviceframe"
 
+check "viewport-list (list of devices and their viewports)" "command -v viewport-list"
+  successfully "npm install -g viewport-list-cli"
+
+## BACKEND DEVELOPMENT ##
+
+echo "\n\033[1;37mBackend Development:\n"
+
 check "aws (universal cli for amazon web services)" "command -v aws"
   successfully "pip install awscli"
 
 check "s3cmd (fully-featured s3 client)" "command -v s3cmd"
   successfully "pip install s3cmd"
 
-check "bitly-client (make and manage bitly/zenjoy.me shortlinks)" "command -v bitly-client"
-  successfully "npm install -g bitly-client"
+check "loadtest (run a load test on the selected url)" "command -v loadtest"
+  successfully "npm install -g loadtest"
 
-check "cash (convert currency rates)" "command -v cash"
-  successfully "npm install -g cash-cli"
+check "speedtest-net (test your internet speed)" "command -v speedtest-net"
+  successfully "npm install --global speedtest-net"  
+
+## GIT TOOLS ##
+
+echo "\n\033[1;37mGit Things:\n"
+
+check "hub (tool that wraps git)" "command -v hub"
+  successfully "brew install hub"
+
+check "git-secret (stores private data inside a git repo)" "brew info git-secret"
+  successfully "brew install git-secret"
+
+check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew info git-extras"
+  successfully "brew install git-extras"
+
+## CONVENIENCE TOOLS ##
+
+echo "\n\033[1;37mConvenience Stuff:\n"
+
+check "colorls (colorized ls command)" "gem list colorls | grep colorls"
+  successfully "gem install colorls"
 
 check "gfi (google font installer)" "command -v gfi"
   successfully "npm install -g google-font-installer"
-
-check "mklicense (cli tool for generating licenses)" "command -v mklicense"
-  successfully "npm install -g mklicense"
-
-check "mapscii (google maps in your terminal)" "command -v mapscii"
-  successfully "npm install -g mapscii"
-
-check "carbon-now (beautiful images of your code)" "command -v carbon-now"
-  successfully "npm i -g carbon-now-cli"
 
 check "fuck (autocorrects error in previous command)" "command -v fuck"
   successfully "brew install thefuck"
@@ -202,32 +217,51 @@ check "rename (utility for renaming files)" "command -v rename"
 check "undollar (undollar strips the dollar sign from copy/pasted commands)" "command -v $"
   successfully "npm install -g undollar"
 
-check "hub (tool that wraps git)" "command -v hub"
-  successfully "brew install hub"
-
-check "git-secret (stores private data inside a git repo)" "brew info git-secret"
-  successfully "brew install git-secret"
-
-check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew info git-extras"
-  successfully "brew install git-extras"
-
-# check "ttystudio (record and create terminal gif recordings)" "command -v ttystudio"
-#   successfully "npm install -g ttystudio"
-
-check "asciinema (record and share what happens in terminal)" "command -v asciinema"
-  successfully "pip3 install asciinema"
-
-check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
-  successfully "pip3 install pillow"
-
 check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill-tabs"
   successfully "npm install --global kill-tabs"
 
-check "speedtest-net (test your internet speed)" "command -v speedtest-net"
-  successfully "npm install --global speedtest-net"
+## INFORMATION / NEWS TOOLS ##
+
+echo "\n\033[1;37mInformation & Search:\n"
+
+check "bitly-client (make and manage bitly/zenjoy.me shortlinks)" "command -v bitly-client"
+  successfully "npm install -g bitly-client"
+
+check "haxor-news (hacker news reader)" "command -v hn"
+  successfully "pip install haxor-news"
+
+check "googler (google cli)" "command -v googler"
+  successfully "brew install googler"
+
+check "is-up (check website via isitup.org)" "command -v is-up"
+  successfully "npm install -g is-up-cli"
+
+## ENTERTAINMENT ##
+
+echo "\n\033[1;37mEntertainment:\n"
+
+check "splash (beautiful wallpapers from unsplash)" "command -v splash"
+  successfully "npm install -g splash-cli"
+
+check "youtube-dl (youtube downloader)" "command -v youtube-dl"
+  successfully "brew install youtube-dl"
+
+check "open-pip-cli (play movies in macos native picture-in-picture)" "command -v open-pip"
+  successfully "npm install -g open-pip-cli"
+
+check "mapscii (google maps in your terminal)" "command -v mapscii"
+  successfully "npm install -g mapscii"
+
+check "asciinema (record and share what happens in terminal)" "command -v asciinema"
+  successfully "pip3 install asciinema"
 
 check "cowsay (talk like a cow)" "command -v cowsay"
   successfully "brew install cowsay"
 
 check "lolcat (talk in rainbows)" "command -v lolcat"
   successfully "gem install lolcat"
+
+check "tetris (well... play tetris in the terminal)" "command -v tetris"
+  successfully "brew install vitetris"
+
+echo "\n\033[1;37mDone... Have fun!"
