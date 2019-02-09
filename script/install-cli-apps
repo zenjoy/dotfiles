@@ -243,6 +243,9 @@ echo "\n\033[1;37mEntertainment:\n"
 check "splash (beautiful wallpapers from unsplash)" "command -v splash"
   successfully "npm install -g splash-cli"
 
+check "mplayer (command line music player)" "command -v mplayer"
+  successfully "brew install mplayer"
+
 check "youtube-dl (youtube downloader)" "command -v youtube-dl"
   successfully "brew install youtube-dl"
 

@@ -3,3 +3,5 @@ sublime2/User/Package Control.last-run
 git/gitconfig.symlink
 cache/
 log/
+bin/elktail
+bin/op

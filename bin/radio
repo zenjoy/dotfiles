@@ -159,7 +159,7 @@ case "$choice" in
 	30) station="http://mosradio-livetest.wm.llnwd.net/mosradio_livetest"
 	echo "Tuning in on Ministry Of Sound HQ"
 	;;
-        31) station="http://bombastix.soundbomb.net:8000/nectarine.ogg"
+  31) station="http://bombastix.soundbomb.net:8000/nectarine.ogg"
 	echo "Tuning in on Nectarine"
 	;;
 	32) station="http://66.175.96.10/cotropi"
