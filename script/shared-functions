@@ -1,0 +1,199 @@
+export DOTFILES=$HOME/.dotfiles
+
+# Use colors, but only if connected to a terminal, and that terminal
+# supports them.
+if which tput >/dev/null 2>&1; then
+    ncolors=$(tput colors)
+fi
+if [ -t 1 ] && [ -n "$ncolors" ] && [ "$ncolors" -ge 8 ]; then
+  BLACK="$(tput setaf 0)"
+  RED="$(tput setaf 1)"
+  GREEN="$(tput setaf 2)"
+  YELLOW="$(tput setaf 3)"
+  BLUE="$(tput setaf 4)"
+  MAGENTA="$(tput setaf 5)"
+  CYAN="$(tput setaf 6)"
+  WHITE="$(tput setaf 7)"
+  BOLD="$(tput bold)"
+  DIM="$(tput dim)"
+  NORMAL="$(tput sgr0)"
+else
+  BLACK=""
+  RED=""
+  GREEN=""
+  YELLOW=""
+  BLUE=""
+  MAGENTA=""
+  CYAN=""
+  WHITE=""
+  BOLD=""
+  DIM=""
+  NORMAL=""
+fi
+
+function header() {
+  title="$*"
+  title_length=${#title}
+  padding=$(expr 66 - $title_length)
+  padding=$(expr $padding / 2 - 1)
+  printf '%s' "$DIM"
+  printf '%s\n' "================================================================="
+  printf '%s' "$NORMAL$BOLD"
+  printf '%s\n' "               _                   _       _    __ _ _           "
+  printf '%s\n' "              (_)                 | |     | |  / _(_) |          "
+  printf '%s\n' " _______ _ __  _  ___  _   _    __| | ___ | |_| |_ _| | ___  ___ "
+  printf '%s\n' "|_  / _ \ '_ \| |/ _ \| | | |  / _\` |/ _ \| __|  _| | |/ _ \/ __|"
+  printf '%s\n' " / /  __/ | | | | (_) | |_| | | (_| | (_) | |_| | | | |  __/\__ \\"
+  printf '%s\n' "/___\___|_| |_| |\___/ \__, |  \__,_|\___/ \__|_| |_|_|\___||___/"
+  printf '%s\n' "             _/ |       __/ |                                    "
+  printf '%s\n' "            |__/       |___/                                     "
+  printf '%s\n' "                                                                 "
+  printf '%s' "$DIM"
+  printf '%s\n' "*****************************************************************"
+  printf '%s' "$NORMAL$BOLD"
+  printf "%*s%s%*s\n" $padding "" "$title" $padding ""
+  printf '%s' "$DIM"
+  printf '%s\n' "================================================================="
+  printf '%s\n' "$NORMAL"
+}
+
+
+# for printing standard echoish messages
+notice () {
+    printf "$1\n"
+}
+
+# for replacing previous input prompts with success messages
+success () {
+  printf "\r\033[2K [ \033[00;32mOK\033[0m ] $*\n"
+}
+
+# for printing logging messages that *may* be replaced by
+# a success/warn/error message
+info () {
+  proceed=1
+  printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
+  message="$1"
+}
+
+# for printing prompts that expect user input and will be
+# replaced by a success/warn/error message
+user () {
+  printf "\r\033[2K [ \033[00;33m??\033[0m ] $*"
+}
+
+# for replacing previous input prompts with warnings
+warn () {
+    printf "\r\033[2K  [\033[0;33mWARN\033[0m] $1\n"
+}
+
+# for replacing previous prompts with errors
+fail () {
+  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $* ${DIM}=> check ${WHITE}${LOGFILE}${NORMAL}${DIM} for more information.${NORMAL}\n"
+}
+
+successfully() {
+  if [[ $proceed -ne 0 ]]; then
+    echo "We are proceeding with the command: $*" >> $LOGFILE 2>&1
+    eval "$1" >> $LOGFILE 2>&1
+    result=$?
+    if [[ $result -ne 0 ]]; then
+      if [[ ! -z "$2" ]]; then
+        fail "$message : ${BOLD}failed${NORMAL}, $2" 2>&1
+      else
+        fail "$message : ${BOLD}failed${NORMAL}" 2>&1
+      fi
+      return 1
+    else
+      success "$message : ${BOLD}installed${NORMAL}"
+    fi
+  fi
+}
+
+check() {
+  printf " [ \033[00;34m..\033[0m ] $1 : checking"
+  echo "Checking $1, running $2:\n" >> $LOGFILE 2>&1
+  eval "$2" > /dev/null 2>&1
+  result=$?
+  if [[ $result -ne 0 ]]; then
+    proceed=1
+    info "$1 : ${BOLD}installing${NORMAL}"
+    message="$1"
+  else
+    proceed=0
+    success "$1 : ${BOLD}found${NORMAL}"
+  fi
+}
+
+title () {
+  echo ''
+  printf "${WHITE}$1${NORMAL}\n"
+  echo ''
+}
+
+# Print update in blue.
+# $1: update message
+update() {
+    printf "\e[0;34m$1\e[0m\n"
+}
+
+# Print error in red and exit.
+# $1: error message
+err_and_exit() {
+    printf "\e[0;31m$1\e[0m\n"
+    exit 1
+}
+
+link_files () {
+  ln -s $1 $2
+  filename=$(basename "$1")
+  destination="$2"
+  success "symlinked ${BOLD}$filename${NORMAL} to ${destination/$HOME/'~'}"
+}
+
+# Get yes or no input from the user. Return default value if the user does no
+# enter a valid value (y, yes, n, or no with any captialization).
+# $1: prompt
+# $2: default value
+get_yn_input() {
+    if [ "$2" = "y" ]; then
+        prompt="${1} [Y/n]: "
+    elif [ "$2" = "n" ]; then
+        prompt="${1} [y/N]: "
+    else
+        echo "Error: bad default value given to get_yn_input()" >&2
+        exit $bad_usage_get_yn_input
+    fi
+
+    read -r -p "$prompt" input
+    case "$input" in
+        [yY][eE][sS] | [yY])
+            echo "y"
+            ;;
+        [nN][oO] | [nN])
+            echo "n"
+            ;;
+        *)
+            echo $2
+            ;;
+    esac
+}
+
+# Exit with an error if the script is not being run on a Mac. (iOS development
+# can only be done on Macs.)
+ensure_mac_os() {
+    if [ "`uname -s`" != "Darwin" ]; then
+        err_and_exit "This script can only be run on Mac OS."
+    fi
+}
+
+# If we exit unexpectedly, log this warning.
+# Scripts should call "trap exit_warning EXIT" near the top to enable,
+# then "trap - EXIT" just before exiting on success.
+exit_warning() {
+    echo "${BOLD}${RED}"
+    echo ""
+    echo "***           FATAL ERROR: dotfiles-setup crashed!             ***"
+    echo "***       Please check the /tmp/dotfiles-setup logs for        ***"
+    echo "***   common errors, or send the output above to @engineering. ***${NORMAL}"
+}

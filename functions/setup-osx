@@ -1,0 +1,3 @@
+function setup-osx() {
+  env DOTFILES=$DOTFILES zsh -f $DOTFILES/script/setup-osx
+}

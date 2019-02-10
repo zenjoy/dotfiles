@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set +e
+proceed=1
+result=0
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DOTFILES_ROOT="$HOME/.dotfiles"
+LOGFILE=/tmp/dotfiles-setup
+
+. $DIR/shared-functions
+
+if [[ $bootstrapping -ne 1 ]]; then
+  header "Let's setup OSX with some apps ..."
+fi
+
+setup_macos_defaults() {
+  # Ask for the administrator password upfront
+  title "We'll ask for your password once upfront..."
+  sudo -v
+
+  info "macOS sane default settings : installing"
+  $HOME/.dotfiles/osx/set-defaults.sh
+  success "MacOS defaults : installed"
+}
+
+quicklook_plugins() {
+  info "macOS useful quicklook plugins"
+  successfully "brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json webpquicklook suspicious-package quicklookase qlvideo"
+}
+
+choose_mac_apps_loop() {
+  user "Would you like to install [a]ll, [n]one, or [s]ome of the apps? [a/n/s]?"
+  read -n 1 input
+  case "$input" in
+    [aA][lL][lL] | [aA])
+      chosen_apps=("${mac_apps[@]}")
+      ;;
+    [sS][oO][mM][eE] | [sS])
+      echo ''
+      echo ''
+      for app in ${mac_apps[@]}; do
+        if [ "$(get_yn_input "Would you like to install ${BOLD}${app}${NORMAL}?" "y")" = "y" ]; then
+          chosen_apps=("${chosen_apps[@]}" "${app}")
+        fi
+      done
+      ;;
+    [nN][oO][nN][eE] | [nN])
+      ;;
+    *)
+      info "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
+      choose_mac_apps_loop
+      ;;
+  esac
+}
+
+install_mac_apps() {
+  chosen_apps=() # When the user opts to install a package it will be added to this array.
+
+  mac_apps=(
+    # Browsers
+    google-chrome firefox
+    # Tools
+    iterm2 nightowl gfxcardstatus alfred the-unarchiver
+    # Zenjoy Essentials
+    slack front harvest dropbox
+    # Text Editors
+    visual-studio-code
+    # Entertainment
+    vlc aerial fliqlo
+  )
+
+  info "We recommend installing the following apps:\n\n"
+  for app in ${mac_apps[@]}; do
+    echo " - ${BOLD}$app${NORMAL}"
+  done
+  echo ""
+  
+  choose_mac_apps_loop
+  
+  echo ''
+  for app in ${chosen_apps[@]}; do
+    check "$app" "brew cask ls $app"
+    successfully "brew cask install $app" "perhaps it is already installed."
+  done
+}
+
+setup_macos_defaults
+install_homebrew
+install_mac_apps
+
+if [[ $bootstrapping -ne 1 ]]; then
+  title "Done... Have fun!"
+fi

@@ -2,79 +2,86 @@
 #
 # bootstrap installs things.
 
-DOTFILES_ROOT="`pwd`"
+set +e
+proceed=1
+result=0
+bootstrapping="1"
 
-set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DOTFILES_ROOT="$HOME/.dotfiles"
+LOGFILE=/tmp/dotfiles-setup
 
-echo ''
-echo "\033[1;30m=================================================================
-\033[0;37m               _                   _       _    __ _ _           
-              (_)                 | |     | |  / _(_) |          
- _______ _ __  _  ___  _   _    __| | ___ | |_| |_ _| | ___  ___ 
-|_  / _ \ '_ \| |/ _ \| | | |  / _\` |/ _ \| __|  _| | |/ _ \/ __|
- / /  __/ | | | | (_) | |_| | | (_| | (_) | |_| | | | |  __/\__ \\
-/___\___|_| |_| |\___/ \__, |  \__,_|\___/ \__|_| |_|_|\___||___/
-             _/ |       __/ |                                    
-            |__/       |___/
+. $DIR/shared-functions
+trap exit_warning EXIT
 
-\033[1;30m*****************************************************************
-\033[1;37m         Let's bootstrap your development machine ...
-\033[1;30m=================================================================
-\033[1;37m"
+header "Let's install our dotfiles..."
 
-info () {
-  printf "  [ \033[00;34m..\033[0m ] $1"
+update_path() {
+  # We need /usr/local/bin to come before /usr/bin on the path, to
+  # pick up brew files we install.  To do this, we just source
+  # .profile.khan, which does this for us (and the new user).
+  # (This assumes you're running mac-setup.sh from the khan-dotfiles
+  # directory.)
+  export PATH="/usr/local/bin:/usr/local/sbin:$DOTFILES/bin:$PATH"
 }
 
-user () {
-  printf "\r  [ \033[0;33m?\033[0m ] $1 "
-}
-
-success () {
-  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
-}
-
-fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
-  echo ''
-  exit
-}
-
-title () {
-  echo ''
-  printf "  $1\n"
-  echo ''
-}
-
-setup_gitconfig () {
-  title 'Checking Git Config'
-
-  if ! [ -f git/gitconfig.symlink ]
-  then
-    info 'setup gitconfig'
-
-    git_credential='cache'
-    if [ "$(uname -s)" == "Darwin" ]
-    then
-      git_credential='osxkeychain'
+install_zsh() {
+  title 'Checking ZSH environment:'
+  check "zsh" "command -v zsh"
+  if [[ $proceed -ne 0 ]]; then
+    if [ "$(uname)" == "Darwin" ]; then
+      eval "brew install zsh"   
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+      eval "sudo apt-get -y install zsh"
     fi
+  fi
 
-    user ' - What is your github author name?'
-    read -e git_authorname
-    user ' - What is your github author email?'
-    read -e git_authoremail
-
-    sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.symlink.example > git/gitconfig.symlink
-
-    success 'gitconfig'
-  else
-    success 'Git already configured!'
+  check "oh-my-zsh" "ls ~/.oh-my-zsh"
+  if [[ $proceed -ne 0 ]]; then
+    notice "\n\n(please provide password when asked)...\n"
+    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -o /tmp/omz.sh
+    sed -i''  '/echo/d' /tmp/omz.sh
+    sed -i''  '/env zsh/d' /tmp/omz.sh
+    sh /tmp/omz.sh
+    rm -rf /tmp/omz.sh
+    echo ''
+    success "oh-my-zsh : ${BOLD}installed${NORMAL}"
   fi
 }
 
-link_files () {
-  ln -s $1 $2
-  success "linked $1 to $2"
+install_dotfiles () {
+  title 'Installing dotfiles:'
+
+  for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
+  do
+    info "$source"
+    dest="$HOME/.`basename \"${source%.*}\"`"
+
+    if [ -f $dest ] || [ -d $dest ]; then
+      if [[ "$(readlink $dest)" -ef "$source" ]]; then
+        success "${BOLD}~/`basename $source`${NORMAL} symlinked"
+      else
+        info "File already exists: `basename $source`. I'll back it up at ${BOLD}${source/$HOME/'~'}.backup${NORMAL}"
+        if [ -f $dest\.backup ] || [ -d $dest\.backup ]; then
+          rm -rf $dest\.backup
+        fi
+        mv $dest $dest\.backup
+        success "moved ${dest/$HOME/'~'} to ${dest/$HOME/'~'}.backup"
+        link_files $source $dest
+      fi
+    else
+      link_files $source $dest
+    fi
+
+
+  done
+
+  info "Fix OSX zsh environment bug"
+  if [[ -f /etc/{zshenv} ]]; then
+    successfully "sudo mv /etc/{zshenv,zprofile}"
+  else
+    success "Fix OSX zsh environment bug : not needed"
+  fi 
 }
 
 install_zshplugins () {
@@ -101,22 +108,22 @@ install_zshplugins () {
 
     if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory} ] 
     then
-      info "Cloning plugin ${source} into ${target}"
+      info "Cloning plugin ${source} into ${target/$HOME/'~'}}"
       eval $(echo "git clone ${source} ${target}") &> /dev/null
-      success "Cloned plugin ${source} into ${target}"
+      success "pluging ${BOLD}`basename $target`${NORMAL} : installed"
     else
-      success "skipping plugin ${target}: already installed"
+      success "skipping plugin ${BOLD}`basename $target`${NORMAL}: already installed"
     fi
   done
 
-  if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt ] 
-  then
-    info "Installing spaceship-prompt theme"
+  target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt
+  if [[ ! -d "$target" ]]; then
+    info "Installing ${BOLD}spaceship-prompt${NORMAL} theme"
     eval $(echo "git clone git://github.com/denysdovhan/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt") &> /dev/null
     eval $(echo "ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme") &> /dev/null
     success "Installed spaceship-prompt theme. Enjoy! (See https://git.io/fpxOn for all customization options: put this in your ~/.localrc)"
   else
-    success "skipping theme ${target}: already installed"
+    success "skipping theme ${BOLD}`basename $target`${NORMAL}: already installed"
   fi
 
   echo ''
@@ -125,104 +132,113 @@ install_zshplugins () {
   echo ''
 }
 
-install_dotfiles () {
-  title 'Installing dotfiles'
+install_homebrew() {
+  check "homebrew" "command -v brew"
+  successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
 
-  overwrite_all=false
-  backup_all=false
-  skip_all=false
-
-  for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
-  do
-    dest="$HOME/.`basename \"${source%.*}\"`"
-
-    if [ -f $dest ] || [ -d $dest ]
-    then
-
-      overwrite=false
-      backup=false
-      skip=false
-
-      if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
-      then
-        user "File already exists: `basename $source`, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
-        read -n 1 action
-
-        case "$action" in
-          o )
-            overwrite=true;;
-          O )
-            overwrite_all=true;;
-          b )
-            backup=true;;
-          B )
-            backup_all=true;;
-          s )
-            skip=true;;
-          S )
-            skip_all=true;;
-          * )
-            skip=true;;
-        esac
-      fi
-
-      if [ "$overwrite" == "true" ] || [ "$overwrite_all" == "true" ]
-      then
-        rm -rf $dest
-        success "removed $dest"
-      fi
-
-      if [ "$backup" == "true" ] || [ "$backup_all" == "true" ]
-      then
-        mv $dest $dest\.backup
-        success "moved $dest to $dest.backup"
-      fi
-
-      if [ "$skip" == "false" ] && [ "$skip_all" == "false" ]
-      then
-        link_files $source $dest
-      else
-        success "skipped $source"
-      fi
-
+  if [[ $proceed -ne 0 ]]; then
+    info "brew doctor"
+    if ! brew doctor; then
+      warn "brew doctor : ${BOLD}Oh no! 'brew doctor' reported some warnings.${NORMAL}"
+      notice "These warnings may cause you trouble, but they are likely harmless.\n"
+      read -r -p "I'll wait while you read this. Ready to continue? [Y/n] " response
+      case "$response" in
+        [nN][oO]|[nN])
+          exit 1
+          ;;
+      esac
     else
-      link_files $source $dest
+      success "brew doctor : ${BOLD}all good!${NORMAL}"
     fi
+  fi
 
-  done
+  # info "Fixing Homebrew permissions ...\n"
+  # successfully "sudo chown -R $(whoami) $(brew --prefix)/*; sudo chown -R +rw $(brew --prefix)/*"
+  #successfully "sudo chgrp -R staff /usr/local/*; sudo chmod -R g+rwxXs /usr/local/*"
+
+  info "updating (but not upgrading) Homebrew"
+  successfully "brew update > /dev/null"
+}
+
+install_1password_cli() {
+  check "1password-cli" "brew cask ls 1password-cli"
+  successfully "brew cask install 1password-cli"
 }
 
 setup_macos() {
-  title 'macOS defaults setup'
-  user 'Want to setup macOS with some nice defaults? [Y/n]'
-  read -n 1 action
-  continue=false
-  case "$action" in
-    n )
-      continue=false;;
-    N )
-      continue=false;;
-    * )
-      continue=true;;
+  continue=1
+  user 'Want to setup macOS (install default apps and plugins)? [Y/n]'
+  read -n 1 response
+  case "$response" in
+    [nN][oO]|[nN])
+      continue=0
+      ;;
   esac
 
-  if [ "$continue" == "true" ]
-  then
-    success "Fine, let's continue the setup... You will be asked for your password.\n"  
-    $HOME/.dotfiles/osx/set-defaults.sh
+  if [[ $continue -ne 0 ]]; then
+    success "Ok, let's do this... You may be asked for your password."  
+    bootstrapping=1 $HOME/.dotfiles/script/setup-osx
   else
-    success "Ok, skipping macOS setup.\n"  
+    success "Ok, skipping macOS setup."  
   fi
 }
 
-setup_gitconfig
+setup_development() {
+  continue=1
+  user 'Want to setup macOS to do development (node, ruby, etc)? [Y/n]'
+  read -n 1 response
+  case "$response" in
+    [nN][oO]|[nN])
+      continue=0
+      ;;
+  esac
+
+  if [[ $continue -ne 0 ]]; then
+    success "Ok, let's go for it... You may be asked for your password."  
+    bootstrapping=1 $HOME/.dotfiles/script/setup-dev
+  else
+    success "Ok, skipping development environment setup."  
+  fi
+}
+
+setup_cli_tools() {
+  continue=1
+  user 'Want to install other convenient cli tools and apps? [Y/n]'
+  read -n 1 response
+  case "$response" in
+    [nN][oO]|[nN])
+      continue=0
+      ;;
+  esac
+
+  if [[ $continue -ne 0 ]]; then
+    success "Ok, let's continue... You may be asked for your password."  
+    bootstrapping=1 $HOME/.dotfiles/script/setup-cli-apps
+  else
+    success "Ok, skipping cli tools installation."  
+  fi
+}
+
+install_zsh
 install_dotfiles
 install_zshplugins
+
+title 'macOS setup essential tools'
+install_homebrew
+install_1password_cli
+
+title 'macOS apps and tools'
 setup_macos
 
+title 'development apps and tools'
+setup_development
+
+title 'other convenient cli tools'
+setup_cli_tools
+
 title '.dotfiles ready & installed!'
-echo '  Want to set up your laptop with the some developer essentials?'
-echo '   => run `script/setup`'
 echo ''
-echo '  Want to reload your ZSH environment?'
-echo '   => run `reload!`'
+
+trap - EXIT
+
+env zsh -l

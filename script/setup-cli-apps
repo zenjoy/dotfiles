@@ -1,22 +1,12 @@
-#!/usr/bin/env sh
+#!/bin/bash
 set +e
 proceed=1
 result=0
 
-echo "\033[1;30m=================================================================
-\033[0;37m               _                   _       _    __ _ _           
-              (_)                 | |     | |  / _(_) |          
- _______ _ __  _  ___  _   _    __| | ___ | |_| |_ _| | ___  ___ 
-|_  / _ \ '_ \| |/ _ \| | | |  / _\` |/ _ \| __|  _| | |/ _ \/ __|
- / /  __/ | | | | (_) | |_| | | (_| | (_) | |_| | | | |  __/\__ \\
-/___\___|_| |_| |\___/ \__, |  \__,_|\___/ \__|_| |_|_|\___||___/
-             _/ |       __/ |                                    
-            |__/       |___/
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+LOGFILE=/tmp/dotfiles-setup
 
-\033[1;30m*****************************************************************
-\033[1;37m         Let's install some interesting cli apps ...
-\033[1;30m=================================================================
-\033[1;37m"
+. $DIR/shared-functions
 
 while :; do
   case $1 in
@@ -27,67 +17,18 @@ while :; do
   shift
 done
 
+if [[ $bootstrapping -ne 1 ]]; then
+  header "Let's install some interesting cli apps ..."
+fi
 
-success () {
-  printf "\r\033[2K [ \033[00;32mok\033[0m ] $*\n"
-}
+notice "Feel free to follow the details by running:"
+notice "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 
-
-info () {
-  proceed=1
-  printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
-  message="$1"
-}
-
-user () {
-  printf "\r\033[2K [ \033[00;33m?\033[0m ] $*"
-}
-
-fail () {
-  printf "\r\033[2K [\033[0;31mFAIL\033[0m] $*\n"
-  echo ''
-  echo "See /tmp/cli-tools-setup for more information.\n"
-  return 1
-}
-
-successfully() {
-  if [[ $proceed -ne 0 ]]; then
-    echo "We are proceeding with the command: $*" >> /tmp/cli-tools-setup 2>&1
-    eval "$*" >> /tmp/cli-tools-setup 2>&1
-    result=$?
-    if [[ $result -ne 0 ]]; then
-      fail "$message : failed" 2>&1
-      return 1
-    else
-      success "$message : installed"
-    fi
-  fi
-}
-
-check() {
-  printf " [ \033[00;34m..\033[0m ] $1 : checking"
-  echo "Checking $1, running $2:\n" >> /tmp/cli-tools-setup 2>&1
-  eval "$2" > /dev/null 2>&1
-  result=$?
-  if [[ $result -ne 0 ]]; then
-    proceed=1
-    info "$1 : installing"
-    message="$1"
-  else
-    proceed=0
-    success "$1 : found"
-  fi
-}
-
-echo "Feel free to follow the details by running:\n"
-echo "\033[0m  tail -f /tmp/cli-tools-setup in another terminal"
 message=""
-echo ""
 current_dir=$(pwd)
-echo "\033[0;37mFirst some base stuff we just need:\n"
 
-check "homebrew" "command -v brew"
-  successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
+title "First some base stuff we just need:"
+install_homebrew
 
 check "node / npm" "command -v npm"
   successfully "brew install npm"
@@ -98,11 +39,11 @@ check "python 2.x" "brew info python@2"
 check "python 3.x" "brew info python"
   successfully "brew install python"
 
-echo "\n\033[1;37mNow the interesting things...\n"
+notice "\nNow the interesting things..."
 
 ## GENERAL DEVELOPMENT TOOLS ##
 
-echo "\n\033[1;37mDevelopment Tools:\n"
+title "Development Tools:"
 
 check "httpie (a user-friendly http client)" "command -v http"
   successfully "brew install httpie"
@@ -133,7 +74,7 @@ check "carbon-now (beautiful images of your code)" "command -v carbon-now"
 
 ## FRONTEND DEVELOPMENT TOOLS ##
 
-echo "\n\033[1;37mFrontend Development:\n"
+title "Frontend Development:"
 
 check "caniuse (check caniuse.com)" "command -v caniuse"
   successfully "npm install -g caniuse-cmd"
@@ -146,7 +87,7 @@ check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
 
 ## MOBILE DEVELOPMENT ##
 
-echo "\n\033[1;37mMobile Development:\n"
+title "Mobile Development:"
 
 check "mobicon (mobile app icon generator)" "command -v mobicon"
   successfully "npm install -g mobicon-cli"
@@ -162,7 +103,7 @@ check "viewport-list (list of devices and their viewports)" "command -v viewport
 
 ## BACKEND DEVELOPMENT ##
 
-echo "\n\033[1;37mBackend Development:\n"
+title "Backend Development:"
 
 check "aws (universal cli for amazon web services)" "command -v aws"
   successfully "pip install awscli"
@@ -178,7 +119,7 @@ check "speedtest-net (test your internet speed)" "command -v speedtest-net"
 
 ## GIT TOOLS ##
 
-echo "\n\033[1;37mGit Things:\n"
+title "Git Things:"
 
 check "hub (tool that wraps git)" "command -v hub"
   successfully "brew install hub"
@@ -191,7 +132,7 @@ check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "br
 
 ## CONVENIENCE TOOLS ##
 
-echo "\n\033[1;37mConvenience Stuff:\n"
+title "Convenience Stuff:"
 
 check "colorls (colorized ls command)" "gem list colorls | grep colorls"
   successfully "gem install colorls"
@@ -222,7 +163,7 @@ check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill
 
 ## INFORMATION / NEWS TOOLS ##
 
-echo "\n\033[1;37mInformation & Search:\n"
+title "Information & Search:"
 
 check "bitly-client (make and manage bitly/zenjoy.me shortlinks)" "command -v bitly-client"
   successfully "npm install -g bitly-client"
@@ -238,7 +179,7 @@ check "is-up (check website via isitup.org)" "command -v is-up"
 
 ## ENTERTAINMENT ##
 
-echo "\n\033[1;37mEntertainment:\n"
+title "Entertainment:"
 
 check "splash (beautiful wallpapers from unsplash)" "command -v splash"
   successfully "npm install -g splash-cli"
@@ -267,4 +208,8 @@ check "lolcat (talk in rainbows)" "command -v lolcat"
 check "tetris (well... play tetris in the terminal)" "command -v tetris"
   successfully "brew install vitetris"
 
-echo "\n\033[1;37mDone... Have fun!"
+title "Done... Have fun!"
+
+if [[ $bootstrapping -ne 1 ]]; then
+  title "Done... Have fun!"
+fi

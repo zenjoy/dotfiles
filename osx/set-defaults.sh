@@ -6,9 +6,6 @@
 #   https://github.com/mathiasbynens/dotfiles/blob/master/.osx
 #
 # Run ./set-defaults.sh and you'll be good to go.
-sudo -v
-
-# Ask for the administrator password upfront
 
 ###############################################################################
 # General UI/UX                                                               #
@@ -74,9 +71,6 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 # Quicklook                                                                   #
 ###############################################################################
 
-# Use OSX Finder Quicklook to preview all plain text files
-sudo ln -sf ~/.dotfiles/osx/QLStephen.qlgenerator /Library/QuickLook/QLStephen.qlgenerator
-
 # Copy text/code from OSX QuickLook directly
 defaults write com.apple.finder QLEnableTextSelection -bool true;
 
@@ -121,9 +115,9 @@ defaults write com.apple.terminal StringEncodings -array 4
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
 # Disable local Time Machine backups
-hash tmutil &> /dev/null && sudo tmutil disablelocal
+hash tmutil &> /dev/null && sudo tmutil disable
 
 ## Restart Finder
-qlmanage -r
+qlmanage -r > /dev/null
 killall Finder
 killall Dock

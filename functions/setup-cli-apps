@@ -1,0 +1,3 @@
+function setup-cli-apps() {
+  env DOTFILES=$DOTFILES zsh -f $DOTFILES/script/setup-cli-apps
+}
