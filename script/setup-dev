@@ -177,6 +177,7 @@ install_vagrant() {
     successfully "brew cask install vagrant"
 }
 
+setup_gitconfig
 maybe_generate_ssh_keys
 register_ssh_keys
 install_homebrew
