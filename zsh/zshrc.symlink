@@ -6,7 +6,7 @@ then
 	export ZSH_CACHE_DIR=$HOME/.zcompcache
 fi
 
-if [[ -a $DOTFILES/.multiuser ]]
+if [[ -a "$DOTFILES/.multiuser" ]]
 then
 	# skip verification of insecure directories (to allow multiuser setups)
 	export ZSH_DISABLE_COMPFIX="true"

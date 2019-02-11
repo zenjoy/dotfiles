@@ -33,9 +33,9 @@ else
 fi
 
 function header() {
-  title="$*"
-  title_length=${#title}
-  padding=$(expr 66 - $title_length)
+  headertitle="$*"
+  headertitle_length=${#headertitle}
+  padding=$(expr 66 - $headertitle_length)
   padding=$(expr $padding / 2 - 1)
   printf '%s' "$DIM"
   printf '%s\n' "================================================================="
@@ -52,7 +52,7 @@ function header() {
   printf '%s' "$DIM"
   printf '%s\n' "*****************************************************************"
   printf '%s' "$NORMAL$BOLD"
-  printf "%*s%s%*s\n" $padding "" "$title" $padding ""
+  printf "%*s%s%*s\n" $padding "" "$headertitle" $padding ""
   printf '%s' "$DIM"
   printf '%s\n' "================================================================="
   printf '%s\n' "$NORMAL"
@@ -61,7 +61,7 @@ function header() {
 
 # for printing standard echoish messages
 notice () {
-    printf "$1\n"
+  printf "$1\n"
 }
 
 # for replacing previous input prompts with success messages
@@ -85,7 +85,7 @@ user () {
 
 # for replacing previous input prompts with warnings
 warn () {
-    printf "\r\033[2K  [\033[0;33mWARN\033[0m] $1\n"
+    printf "\r\033[2K [\033[0;33mWARN\033[0m] $1\n"
 }
 
 # for replacing previous prompts with errors
@@ -135,14 +135,14 @@ title () {
 # Print update in blue.
 # $1: update message
 update() {
-    printf "\e[0;34m$1\e[0m\n"
+  printf "\e[0;34m$1\e[0m\n"
 }
 
 # Print error in red and exit.
 # $1: error message
 err_and_exit() {
-    printf "\e[0;31m$1\e[0m\n"
-    exit 1
+  printf "\e[0;31m$1\e[0m\n"
+  exit 1
 }
 
 link_files () {
@@ -157,35 +157,35 @@ link_files () {
 # $1: prompt
 # $2: default value
 get_yn_input() {
-    if [ "$2" = "y" ]; then
-        prompt="${1} [Y/n]: "
-    elif [ "$2" = "n" ]; then
-        prompt="${1} [y/N]: "
-    else
-        echo "Error: bad default value given to get_yn_input()" >&2
-        exit $bad_usage_get_yn_input
-    fi
+  if [ "$2" = "y" ]; then
+    prompt="${1} [Y/n]: "
+  elif [ "$2" = "n" ]; then
+    prompt="${1} [y/N]: "
+  else
+    echo "Error: bad default value given to get_yn_input()" >&2
+    exit $bad_usage_get_yn_input
+  fi
 
-    read -r -p "$prompt" input
-    case "$input" in
-        [yY][eE][sS] | [yY])
-            echo "y"
-            ;;
-        [nN][oO] | [nN])
-            echo "n"
-            ;;
-        *)
-            echo $2
-            ;;
-    esac
+  read -r -p "$prompt" input
+  case "$input" in
+    [yY][eE][sS] | [yY])
+      echo "y"
+      ;;
+    [nN][oO] | [nN])
+      echo "n"
+      ;;
+    *)
+      echo $2
+      ;;
+  esac
 }
 
 # Exit with an error if the script is not being run on a Mac. (iOS development
 # can only be done on Macs.)
 ensure_mac_os() {
-    if [ "`uname -s`" != "Darwin" ]; then
-        err_and_exit "This script can only be run on Mac OS."
-    fi
+  if [ "`uname -s`" != "Darwin" ]; then
+    err_and_exit "This script can only be run on Mac OS."
+  fi
 }
 
 # If we exit unexpectedly, log this warning.

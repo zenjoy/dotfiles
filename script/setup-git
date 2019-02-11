@@ -50,7 +50,6 @@ maybe_generate_ssh_keys () {
     ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
     success "Generated an rsa ssh key at ~/.ssh/id_rsa"
   fi
-  return 0
 }
 
 copy_ssh_key () {
@@ -67,8 +66,8 @@ copy_ssh_key () {
 }
 
 register_ssh_keys() {
-    title "Registering your ssh keys with Github"
-    verify_ssh_auth
+  title "Registering your ssh keys with Github"
+  verify_ssh_auth
 }
 
 # checks to see that ssh keys are registered with github
@@ -115,23 +114,26 @@ ssh_auth_loop() {
     user "What's your choice? (o|c|t|s) "
     read -n 1 ssh_option
     case $ssh_option in
-      o|O )
+      o|O)
         success "opening GitHub's webpage to register your key!"
         open $service_url
         ssh_auth_loop $service_url "false"
         ;;
-      c|C )
+      c|C)
         success "copying your ssh key to your clipboard"
         copy_ssh_key
         ssh_auth_loop $service_url "false"
         ;;
-      t|T )
+      t|T)
         printf "\r"
         verify_ssh_auth "false"
         ;;
-      s|S )
+      s|S)
         warn "skipping GitHub ssh registration"
         ;;
+      *)
+        ssh_auth_loop $service_url "false"
+      ;;
     esac
   fi
 }
