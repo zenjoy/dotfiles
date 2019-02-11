@@ -43,7 +43,7 @@ maybe_generate_ssh_keys () {
   # Create a public key if need be.
   info "Checking for ssh keys"
   mkdir -p ~/.ssh
-  if [ -e ~/.ssh/id_[rd]sa ]
+  if [[ -e ~/.ssh/id_[rd]sa ]]
   then
     success "Found existing ssh keys"
   else
@@ -54,10 +54,10 @@ maybe_generate_ssh_keys () {
 }
 
 copy_ssh_key () {
-  if [ -e ~/.ssh/id_rsa ]
+  if [[ -e ~/.ssh/id_rsa ]]
   then
     pbcopy < ~/.ssh/id_rsa.pub
-  elif [ -e ~/.ssh/id_dsa ]
+  elif [[ -e ~/.ssh/id_dsa ]]
   then
     pbcopy < ~/.ssh/id_dsa.pub
   else
@@ -82,7 +82,7 @@ verify_ssh_auth () {
   if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
     -q -e "Authentication succeeded (publickey)"
   then
-    if [ "$2" == "false" ]  # error if auth fails twice in a row
+    if [[ "$2" == "false" ]]  # error if auth fails twice in a row
     then
       error "Still no luck with GitHub ssh auth. Ask a dev!"
       ssh_auth_loop $webpage_url "false"
@@ -104,7 +104,7 @@ ssh_auth_loop() {
   # $1 = ssh key registration url
   service_url=$1
   first_run=$2
-  if [ "$first_run" == "true" ]
+  if [[ "$first_run" == "true" ]]
   then
     notice "1. hit ${BOLD}o${NORMAL} to open GitHub on the web"
     notice "2. hit ${BOLD}c${NORMAL} to copy your public key to your clipboard"
