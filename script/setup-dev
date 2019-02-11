@@ -14,129 +14,6 @@ if [[ $bootstrapping -ne 1 ]]; then
   header "Let's get ready for development ..."
 fi
 
-setup_gitconfig () {
-  title 'Checking Git Config'
-
-  if ! [ -f git/gitconfig.symlink ]
-  then
-    info 'setup gitconfig'
-
-    git_credential='cache'
-    if [ "$(uname -s)" == "Darwin" ]
-    then
-      git_credential='osxkeychain'
-    fi
-
-    user 'What is your github author name? '
-    read -e git_authorname
-    user 'What is your github author email? '
-    read -e git_authoremail
-
-    sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.symlink.example > git/gitconfig.symlink
-
-    success 'Git successfully configured!'
-  else
-    success 'Git already configured!'
-  fi
-}
-
-maybe_generate_ssh_keys () {
-  # Create a public key if need be.
-  info "Checking for ssh keys"
-  mkdir -p ~/.ssh
-  if [ -e ~/.ssh/id_[rd]sa ]
-  then
-    success "Found existing ssh keys"
-  else
-    ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
-    success "Generated an rsa ssh key at ~/.ssh/id_rsa"
-  fi
-  return 0
-}
-
-copy_ssh_key () {
-  if [ -e ~/.ssh/id_rsa ]
-  then
-    pbcopy < ~/.ssh/id_rsa.pub
-  elif [ -e ~/.ssh/id_dsa ]
-  then
-    pbcopy < ~/.ssh/id_dsa.pub
-  else
-    error "no ssh public keys found"
-    exit
-  fi
-}
-
-register_ssh_keys() {
-    title "Registering your ssh keys with Github"
-    verify_ssh_auth
-}
-
-# checks to see that ssh keys are registered with github
-# $1: "true"|"false" to end the auth cycle
-verify_ssh_auth () {
-  ssh_host="git@github.com"
-  webpage_url="https://github.com/settings/ssh"
-  instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
-
-  notice "Checking for GitHub ssh authentication"
-  if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
-    -q -e "Authentication succeeded (publickey)"
-  then
-    if [ "$2" == "false" ]  # error if auth fails twice in a row
-    then
-      error "Still no luck with GitHub ssh auth. Ask a dev!"
-      ssh_auth_loop $webpage_url "false"
-    else
-      # otherwise prompt to upload keys
-      notice "GitHub's ssh auth didn't seem to work\n"
-      notice "Let's add your public key to GitHub:"
-      notice "${BOLD}${instruction}${NORMAL}\n"
-      ssh_auth_loop $webpage_url "true"
-    fi
-  else
-    notice "GitHub ssh auth ${BOLD}succeeded${NORMAL}!"
-  fi
-}
-
-ssh_auth_loop() {
-  # a convenience function which lets you copy your public key to your clipboard
-  # open the webpage for the site you're pasting the key into or just bailing
-  # $1 = ssh key registration url
-  service_url=$1
-  first_run=$2
-  if [ "$first_run" == "true" ]
-  then
-    notice "1. hit ${BOLD}o${NORMAL} to open GitHub on the web"
-    notice "2. hit ${BOLD}c${NORMAL} to copy your public key to your clipboard"
-    notice "3. hit ${BOLD}t${NORMAL} to test ssh auth for GitHub"
-    notice "☢. hit ${BOLD}s${NORMAL} to skip ssh setup for GitHub\n"
-    ssh_auth_loop $1 "false"
-  else
-    user "What's your choice? (o|c|t|s) "
-    read -n1 ssh_option
-    case $ssh_option in
-      o|O )
-        success "opening GitHub's webpage to register your key!"
-        open $service_url
-        ssh_auth_loop $service_url "false"
-        ;;
-      c|C )
-        success "copying your ssh key to your clipboard"
-        copy_ssh_key
-        ssh_auth_loop $service_url "false"
-        ;;
-      t|T )
-        printf "\r"
-        verify_ssh_auth "false"
-        ;;
-      s|S )
-        warn "skipping GitHub ssh registration"
-        ;;
-    esac
-  fi
-}
-
 install_homebrew() {
   check "homebrew" "command -v brew"
     successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
@@ -177,9 +54,11 @@ install_vagrant() {
     successfully "brew cask install vagrant"
 }
 
-setup_gitconfig
-maybe_generate_ssh_keys
-register_ssh_keys
+setup_git() {
+  bootstrapping=1 $HOME/.dotfiles/script/setup-git
+}
+
+setup_git
 install_homebrew
 install_node
 install_ruby
