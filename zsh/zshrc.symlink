@@ -6,6 +6,12 @@ then
 	export ZSH_CACHE_DIR=$HOME/.zcompcache
 fi
 
+if [[ -a $DOTFILES/.multiuser ]]
+then
+	# skip verification of insecure directories (to allow multiuser setups)
+	export ZSH_DISABL_COMPFIX=true
+fi
+
 if [[ -a $HOME/.antigen/antigen.zsh ]]
 then # antigen -> also install oh-my-git :-)
 	source "$HOME/.antigen/antigen.zsh"
