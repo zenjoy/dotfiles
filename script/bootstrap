@@ -97,13 +97,19 @@ install_zshplugins () {
                       "g-plane/zsh-yarn-autocompletions"
                       "peterhurford/git-it-on.zsh")
 
-  declare -A rename=(["git-it-on.zsh"]="git-it-on")
+  declare -a rename=("git-it-on.zsh/git-it-on")
 
   for plugin in "${plugins[@]}"
   do
     source="git://github.com/${plugin}.git"
     directory=${plugin#*/}
-    directory=${rename[$directory]:-$directory}
+    for gsub in "${rename[@]}"
+    do
+      IFS='/' read -ra replacements <<< "$gsub"
+      pattern=$replacements[0]
+      result=$replacements[1]
+      directory=${directory/$pattern/$result}
+    done
     target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}
 
     if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory} ] 
@@ -230,10 +236,10 @@ install_1password_cli
 title 'macOS apps and tools'
 setup_macos
 
-title 'development apps and tools'
+title 'Development apps and tools'
 setup_development
 
-title 'other convenient cli tools'
+title 'Other convenient cli tools'
 setup_cli_tools
 
 title '.dotfiles ready & installed!'
