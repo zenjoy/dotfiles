@@ -3,10 +3,10 @@ set +e
 proceed=1
 result=0
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DOTFILES_ROOT="$HOME/.dotfiles"
 LOGFILE=/tmp/dotfiles-setup
 
-. $DIR/shared-functions
+. $DOTFILES_ROOT/script/shared-functions
 
 while :; do
   case $1 in
