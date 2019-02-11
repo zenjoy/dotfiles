@@ -113,7 +113,7 @@ ssh_auth_loop() {
     ssh_auth_loop $1 "false"
   else
     user "What's your choice? (o|c|t|s) "
-    read -n1 ssh_option
+    read -n 1 ssh_option
     case $ssh_option in
       o|O )
         success "opening GitHub's webpage to register your key!"
