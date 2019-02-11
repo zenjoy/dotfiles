@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 export DOTFILES=$HOME/.dotfiles
 
 # Use colors, but only if connected to a terminal, and that terminal
