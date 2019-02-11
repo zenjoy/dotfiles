@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set +e
 proceed=1
@@ -16,12 +16,12 @@ fi
 setup_gitconfig () {
   title 'Checking Git Config'
 
-  if ! [ -f git/gitconfig.symlink ]
+  if ! [[ -f git/gitconfig.symlink ]]
   then
     info 'setup gitconfig'
 
     git_credential='cache'
-    if [ "$(uname -s)" == "Darwin" ]
+    if [[ "$(uname -s)" == "Darwin" ]]
     then
       git_credential='osxkeychain'
     fi
