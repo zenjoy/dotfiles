@@ -126,10 +126,8 @@ check() {
   fi
 }
 
-title () {
-  echo ''
-  printf "${WHITE}$1${NORMAL}\n"
-  echo ''
+_title_ () {
+  printf "\n${BOLD}$1${NORMAL}\n\n"
 }
 
 # Print update in blue.
@@ -157,9 +155,9 @@ link_files () {
 # $1: prompt
 # $2: default value
 get_yn_input() {
-  if [ "$2" = "y" ]; then
+  if [[ "$2" = "y" ]]; then
     prompt="${1} [Y/n]: "
-  elif [ "$2" = "n" ]; then
+  elif [[ "$2" = "n" ]]; then
     prompt="${1} [y/N]: "
   else
     echo "Error: bad default value given to get_yn_input()" >&2

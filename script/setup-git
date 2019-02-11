@@ -14,7 +14,7 @@ if [[ $bootstrapping -ne 1 ]]; then
 fi
 
 setup_gitconfig () {
-  title 'Checking Git Config'
+  _title_ 'Checking Git Config'
 
   if ! [[ -f git/gitconfig.symlink ]]
   then
@@ -66,7 +66,7 @@ copy_ssh_key () {
 }
 
 register_ssh_keys() {
-  title "Registering your ssh keys with Github"
+  _title_ "Registering your ssh keys with Github"
   verify_ssh_auth
 }
 

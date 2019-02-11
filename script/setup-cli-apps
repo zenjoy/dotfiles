@@ -27,7 +27,7 @@ notice "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 message=""
 current_dir=$(pwd)
 
-title "First some base stuff we just need:"
+_title_ "First some base stuff we just need:"
 install_homebrew
 
 check "node / npm" "command -v npm"
@@ -43,7 +43,7 @@ notice "\nNow the interesting things..."
 
 ## GENERAL DEVELOPMENT TOOLS ##
 
-title "Development Tools:"
+_title_ "Development Tools:"
 
 check "httpie (a user-friendly http client)" "command -v http"
   successfully "brew install httpie"
@@ -74,7 +74,7 @@ check "carbon-now (beautiful images of your code)" "command -v carbon-now"
 
 ## FRONTEND DEVELOPMENT TOOLS ##
 
-title "Frontend Development:"
+_title_ "Frontend Development:"
 
 check "caniuse (check caniuse.com)" "command -v caniuse"
   successfully "npm install -g caniuse-cmd"
@@ -87,7 +87,7 @@ check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
 
 ## MOBILE DEVELOPMENT ##
 
-title "Mobile Development:"
+_title_ "Mobile Development:"
 
 check "mobicon (mobile app icon generator)" "command -v mobicon"
   successfully "npm install -g mobicon-cli"
@@ -103,7 +103,7 @@ check "viewport-list (list of devices and their viewports)" "command -v viewport
 
 ## BACKEND DEVELOPMENT ##
 
-title "Backend Development:"
+_title_ "Backend Development:"
 
 check "aws (universal cli for amazon web services)" "command -v aws"
   successfully "pip install awscli"
@@ -119,7 +119,7 @@ check "speedtest-net (test your internet speed)" "command -v speedtest-net"
 
 ## GIT TOOLS ##
 
-title "Git Things:"
+_title_ "Git Things:"
 
 check "hub (tool that wraps git)" "command -v hub"
   successfully "brew install hub"
@@ -132,7 +132,7 @@ check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "br
 
 ## CONVENIENCE TOOLS ##
 
-title "Convenience Stuff:"
+_title_ "Convenience Stuff:"
 
 check "colorls (colorized ls command)" "gem list colorls | grep colorls"
   successfully "gem install colorls"
@@ -163,7 +163,7 @@ check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill
 
 ## INFORMATION / NEWS TOOLS ##
 
-title "Information & Search:"
+_title_ "Information & Search:"
 
 check "bitly-client (make and manage bitly/zenjoy.me shortlinks)" "command -v bitly-client"
   successfully "npm install -g bitly-client"
@@ -179,7 +179,7 @@ check "is-up (check website via isitup.org)" "command -v is-up"
 
 ## ENTERTAINMENT ##
 
-title "Entertainment:"
+_title_ "Entertainment:"
 
 check "splash (beautiful wallpapers from unsplash)" "command -v splash"
   successfully "npm install -g splash-cli"
@@ -208,8 +208,8 @@ check "lolcat (talk in rainbows)" "command -v lolcat"
 check "tetris (well... play tetris in the terminal)" "command -v tetris"
   successfully "brew install vitetris"
 
-title "Done... Have fun!"
+_title_ "Done... Have fun!"
 
 if [[ $bootstrapping -ne 1 ]]; then
-  title "Done... Have fun!"
+  _title_ "Done... Have fun!"
 fi

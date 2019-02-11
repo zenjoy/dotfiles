@@ -65,5 +65,5 @@ install_docker
 install_vagrant
 
 if [[ $bootstrapping -ne 1 ]]; then
-  title "Done... Have fun!"
+  _title_ "Done... Have fun!"
 fi

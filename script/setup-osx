@@ -15,7 +15,7 @@ fi
 
 setup_macos_defaults() {
   # Ask for the administrator password upfront
-  title "We'll ask for your password once upfront..."
+  _title_ "We'll ask for your password once upfront..."
   sudo -v
 
   info "macOS sane default settings : installing"
@@ -89,5 +89,5 @@ install_homebrew
 install_mac_apps
 
 if [[ $bootstrapping -ne 1 ]]; then
-  title "Done... Have fun!"
+  _title_ "Done... Have fun!"
 fi

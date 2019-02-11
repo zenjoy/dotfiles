@@ -25,7 +25,7 @@ update_path() {
 }
 
 install_zsh() {
-  title 'Checking ZSH environment:'
+  _title_ 'Checking ZSH environment:'
   check "zsh" "command -v zsh"
   if [[ $proceed -ne 0 ]]; then
     if [ "$(uname)" == "Darwin" ]; then
@@ -49,7 +49,7 @@ install_zsh() {
 }
 
 install_dotfiles () {
-  title 'Installing dotfiles:'
+  _title_ 'Installing dotfiles:'
 
   for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
   do
@@ -84,7 +84,7 @@ install_dotfiles () {
 }
 
 install_zshplugins () {
-  title 'Installing ZSH plugins'
+  _title_ 'Installing ZSH plugins'
 
   declare -a plugins=("jocelynmallon/zshmarks" 
                       "iam4x/zsh-iterm-touchbar"
@@ -228,20 +228,20 @@ install_zsh
 install_dotfiles
 install_zshplugins
 
-title 'macOS setup essential tools'
+_title_ 'macOS setup essential tools'
 install_homebrew
 install_1password_cli
 
-title 'macOS apps and tools'
+_title_ 'macOS apps and tools'
 setup_macos
 
-title 'Development apps and tools'
+_title_ 'Development apps and tools'
 setup_development
 
-title 'Other convenient cli tools'
+_title_ 'Other convenient cli tools'
 setup_cli_tools
 
-title '.dotfiles ready & installed!'
+_title_ '.dotfiles ready & installed!'
 echo ''
 
 trap - EXIT
