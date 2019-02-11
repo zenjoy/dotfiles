@@ -134,7 +134,7 @@ install_zshplugins () {
 
 install_homebrew() {
   check "homebrew" "command -v brew"
-  successfully "exec bash -c 'echo | ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"'"
+  successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
   if [[ $proceed -ne 0 ]]; then
     info "brew doctor"
