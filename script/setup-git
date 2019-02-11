@@ -15,28 +15,30 @@ fi
 
 setup_gitconfig () {
   _title_ 'Checking Git Config'
+  info 'setup gitconfig'
 
-  if ! [[ -f git/gitconfig.symlink ]]
+  git_credential='cache'
+  if [[ "$(uname -s)" == "Darwin" ]]
   then
-    info 'setup gitconfig'
+    git_credential='osxkeychain'
+  fi
 
-    git_credential='cache'
-    if [[ "$(uname -s)" == "Darwin" ]]
-    then
-      git_credential='osxkeychain'
-    fi
-
+  while [[ -z "$git_authorname" ]]
+  do
     user 'What is your github author name? '
     read -e git_authorname
+    echo ''
+  done
+  while [[ -z "$git_authoremail" ]]
+  do
     user 'What is your github author email? '
     read -e git_authoremail
+    echo ''
+  done
 
-    sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.symlink.example > git/gitconfig.symlink
+  sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.symlink.example > git/gitconfig.symlink
 
-    success 'Git successfully configured!'
-  else
-    success 'Git already configured!'
-  fi
+  success 'Git successfully configured!'
 }
 
 maybe_generate_ssh_keys () {
