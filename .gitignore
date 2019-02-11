@@ -6,3 +6,4 @@ log/
 bin/elktail
 bin/op
 .multiuser
+.vagrant
