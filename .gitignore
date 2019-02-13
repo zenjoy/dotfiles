@@ -7,3 +7,5 @@ bin/elktail
 bin/op
 .multiuser
 .vagrant
+.spinner/
+/*.log

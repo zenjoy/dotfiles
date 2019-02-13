@@ -68,17 +68,30 @@ notice () {
 
 # for replacing previous input prompts with success messages
 success () {
+  _spinner_stop
   printf "\r\033[2K [ \033[00;32mOK\033[0m ] $*\n"
 }
 
 # for printing logging messages that *may* be replaced by
 # a success/warn/error message
 status () {
-  printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
+  _spinner_update "$1"
+  #printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
 }
 
 info () {
   proceed=1
+  _spinner_start "$1"
+  #printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
+  message="$1"
+  if [[ ! -z "$2" ]]; then
+    done_message="$2"
+  fi
+}
+
+info_no_spinner () {
+  proceed=1
+  _spinner_stop
   printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
   message="$1"
   if [[ ! -z "$2" ]]; then
@@ -89,16 +102,19 @@ info () {
 # for printing prompts that expect user input and will be
 # replaced by a success/warn/error message
 user () {
+  _spinner_stop
   printf "\r\033[2K [ \033[00;33m??\033[0m ] $*"
 }
 
 # for replacing previous input prompts with warnings
 warn () {
-    printf "\r\033[2K [\033[0;33mWARN\033[0m] $1\n"
+  _spinner_stop
+  printf "\r\033[2K [\033[0;33mWARN\033[0m] $1\n"
 }
 
 # for replacing previous prompts with errors
 fail () {
+  _spinner_stop
   printf "\r\033[2K [\033[0;31mFAIL\033[0m] $* ${DIM}=> check ${WHITE}${LOGFILE}${NORMAL}${DIM} for more information.${NORMAL}\n"
 }
 
@@ -125,7 +141,7 @@ successfully() {
 
 check() {
   current_dir=$(pwd)
-  printf " [ \033[00;34m..\033[0m ] $1 : checking"
+  _spinner_start "$1 : checking"
   echo "Checking $1, running $2:\n" >> $LOGFILE 2>&1
   eval "$2" > /dev/null 2>&1
   result=$?
@@ -236,4 +252,183 @@ exit_warning() {
     echo "***           FATAL ERROR: dotfiles-setup crashed!             ***"
     echo "***       Please check the /tmp/dotfiles-setup logs for        ***"
     echo "***   common errors, or send the output above to @engineering. ***${NORMAL}"
+}
+
+
+###
+# The main spinner process, which contains the loop
+###
+function _spinner_process() {
+  local dir statefile state msg pid="$1" spinner_index=0
+
+  # Find the directory and load the statefile
+  dir="$HOME/.dotfiles/.spinner"
+  statefile="$dir/$pid"
+
+  # The frames that, when animated, will make up
+  # our spinning indicator
+  frames=("⠋ " "⠉ " "⠈⠁" " ⠉" " ⠙" " ⠹" " ⠸" " ⠼" " ⠴" " ⠤" "⠠⠄" "⠤ " "⠦ " "⠧ " "⠇ " "⠏ ")
+  interval="0.08"
+  
+  # Create a never-ending loop
+  while [[ 1 -eq 1 ]]; do
+    # If the statefile has been removed, exit the script
+    # to prevent it from being orphaned
+    if [[ ! -f $statefile ]]; then
+      exit 1
+    fi
+
+    # Check for the existence of the parent process
+    $(kill -s 0 $pid 2&>/dev/null)
+
+    # If process doesn't exist, exit the script
+    # to prevent it from being orphaned
+    if [[ $? -ne 0 ]]; then
+      return 1
+    fi
+
+    # Load the current state, and parse it to get
+    # the message to be displayed
+    state=($(cat $statefile))
+    state=("${state[@]:1}")
+    msg="${state[@]}"
+
+    # Output the current spinner frame, and add a
+    # slight delay before the next one
+    _spinner_spin
+    sleep ${interval:-"0.1"}
+  done
+}
+
+###
+# Output the spinner itself, along with a message
+###
+function _spinner_spin() {
+  local dir statefile state pid frame
+
+  # ZSH arrays start at 1, so we need to bump the index if it's 0
+  if [[ $spinner_index -eq 0 ]]; then
+    spinner_index+=1
+  fi
+
+  # Calculate the screen width
+  lim=$(tput cols)
+
+  # Clear the line and move the cursor to the start
+  printf ' %.0s' {1..$lim}
+  printf "\r"
+
+  # Echo the current frame and message, and overwrite
+  # the rest of the line with white space
+  #msg="\033[0;38;5;242m${msg}\033[0;m"
+  #set ${frames[$spinner_index]}
+  frame="${frames[${spinner_index}]}"
+  #frame="${${(@z)frames}[$spinner_index]//\"}"
+  printf '%*.*b' ${#msg} $lim " [ \033[00;34m$frame\033[0m ] $msg$(printf '%0.1s' " "{1..$lim})"
+
+  # Return to the beginning of the line
+  printf "\r"
+
+  # Set the spinner index to the next frame
+  spinner_index=$(( $(( $spinner_index + 1 )) % $(( ${#frames[@]} )) ))
+}
+
+###
+# Stop the current spinner process
+###
+function _spinner_stop() {
+  local dir statefile state pid
+  tput cnorm
+
+  # Find the directory and load the statefile
+  dir="$HOME/.dotfiles/.spinner"
+  statefile="$dir/$PPID"
+
+
+  # If the statefile does not exist, raise an error.
+  # The spinner process itself performs the same check
+  # and kills itself, so it should never be orphaned
+  if [[ ! -f $statefile ]]; then
+    return 1
+  fi
+
+  # Get the current state, and parse it to find the PID
+  # of the spinner process
+  state=($(cat $statefile))
+  pid=${state[0]}
+
+  # Clear the line and move the cursor to the start
+  printf ' %.0s' {1..$(tput cols)}
+  printf "\r"
+
+  # If a PID has been found, kill the process
+  if [[ ! -z $pid ]]; then
+    kill "$pid" >/dev/null 2>&1
+    wait "$pid" 2>/dev/null
+  fi
+  unset pid
+
+  # Remove the statefile
+  rm $statefile
+}
+
+###
+# Update the message being displayed
+function _spinner_update() {
+  local dir statefile state pid msg="$1"
+
+  # Find the directory and load the statefile
+  dir="$HOME/.dotfiles/.spinner"
+  statefile="$dir/$PPID"
+
+  # If the statefile does not exist, raise an error.
+  # The spinner process itself performs the same check
+  # and kills itself, so it should never be orphaned
+  if [[ ! -f $statefile ]]; then
+    # echo '\033[0;31mRevolver process could not be found\033[0;m'
+    return 1
+  fi
+
+  # Get the current state, and parse it to find the PID
+  # of the spinner process
+  state=($(cat $statefile))
+  pid=${state[0]}
+
+  # Clear the line and move the cursor to the start
+  printf ' %.0s' {1..$(tput cols)}
+  printf "\r"
+
+  # Echo the new message to the statefile, to be
+  # picked up by the spinner process
+  echo "$pid $msg" > $statefile
+}
+
+###
+# Create a new spinner with the specified message
+###
+function _spinner_start() {
+  local dir statefile msg="$1"
+  tput civis
+
+  # Find the directory and create it if it doesn't exist
+  dir="$HOME/.dotfiles/.spinner"
+  if [[ ! -d $dir ]]; then
+    mkdir -p $dir
+  fi
+
+  # Create the filename for the statefile
+  statefile="$dir/$PPID"
+
+  touch $statefile
+  if [[ ! -f $statefile ]]; then
+    echo '\033[0;31mSpinner process could not create state file\033[0;m'
+    echo "Check that the directory $dir is writable"
+    return 1
+  fi
+
+  # Start the spinner process in the background
+  _spinner_process $PPID &!
+
+  # Save the current state to the statefile
+  echo "$! $msg" > $statefile
 }

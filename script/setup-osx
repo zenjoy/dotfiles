@@ -18,7 +18,7 @@ setup_macos_defaults() {
   _title_ "We'll ask for your password once upfront..."
   sudo -v
 
-  info "macOS sane default settings : installing"
+  info "macOS sane default settings : ${BOLD}installing${NORMAL}"
   $HOME/.dotfiles/osx/set-defaults.sh
   success "MacOS defaults : installed"
 }
@@ -47,7 +47,7 @@ choose_mac_apps_loop() {
     [nN][oO][nN][eE] | [nN])
       ;;
     *)
-      info "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
+      info_no_spinner "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
       choose_mac_apps_loop
       ;;
   esac
@@ -69,7 +69,7 @@ install_mac_apps() {
     vlc aerial fliqlo
   )
 
-  info "We recommend installing the following apps:\n\n"
+  info_no_spinner "We recommend installing the following apps:\n\n"
   for app in ${mac_apps[@]}; do
     echo " - ${BOLD}$app${NORMAL}"
   done

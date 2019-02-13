@@ -73,7 +73,8 @@ install_ruby() {
     check "ruby dependencies - libffi" "brew ls --versions libffi"
     successfully "brew install libffi"
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    info "ruby dependencies" "brew ls --versions openssl"
+    info "ruby dependencies"
+    update "ruby dependencies : ${BOLD}installing${NORMAL}"
     successfully "sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev"
   fi
 
