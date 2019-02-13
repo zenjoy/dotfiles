@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 export DOTFILES=$HOME/.dotfiles
 
+done_message="installed"
+
 # Use colors, but only if connected to a terminal, and that terminal
 # supports them.
 if which tput >/dev/null 2>&1; then
@@ -71,10 +73,17 @@ success () {
 
 # for printing logging messages that *may* be replaced by
 # a success/warn/error message
+status () {
+  printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
+}
+
 info () {
   proceed=1
   printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
   message="$1"
+  if [[ ! -z "$2" ]]; then
+    done_message="$2"
+  fi
 }
 
 # for printing prompts that expect user input and will be
@@ -94,6 +103,7 @@ fail () {
 }
 
 successfully() {
+  current_dir=$(pwd)
   if [[ $proceed -ne 0 ]]; then
     echo "We are proceeding with the command: $*" >> $LOGFILE 2>&1
     eval "$1" >> $LOGFILE 2>&1
@@ -106,24 +116,34 @@ successfully() {
       fi
       return 1
     else
-      success "$message : ${BOLD}installed${NORMAL}"
+      success "$message : ${BOLD}$done_message${NORMAL}"
+      done_message="installed"
     fi
   fi
+  cd $current_dir
 }
 
 check() {
+  current_dir=$(pwd)
   printf " [ \033[00;34m..\033[0m ] $1 : checking"
   echo "Checking $1, running $2:\n" >> $LOGFILE 2>&1
   eval "$2" > /dev/null 2>&1
   result=$?
   if [[ $result -ne 0 ]]; then
     proceed=1
-    info "$1 : ${BOLD}installing${NORMAL}"
+    status "$1 : ${BOLD}installing${NORMAL}"
     message="$1"
   else
     proceed=0
-    success "$1 : ${BOLD}found${NORMAL}"
+    if [[ ! -z "$3" ]]; then
+      status "$1 : ${BOLD}updating${NORMAL}"
+      eval "$3" >> $LOGFILE 2>&1
+      success "$1 : ${BOLD}up-to-date${NORMAL}"
+    else
+      success "$1 : ${BOLD}found${NORMAL}"
+    fi
   fi
+  cd $current_dir
 }
 
 _title_ () {
@@ -141,6 +161,27 @@ update() {
 err_and_exit() {
   printf "\e[0;31m$1\e[0m\n"
   exit 1
+}
+
+link_dotfile() {
+  source=$1
+  dest="$HOME/.`basename \"${source%.*}\"`"
+
+  if [ -f $dest ] || [ -d $dest ]; then
+    if [[ "$(readlink $dest)" -ef "$source" ]]; then
+      success "${BOLD}~/`basename $source`${NORMAL} symlinked"
+    else
+      info "File already exists: `basename $source`. I'll back it up at ${BOLD}${source/$HOME/'~'}.backup${NORMAL}"
+      if [ -f $dest\.backup ] || [ -d $dest\.backup ]; then
+        rm -rf $dest\.backup
+      fi
+      mv $dest $dest\.backup
+      success "moved ${dest/$HOME/'~'} to ${dest/$HOME/'~'}.backup"
+      link_files $source $dest
+    fi
+  else
+    link_files $source $dest
+  fi
 }
 
 link_files () {

@@ -30,27 +30,65 @@ install_node() {
 }
 
 install_docker() {
-  check "docker for mac" "command -v docker"
-    successfully "brew cask install docker"
+  if [ "$(uname)" == "Darwin" ]; then
+    check "docker for mac" "command -v docker"
+      successfully "brew cask install docker"
+  fi
 }
 
 install_ruby() {
-  check "rbenv" "ls /usr/local/rbenv > /dev/null"
-    successfully "sudo git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv; sudo chmod -R g+rwxXs /usr/local/rbenv; cd /usr/local/rbenv; git pull >> $LOGFILE 2>&1"
+  if [ "$(uname)" == "Darwin" ]; then
+    check "rbenv" "ls /usr/local/rbenv > /dev/null" "cd /usr/local/rbenv && git pull"
+    successfully "sudo git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv; sudo chmod -R g+rwxXs /usr/local/rbenv;"
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    check "rbenv" "ls ~/.rbenv > /dev/null" "cd ~/.rbenv && git pull"
+    successfully "git clone git://github.com/sstephenson/rbenv.git ~/.rbenv >> $LOGFILE 2>&1;"
+  fi
 
-  check "ruby-build" "ls /usr/local/rbenv/plugins/ruby-build > /dev/null"
-    successfully "mkdir -p /usr/local/rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv/plugins/ruby-build; sudo chmod -R g+rwxs /usr/local/rbenv/plugins/ruby-build; cd /usr/local/rbenv/plugins/ruby-build; git pull >> $LOGFILE 2>&1; cd $current_dir"
+  if [ "$(uname)" == "Darwin" ]; then
+    check "ruby-build" "ls /usr/local/rbenv/plugins/ruby-build > /dev/null" "cd /usr/local/rbenv/plugins/ruby-build && git pull"
+    successfully "mkdir -p /usr/local/rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv/plugins/ruby-build; sudo chmod -R g+rwxs /usr/local/rbenv/plugins/ruby-build;"
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    check "ruby-build" "ls ~/.rbenv/plugins/ruby-build > /dev/null" "cd ~/.rbenv/plugins/ruby-build && git pull"
+    successfully "mkdir -p ~/.rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build >> $LOGFILE 2>&1;"
+  fi
+  
+  if [ -d "/usr/local/rbenv" ]; then
+    export RBENV_ROOT="/usr/local/rbenv"
+    export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+    eval "$(rbenv init -)"
+  fi
+
+  if [ -d "$HOME/.rbenv" ]; then
+    export RBENV_ROOT="$HOME/.rbenv"
+    export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+    eval "$(rbenv init -)"
+  fi
+
+  if [ "$(uname)" == "Darwin" ]; then
+    check "ruby dependencies - openssl" "brew ls --versions openssl"
+    successfully "brew install openssl"
+    check "ruby dependencies - libyaml" "brew ls --versions libyaml"
+    successfully "brew install libyaml"
+    check "ruby dependencies - libffi" "brew ls --versions libffi"
+    successfully "brew install libffi"
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    info "ruby dependencies" "brew ls --versions openssl"
+    successfully "sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev"
+  fi
 
   check "ruby 2.5.3" "rbenv versions | grep 2.5.3"
     successfully "rbenv install 2.5.3; rbenv shell 2.5.3; gem install bundler"
 }
 
 install_vagrant() {
-  check "virtualbox" "command -v VirtualBox"
-    successfully "brew cask install virtualbox"
-  
-  check "vagrant" "command -v vagrant"
-    successfully "brew cask install vagrant"
+  if [ "$(uname)" == "Darwin" ]; then
+    check "virtualbox" "command -v VirtualBox"
+      successfully "brew cask install virtualbox"
+    
+    check "vagrant" "command -v vagrant"
+      successfully "brew cask install vagrant"
+  fi
 }
 
 setup_git() {

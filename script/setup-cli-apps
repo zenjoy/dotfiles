@@ -25,7 +25,6 @@ notice "Feel free to follow the details by running:"
 notice "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 
 message=""
-current_dir=$(pwd)
 
 _title_ "First some base stuff we just need:"
 install_homebrew
@@ -33,10 +32,10 @@ install_homebrew
 check "node / npm" "command -v npm"
   successfully "brew install npm"
 
-check "python 2.x" "brew info python@2"
+check "python 2.x" "brew ls --versions python@2"
   successfully "brew install python@2"
 
-check "python 3.x" "brew info python"
+check "python 3.x" "brew ls --versions python@3"
   successfully "brew install python"
 
 notice "\nNow the interesting things..."
@@ -124,10 +123,10 @@ _title_ "Git Things:"
 check "hub (tool that wraps git)" "command -v hub"
   successfully "brew install hub"
 
-check "git-secret (stores private data inside a git repo)" "brew info git-secret"
+check "git-secret (stores private data inside a git repo)" "brew ls --versions git-secret"
   successfully "brew install git-secret"
 
-check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew info git-extras"
+check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew ls --versions git-extras"
   successfully "brew install git-extras"
 
 ## CONVENIENCE TOOLS ##

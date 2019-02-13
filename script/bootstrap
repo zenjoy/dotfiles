@@ -15,6 +15,10 @@ trap exit_warning EXIT
 
 header "Let's install our dotfiles..."
 
+info "let's test this"
+sleep 2
+success "aha"
+
 update_path() {
   # We need /usr/local/bin to come before /usr/bin on the path, to
   # pick up brew files we install.  To do this, we just source
@@ -29,19 +33,20 @@ install_zsh() {
   check "zsh" "command -v zsh"
   if [[ $proceed -ne 0 ]]; then
     if [ "$(uname)" == "Darwin" ]; then
-      eval "brew install zsh"   
+      successfully "brew install zsh"
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-      eval "sudo apt-get -y install zsh"
+      successfully "sudo apt-get -y install zsh"
     fi
   fi
 
-  check "oh-my-zsh" "ls ~/.oh-my-zsh"
+  check "oh-my-zsh" "ls ~/.oh-my-zsh" "cd ~/.oh-my-zsh && git pull"
   if [[ $proceed -ne 0 ]]; then
-    notice "\n\n(please provide password when asked)...\n"
-    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -o /tmp/omz.sh
+    info "oh-my-zsh : ${BOLD}installing${NORMAL} (please provide password when asked)\n\n"
+    sudo -v
+    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -o /tmp/omz.sh >> $LOGFILE 2>&1;
     sed -i''  '/echo/d' /tmp/omz.sh
     sed -i''  '/env zsh/d' /tmp/omz.sh
-    sh /tmp/omz.sh
+    sh /tmp/omz.sh | tee $LOGFILE;
     rm -rf /tmp/omz.sh
     echo ''
     success "oh-my-zsh : ${BOLD}installed${NORMAL}"
@@ -54,25 +59,7 @@ install_dotfiles () {
   for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
   do
     info "$source"
-    dest="$HOME/.`basename \"${source%.*}\"`"
-
-    if [ -f $dest ] || [ -d $dest ]; then
-      if [[ "$(readlink $dest)" -ef "$source" ]]; then
-        success "${BOLD}~/`basename $source`${NORMAL} symlinked"
-      else
-        info "File already exists: `basename $source`. I'll back it up at ${BOLD}${source/$HOME/'~'}.backup${NORMAL}"
-        if [ -f $dest\.backup ] || [ -d $dest\.backup ]; then
-          rm -rf $dest\.backup
-        fi
-        mv $dest $dest\.backup
-        success "moved ${dest/$HOME/'~'} to ${dest/$HOME/'~'}.backup"
-        link_files $source $dest
-      fi
-    else
-      link_files $source $dest
-    fi
-
-
+    link_dotfile "$source"
   done
 
   info "Fix OSX zsh environment bug"
@@ -131,18 +118,31 @@ install_zshplugins () {
     success "skipping theme ${BOLD}`basename $target`${NORMAL}: already installed"
   fi
 
-  echo ''
-  echo '  To complete the iTerm TouchBar integration:'
-  echo '    Menu -> go into View -> Customize Tool Bar... and drag & drop the Fn module on the Touchbar'
-  echo ''
+  if [ "$(uname)" == "Darwin" ]; then
+    echo ''
+    echo '  To complete the iTerm TouchBar integration:'
+    echo '    Menu -> go into View -> Customize Tool Bar... and drag & drop the Fn module on the Touchbar'
+    echo ''
+  fi
 }
 
 install_homebrew() {
   check "homebrew" "command -v brew"
-  successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+  if [ "$(uname)" == "Darwin" ]; then
+    successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    if [[ $proceed -ne 0 ]]; then
+      info "homebrew : ${BOLD}dependencies${NORMAL}\n"
+      successfully "sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;
+      info "homebrew : ${BOLD}installing${NORMAL}"
+      successfully 'echo | sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+      info "homebrew : environment setup"
+      successfully 'test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv);test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.localrc;sudo mkdir -p /home/linuxbrew/.linuxbrew/var/homebrew/linked;sudo chown -R $(whoami) /home/linuxbrew/.linuxbrew/var/homebrew/linked'
+    fi
+  fi
 
   if [[ $proceed -ne 0 ]]; then
-    info "brew doctor"
+    info "brew doctor : running...\n"
     if ! brew doctor; then
       warn "brew doctor : ${BOLD}Oh no! 'brew doctor' reported some warnings.${NORMAL}"
       notice "These warnings may cause you trouble, but they are likely harmless.\n"
@@ -161,12 +161,12 @@ install_homebrew() {
   # successfully "sudo chown -R $(whoami) $(brew --prefix)/*; sudo chown -R +rw $(brew --prefix)/*"
   #successfully "sudo chgrp -R staff /usr/local/*; sudo chmod -R g+rwxXs /usr/local/*"
 
-  info "updating (but not upgrading) Homebrew"
+  info "updating (but not upgrading) homebrew" "done"
   successfully "brew update > /dev/null"
 }
 
 install_1password_cli() {
-  check "1password-cli" "brew cask ls 1password-cli"
+  check "1password-cli" "brew cask ls 1password-cli" "brew cask upgrade 1password-cli"
   successfully "brew cask install 1password-cli"
 }
 
@@ -228,12 +228,15 @@ install_zsh
 install_dotfiles
 install_zshplugins
 
-_title_ 'macOS setup essential tools'
+_title_ 'essential tools'
 install_homebrew
-install_1password_cli
 
-_title_ 'macOS apps and tools'
-setup_macos
+if [ "$(uname)" == "Darwin" ]; then
+  install_1password_cli
+
+  _title_ 'macOS apps and tools'
+  setup_macos
+fi
 
 _title_ 'Development apps and tools'
 setup_development

@@ -27,16 +27,16 @@ setup_gitconfig () {
   do
     user 'What is your github author name? '
     read -e git_authorname
-    echo ''
   done
   while [[ -z "$git_authoremail" ]]
   do
     user 'What is your github author email? '
     read -e git_authoremail
-    echo ''
   done
 
-  sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.symlink.example > git/gitconfig.symlink
+  sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" $DOTFILES_ROOT/git/gitconfig.symlink.example > $DOTFILES_ROOT/git/gitconfig.symlink
+  info "Installing .gitconfig"
+  link_dotfile "$DOTFILES_ROOT/git/gitconfig.symlink"
 
   success 'Git successfully configured!'
 }
@@ -80,7 +80,7 @@ verify_ssh_auth () {
   instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
 
   notice "Checking for GitHub ssh authentication"
-  if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
+  if ! ssh -oStrictHostKeyChecking=no -T -v $ssh_host 2>&1 >/dev/null | grep \
     -q -e "Authentication succeeded (publickey)"
   then
     if [[ "$2" == "false" ]]  # error if auth fails twice in a row
