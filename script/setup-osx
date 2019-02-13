@@ -85,7 +85,7 @@ install_mac_apps() {
 }
 
 setup_macos_defaults
-install_homebrew
+quicklook_plugins
 install_mac_apps
 
 if [[ $bootstrapping -ne 1 ]]; then

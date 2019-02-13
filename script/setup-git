@@ -43,7 +43,7 @@ setup_gitconfig () {
 
 maybe_generate_ssh_keys () {
   # Create a public key if need be.
-  info "Checking for ssh keys"
+  info_no_spinner "Checking for ssh keys:"
   mkdir -p ~/.ssh
   if [[ -e ~/.ssh/id_[rd]sa ]]
   then

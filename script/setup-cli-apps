@@ -17,12 +17,30 @@ while :; do
   shift
 done
 
+install_homebrew() {
+  check "homebrew" "command -v brew"
+  if [ "$(uname)" == "Darwin" ]; then
+    successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    if [[ $proceed -ne 0 ]]; then
+      status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
+      successfully "sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;
+      info "homebrew"
+      status "homebrew : ${BOLD}installing${NORMAL}"
+      successfully 'echo | sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+      info "homebrew" "environment ready"
+      status "homebrew : ${BOLD}environment setup${NORMAL}"
+      successfully 'test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv);test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.localrc;sudo mkdir -p /home/linuxbrew/.linuxbrew/var/homebrew/linked;sudo chown -R $(whoami) /home/linuxbrew/.linuxbrew/var/homebrew/linked'
+    fi
+  fi
+}
+
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's install some interesting cli apps ..."
 fi
 
 notice "Feel free to follow the details by running:"
-notice "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
+notice "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
 
 message=""
 

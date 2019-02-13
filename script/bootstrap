@@ -197,7 +197,7 @@ setup_development() {
   esac
 
   if [[ $continue -ne 0 ]]; then
-    success "Ok, let's go for it... You may be asked for your password."  
+    success "Ok, let's go for it... You may be asked for your password.\n"  
     bootstrapping=1 $HOME/.dotfiles/script/setup-dev
   else
     success "Ok, skipping development environment setup."  
@@ -215,7 +215,7 @@ setup_cli_tools() {
   esac
 
   if [[ $continue -ne 0 ]]; then
-    success "Ok, let's continue... You may be asked for your password."  
+    success "Ok, let's continue... You may be asked for your password.\n"  
     bootstrapping=1 $HOME/.dotfiles/script/setup-cli-apps
   else
     success "Ok, skipping cli tools installation."  
