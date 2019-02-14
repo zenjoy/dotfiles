@@ -30,7 +30,7 @@ fi
 whence git >/dev/null || return 0
 
 if mkdir "$DOTFILES/log/update.lock" 2>/dev/null; then
-  if [ -f ${DOTFILES}/cache/.dotfiles-update ]; then
+  if [[ -f ${DOTFILES}/cache/.dotfiles-update ]]; then
     . ${DOTFILES}/cache/.dotfiles-update
 
     if [[ -z "$LAST_EPOCH" ]]; then
@@ -38,13 +38,13 @@ if mkdir "$DOTFILES/log/update.lock" 2>/dev/null; then
     fi
 
     epoch_diff=$(($(_current_epoch) - $LAST_EPOCH))
-    if [ $epoch_diff -gt $epoch_target ]; then
-      if [ "$DISABLE_UPDATE_PROMPT" = "true" ]; then
+    if [[ $epoch_diff -gt $epoch_target ]]; then
+      if [[ "$DISABLE_UPDATE_PROMPT" = "true" ]]; then
         _upgrade_zsh
       else
         echo "[Zenjoy Dotfiles] Would you like to update? [Y/n]: \c"
         read line
-        if [[ "$line" == Y* ]] || [[ "$line" == y* ]] || [ -z "$line" ]; then
+        if [[ "$line" == Y* ]] || [[ "$line" == y* ]] || [[ -z "$line" ]]; then
           _upgrade_zsh
         else
           _update_zsh_update

@@ -1,3 +1,0 @@
-function update-dotfiles() {
-  env DOTFILES=$DOTFILES DISABLE_UPDATE_PROMPT=$DISABLE_UPDATE_PROMPT zsh -f $DOTFILES/tools/upgrade.sh
-}

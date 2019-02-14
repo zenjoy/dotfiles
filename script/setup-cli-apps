@@ -8,6 +8,8 @@ LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
 
+echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
+
 while :; do
   case $1 in
     -h|--help) showhelp=1
@@ -19,9 +21,9 @@ done
 
 install_homebrew() {
   check "homebrew" "command -v brew"
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
     successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     if [[ $proceed -ne 0 ]]; then
       status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
       successfully "sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;

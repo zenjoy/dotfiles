@@ -8,7 +8,7 @@ done_message="installed"
 if which tput >/dev/null 2>&1; then
     ncolors=$(tput colors)
 fi
-if [ -t 1 ] && [ -n "$ncolors" ] && [ "$ncolors" -ge 8 ]; then
+if [[ -t 1 ]] && [[ -n "$ncolors" ]] && [[ "$ncolors" -ge 8 ]]; then
   BLACK="$(tput setaf 0)"
   RED="$(tput setaf 1)"
   GREEN="$(tput setaf 2)"
@@ -361,12 +361,12 @@ link_dotfile() {
   source=$1
   dest="$HOME/.`basename \"${source%.*}\"`"
 
-  if [ -f $dest ] || [ -d $dest ]; then
+  if [[ -f $dest ]] || [[ -d $dest ]]; then
     if [[ "$(readlink $dest)" -ef "$source" ]]; then
       success "${BOLD}~/`basename $source`${NORMAL} symlinked"
     else
       info "File already exists: `basename $source`. I'll back it up at ${BOLD}${source/$HOME/'~'}.backup${NORMAL}"
-      if [ -f $dest\.backup ] || [ -d $dest\.backup ]; then
+      if [[ -f $dest\.backup ]] || [[ -d $dest\.backup ]]; then
         rm -rf $dest\.backup
       fi
       mv $dest $dest\.backup
@@ -379,7 +379,7 @@ link_dotfile() {
 }
 
 link_files () {
-  ln -s $1 $2
+  ln -s "$1" "$2"
   filename=$(basename "$1")
   destination="$2"
   success "symlinked ${BOLD}$filename${NORMAL} to ${destination/$HOME/'~'}"
@@ -416,7 +416,7 @@ get_yn_input() {
 # Exit with an error if the script is not being run on a Mac. (iOS development
 # can only be done on Macs.)
 ensure_mac_os() {
-  if [ "`uname -s`" != "Darwin" ]; then
+  if [[ "`uname -s`" != "Darwin" ]]; then
     err_and_exit "This script can only be run on Mac OS."
   fi
 }

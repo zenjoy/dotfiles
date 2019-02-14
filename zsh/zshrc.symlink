@@ -1,6 +1,10 @@
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
 
+if [[ -a "$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist" ]]; then
+	echo -e "\033]50;SetProfile=Zenjoy\a"
+fi
+
 if [[ -d "$HOME/.zcompcache" ]]
 then
 	export ZSH_CACHE_DIR=$HOME/.zcompcache

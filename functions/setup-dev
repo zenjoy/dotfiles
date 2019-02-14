@@ -1,3 +1,0 @@
-function setup-dev() {
-  env DOTFILES=$DOTFILES zsh -f $DOTFILES/script/setup-dev
-}

@@ -82,7 +82,11 @@ defaults write com.apple.finder QLEnableTextSelection -bool true;
 defaults write com.apple.dock autohide -bool true
 
 # Hide all desktop icons
-defaults write com.apple.finder CreateDesktop -bool false
+if [[ $hide_desktop_icons -ne 0 ]]; then
+  defaults write com.apple.finder CreateDesktop -bool false
+else
+  defaults write com.apple.finder CreateDesktop -bool true
+fi
 
 # Enable Hidden Stacks List View
 defaults write com.apple.dock use-new-list-stack -bool YES

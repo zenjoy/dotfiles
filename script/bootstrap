@@ -10,7 +10,7 @@ bootstrapping="1"
 DOTFILES_ROOT="$HOME/.dotfiles"
 LOGFILE=/tmp/dotfiles-setup
 
-echo "Running in bash ${BASH_VERSION}" >> $LOGFILE
+echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
 . $DOTFILES_ROOT/script/shared-functions
 trap exit_warning EXIT
@@ -30,9 +30,9 @@ install_zsh() {
   _title_ 'Checking ZSH environment:'
   check "zsh" "command -v zsh"
   if [[ $proceed -ne 0 ]]; then
-    if [ "$(uname)" == "Darwin" ]; then
+    if [[ "$(uname)" == "Darwin" ]]; then
       successfully "brew install zsh"
-    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
       successfully "sudo apt-get -y install zsh"
     fi
   fi
@@ -115,20 +115,13 @@ install_zshplugins () {
   else
     success "skipping theme ${BOLD}`basename $target`${NORMAL}: already installed"
   fi
-
-  if [ "$(uname)" == "Darwin" ]; then
-    echo ''
-    echo '  To complete the iTerm TouchBar integration:'
-    echo '    Menu -> go into View -> Customize Tool Bar... and drag & drop the Fn module on the Touchbar'
-    echo ''
-  fi
 }
 
 install_homebrew() {
   check "homebrew" "command -v brew"
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
     successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     if [[ $proceed -ne 0 ]]; then
       status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
       successfully "sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;
@@ -231,7 +224,7 @@ install_zshplugins
 _title_ 'essential tools'
 install_homebrew
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
   install_1password_cli
 
   _title_ 'macOS apps and tools'

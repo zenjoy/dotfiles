@@ -18,14 +18,24 @@ setup_macos_defaults() {
   _title_ "We'll ask for your password once upfront..."
   sudo -v
 
-  info "macOS sane default settings : ${BOLD}installing${NORMAL}"
-  $HOME/.dotfiles/osx/set-defaults.sh
+  if [[ "$(get_yn_input "Would you like to hide icons on your desktop?" "y")" = "y" ]]; then
+    hide_desktop_icons=1
+  else
+    hide_desktop_icons=0
+  fi
+
+  info "default settings for macOS : ${BOLD}installing${NORMAL}"
+  hide_desktop_icons=$hide_desktop_icons $HOME/.dotfiles/osx/set-defaults.sh
   success "MacOS defaults : installed"
 }
 
 quicklook_plugins() {
-  info "macOS useful quicklook plugins"
-  successfully "brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json webpquicklook suspicious-package quicklookase qlvideo"
+  _title_ "macOS useful quicklook plugins"
+  plugins=("qlcolorcode" "qlstephen" "qlmarkdown" "quicklook-json" "webpquicklook" "suspicious-package" "quicklookase" "qlvideo")
+  for plugin in ${plugins[@]}; do
+    check "quicklook plugin ${BOLD}$plugin${NORMAL}" "brew cask ls $plugin"
+    successfully "brew cask install $app"
+  done
 }
 
 choose_mac_apps_loop() {
@@ -39,7 +49,7 @@ choose_mac_apps_loop() {
       echo ''
       echo ''
       for app in ${mac_apps[@]}; do
-        if [ "$(get_yn_input "Would you like to install ${BOLD}${app}${NORMAL}?" "y")" = "y" ]; then
+        if [[ "$(get_yn_input "Would you like to install ${BOLD}${app}${NORMAL}?" "y")" = "y" ]]; then
           chosen_apps=("${chosen_apps[@]}" "${app}")
         fi
       done
@@ -79,14 +89,55 @@ install_mac_apps() {
   
   echo ''
   for app in ${chosen_apps[@]}; do
-    check "$app" "brew cask ls $app"
+    # get executable name from cask to check if it is already installed
+    executable=$(brew cask info $app | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
+    # check sudo or keep it alive before spinner starts
+    sudo -v
+    check "$app" "open -R -g -a '$executable' > /dev/null"
     successfully "brew cask install $app" "perhaps it is already installed."
   done
+}
+
+setup_iterm() {
+  _title_ "Setup iTerm2 Profile"
+
+  if ! open -R -g -a iTerm > /dev/null; then
+    warn "iTerm2 not found, skipping setup..."
+  else
+    check "Fura Code Nerd font" "brew cask ls font-firacode-nerd-font"
+    successfully "brew cask install font-firacode-nerd-font"
+
+    destination="$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist"
+    source="$HOME/.dotfiles/osx/iterm.profile.plist"
+    if [[ -f "$destination" ]] || [[ -d "$destination" ]]; then
+      if [[ "$(readlink "$destination")" -ef "$source" ]]; then
+        success "${BOLD}~/`basename $source`${NORMAL} already installed"
+      else
+        link_files "$source" "$destination"
+      fi
+    else
+      link_files "$source" "$destination"
+    fi
+    # dynamically load the profile on the fly
+    echo -e "\033]50;SetProfile=Zenjoy\a"
+  fi
+
+  echo ''
+  echo '  To setup the iTerm Profile, open iTerm:'
+  echo '    Menu -> go into Iterm2 -> Preferences... go to Profiles and set the Zenjoy profile as default'
+  echo '     (select Zenjoy dynamic profile -> click Other Actions -> Set as default)'
+  echo ''
+  echo '  The iTerm profile should automatically be loaded after restarting iTerm'
+  echo ''
+  echo '  To complete the iTerm TouchBar integration:'
+  echo '    Menu -> go into View -> Customize Tool Bar... and drag & drop the Fn module on the Touchbar'
+  echo ''
 }
 
 setup_macos_defaults
 quicklook_plugins
 install_mac_apps
+setup_iterm
 
 if [[ $bootstrapping -ne 1 ]]; then
   _title_ "Done... Have fun!"

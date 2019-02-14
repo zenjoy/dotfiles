@@ -9,15 +9,17 @@ LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
 
+echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
+
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's get ready for development ..."
 fi
 
 install_homebrew() {
   check "homebrew" "command -v brew"
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
     successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     if [[ $proceed -ne 0 ]]; then
       status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
       successfully "sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;
@@ -43,49 +45,52 @@ install_node() {
 }
 
 install_docker() {
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    # check sudo or keep it alive before spinner starts
+    sudo -v
+    
     check "docker for mac" "command -v docker"
-      successfully "brew cask install docker"
+    successfully "brew cask install docker"
   fi
 }
 
 install_ruby() {
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
     check "rbenv" "ls /usr/local/rbenv > /dev/null" "cd /usr/local/rbenv && git pull"
     successfully "sudo git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv; sudo chmod -R g+rwxXs /usr/local/rbenv;"
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     check "rbenv" "ls ~/.rbenv > /dev/null" "cd ~/.rbenv && git pull"
     successfully "git clone git://github.com/sstephenson/rbenv.git ~/.rbenv >> $LOGFILE 2>&1;"
   fi
 
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
     check "ruby-build" "ls /usr/local/rbenv/plugins/ruby-build > /dev/null" "cd /usr/local/rbenv/plugins/ruby-build && git pull"
     successfully "mkdir -p /usr/local/rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv/plugins/ruby-build; sudo chmod -R g+rwxs /usr/local/rbenv/plugins/ruby-build;"
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     check "ruby-build" "ls ~/.rbenv/plugins/ruby-build > /dev/null" "cd ~/.rbenv/plugins/ruby-build && git pull"
     successfully "mkdir -p ~/.rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build >> $LOGFILE 2>&1;"
   fi
   
-  if [ -d "/usr/local/rbenv" ]; then
+  if [[ -d "/usr/local/rbenv" ]]; then
     export RBENV_ROOT="/usr/local/rbenv"
     export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
     eval "$(rbenv init -)"
   fi
 
-  if [ -d "$HOME/.rbenv" ]; then
+  if [[ -d "$HOME/.rbenv" ]]; then
     export RBENV_ROOT="$HOME/.rbenv"
     export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
     eval "$(rbenv init -)"
   fi
 
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
     check "ruby dependencies - openssl" "brew ls --versions openssl"
     successfully "brew install openssl"
     check "ruby dependencies - libyaml" "brew ls --versions libyaml"
     successfully "brew install libyaml"
     check "ruby dependencies - libffi" "brew ls --versions libffi"
     successfully "brew install libffi"
-  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     info "ruby dependencies"
     status "ruby dependencies : ${BOLD}installing${NORMAL}"
     successfully "sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev"
@@ -96,12 +101,18 @@ install_ruby() {
 }
 
 install_vagrant() {
-  if [ "$(uname)" == "Darwin" ]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    # check sudo or keep it alive before spinner starts
+    sudo -v
+    
     check "virtualbox" "command -v VirtualBox"
-      successfully "brew cask install virtualbox"
+    successfully "brew cask install virtualbox"
+    
+    # check sudo or keep it alive before spinner starts
+    sudo -v
     
     check "vagrant" "command -v vagrant"
-      successfully "brew cask install vagrant"
+    successfully "brew cask install vagrant"
   fi
 }
 

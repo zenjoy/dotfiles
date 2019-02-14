@@ -2,7 +2,7 @@
 
 export DOTFILES=$HOME/.dotfiles
 
-if [ ! -d $DOTFILES ]; then
+if [[ ! -d $DOTFILES ]]; then
   echo "Installing Zenjoy Dotfiles for the first time:"
   git clone https://github.com/zenjoy/dotfiles.git "$HOME/.dotfiles"
   cd $DOTFILES

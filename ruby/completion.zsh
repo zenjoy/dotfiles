@@ -12,7 +12,7 @@ _rbenv() {
   read -cA words
   word="${words[2]}"
 
-  if [ "${#words}" -eq 2 ]; then
+  if [[ "${#words}" -eq 2 ]]; then
     completions="$(rbenv commands)"
   else
     completions="$(rbenv completions "${word}")"

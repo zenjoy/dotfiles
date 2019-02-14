@@ -9,6 +9,8 @@ LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
 
+echo "Running in $0 $BASH_VERSION" >> $LOGFILE
+
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's setup Git and Github ..."
 fi
