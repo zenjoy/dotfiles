@@ -570,11 +570,11 @@
 			<key>Name</key>
 			<string>Zenjoy</string>
 			<key>Non Ascii Font</key>
-			<string>FuraCodeNerdFontComplete-Medium 12</string>
+			<string>FuraCodeNerdFontComplete-Medium 14</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>FuraCodeNerdFontComplete-Medium 12</string>
+			<string>FuraCodeNerdFontComplete-Medium 14</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>

@@ -97,7 +97,7 @@
       },
       "Custom Command": "No",
       "ASCII Anti Aliased": true,
-      "Non Ascii Font": "FuraCodeNerdFontComplete-Medium 12",
+      "Non Ascii Font": "FuraCodeNerdFontComplete-Medium 14",
       "Vertical Spacing": 1,
       "Use Bold Font": true,
       "Option Key Sends": 0,
@@ -335,7 +335,7 @@
         "Red Component": 0.40392157435417175,
         "Blue Component": 0.94117647409439087
       },
-      "Normal Font": "FuraCodeNerdFontComplete-Medium 12",
+      "Normal Font": "FuraCodeNerdFontComplete-Medium 14",
       "Ansi 3 Color": {
         "Green Component": 0.58431375026702881,
         "Red Component": 0.98823529481887817,
