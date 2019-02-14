@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+##!/usr/bin/env bash
 #
 # bootstrap installs things.
 
@@ -9,6 +9,8 @@ bootstrapping="1"
 
 DOTFILES_ROOT="$HOME/.dotfiles"
 LOGFILE=/tmp/dotfiles-setup
+
+echo "Running in bash ${BASH_VERSION}" >> $LOGFILE
 
 . $DOTFILES_ROOT/script/shared-functions
 trap exit_warning EXIT
