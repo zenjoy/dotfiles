@@ -103,7 +103,7 @@ function _spinner_spin() {
   #set ${frames[$spinner_index]}
   frame="${frames[${spinner_index}]}"
   #frame="${${(@z)frames}[$spinner_index]//\"}"
-  printf '%*.*b' ${#msg} $lim " [ \033[00;34m$frame\033[0m ] $msg$(printf '%0.1s' " "{1..$lim})"
+  printf '%*.*b' ${#msg} $lim " [ \033[00;37m$frame\033[0m ] $msg$(printf '%0.1s' " "{1..$lim})"
 
   # Return to the beginning of the line
   printf "\r"
