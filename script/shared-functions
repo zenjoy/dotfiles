@@ -389,26 +389,30 @@ link_files () {
 # enter a valid value (y, yes, n, or no with any captialization).
 # $1: prompt
 # $2: default value
-get_yn_input() {
+user_ask_yn() {
+  _spinner_stop
+  prefix=" [ ${YELLOW}??${NORMAL} ]"
   if [[ "$2" = "y" ]]; then
     prompt="${1} [Y/n]: "
   elif [[ "$2" = "n" ]]; then
     prompt="${1} [y/N]: "
   else
-    echo "Error: bad default value given to get_yn_input()" >&2
-    exit $bad_usage_get_yn_input
+    echo "Error: bad default value given to user_ask_yn()" >&2
+    exit 1
   fi
 
-  read -r -p "$prompt" input
+  read -n 1 -r -p "$prefix $prompt" input
   case "$input" in
     [yY][eE][sS] | [yY])
-      echo "y"
+      user_ask_yn_result="y"
+      echo ''
       ;;
     [nN][oO] | [nN])
-      echo "n"
+      user_ask_yn_result="n"
+      echo ''      
       ;;
     *)
-      echo $2
+      user_ask_yn_result=$2
       ;;
   esac
 }

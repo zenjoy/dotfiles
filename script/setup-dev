@@ -15,6 +15,24 @@ if [[ $bootstrapping -ne 1 ]]; then
   header "Let's get ready for development ..."
 fi
 
+install_command_line_tools() {
+  info "XCode Command Line Tools : checking"
+  if [[ "$(xcode-select --install 2>&1 | grep installed)" == *"installed"* ]]; then
+    success "XCode Command Line Tools : ${BOLD}installed${NORMAL}"
+  else
+    status "XCode Command Line Tools : ${BOLD}installing...${DIM}(a prompt should open to ask you for installation)${NORMAL}"
+    
+    user_ask_yn "XCode Command Line Tools : is the installation done and can we proceed?" "n"
+    if [[ "$user_ask_yn_result" == "n" ]]; then
+      fail "XCode Command Line Tools : please install them.. exiting!"
+      exit
+    else
+      success "XCode Command Line Tools : installed!"
+    fi
+
+  fi
+}
+
 install_homebrew() {
   check "homebrew" "command -v brew"
   if [[ "$(uname)" == "Darwin" ]]; then
@@ -116,16 +134,23 @@ install_vagrant() {
   fi
 }
 
+install_shell_tools() {
+  check "vagrant" "command -v vagrant"
+  successfully "brew cask install vagrant"
+}
+
 setup_git() {
   bootstrapping=1 $HOME/.dotfiles/script/setup-git
 }
 
 setup_git
+install_command_line_tools
 install_homebrew
 install_node
 install_ruby
 install_docker
 install_vagrant
+install_shell_tools
 
 if [[ $bootstrapping -ne 1 ]]; then
   _title_ "Done... Have fun!"

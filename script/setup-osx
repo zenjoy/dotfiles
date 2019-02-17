@@ -18,7 +18,8 @@ setup_macos_defaults() {
   _title_ "We'll ask for your password once upfront..."
   sudo -v
 
-  if [[ "$(get_yn_input "Would you like to hide icons on your desktop?" "y")" = "y" ]]; then
+  user_ask_yn "Would you like to hide icons on your desktop?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
     hide_desktop_icons=1
   else
     hide_desktop_icons=0
@@ -32,7 +33,7 @@ setup_macos_defaults() {
 quicklook_plugins() {
   _title_ "macOS useful quicklook plugins"
   plugins=("qlcolorcode" "qlstephen" "qlmarkdown" "quicklook-json" "webpquicklook" "suspicious-package" "quicklookase" "qlvideo")
-  for plugin in ${plugins[@]}; do
+  for plugin in "${plugins[@]}"; do
     check "quicklook plugin ${BOLD}$plugin${NORMAL}" "brew cask ls $plugin"
     successfully "brew cask install $app"
   done
@@ -47,9 +48,9 @@ choose_mac_apps_loop() {
       ;;
     [sS][oO][mM][eE] | [sS])
       echo ''
-      echo ''
-      for app in ${mac_apps[@]}; do
-        if [[ "$(get_yn_input "Would you like to install ${BOLD}${app}${NORMAL}?" "y")" = "y" ]]; then
+      for app in "${mac_apps[@]}"; do
+        user_ask_yn "Would you like to install ${BOLD}${app}${NORMAL}?" "y"
+        if [[ "$user_ask_yn_result" == "y" ]]; then
           chosen_apps=("${chosen_apps[@]}" "${app}")
         fi
       done
@@ -80,7 +81,7 @@ install_mac_apps() {
   )
 
   info_no_spinner "We recommend installing the following apps:\n\n"
-  for app in ${mac_apps[@]}; do
+  for app in "${mac_apps[@]}"; do
     echo " - ${BOLD}$app${NORMAL}"
   done
   echo ""
@@ -88,7 +89,7 @@ install_mac_apps() {
   choose_mac_apps_loop
   
   echo ''
-  for app in ${chosen_apps[@]}; do
+  for app in "${chosen_apps[@]}"; do
     # get executable name from cask to check if it is already installed
     executable=$(brew cask info $app | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
     # check sudo or keep it alive before spinner starts
@@ -107,16 +108,31 @@ setup_iterm() {
     check "Fura Code Nerd font" "brew cask ls font-firacode-nerd-font"
     successfully "brew cask install font-firacode-nerd-font"
 
+    user_ask_yn "iTerm profile: would you like a larger font size?" "y"
+    if [[ "$user_ask_yn_result" == "y" ]]; then
+      font_size=14
+    else
+      font_size=12
+    fi
+
+    source_json="$HOME/.dotfiles/osx/iterm.profile.json"
+    source_plist="$HOME/.dotfiles/osx/iterm.profile.plist"
     destination="$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist"
-    source="$HOME/.dotfiles/osx/iterm.profile.plist"
+
+    info "iTerm profile: ${BOLD}generating${NORMAL}"
+    plutil -convert xml1 "$source_json" -o "$source_plist"
+
+    sed -i "" "s/FuraCodeNerdFontComplete-Medium 14/FuraCodeNerdFontComplete-Medium $font_size/g" "$source_plist"
+    success "iTerm profile: generated"
+    
     if [[ -f "$destination" ]] || [[ -d "$destination" ]]; then
-      if [[ "$(readlink "$destination")" -ef "$source" ]]; then
-        success "${BOLD}~/`basename $source`${NORMAL} already installed"
+      if [[ "$(readlink "$destination")" -ef "$source_plist" ]]; then
+        success "iTerm profile: already linked"
       else
-        link_files "$source" "$destination"
+        link_files "$source_plist" "$destination"
       fi
     else
-      link_files "$source" "$destination"
+      link_files "$source_plist" "$destination"
     fi
     # dynamically load the profile on the fly
     echo -e "\033]50;SetProfile=Zenjoy\a"
@@ -134,10 +150,98 @@ setup_iterm() {
   echo ''
 }
 
+choose_vscode_extensions_loop() {
+  user "Would you like to install [a]ll, [n]one, or [s]ome of the extensions? [a/n/s]?"
+  read -n 1 input
+  case "$input" in
+    [aA][lL][lL] | [aA])
+      chosen_extensions=("${vscode_extensions[@]}")
+      ;;
+    [sS][oO][mM][eE] | [sS])
+      echo ''
+      for extension in "${vscode_extensions[@]}"; do
+        IFS='|' read -r -a extension_info <<< "$extension"
+        extensions_name="${extension_info[1]}"
+        user_ask_yn "Would you like to install ${BOLD}${extensions_name}${NORMAL}?" "y"
+        if [[ "$user_ask_yn_result" == "y" ]]; then
+          chosen_extensions=("${chosen_extensions[@]}" "${extension}")
+        fi
+      done
+      ;;
+    [nN][oO][nN][eE] | [nN])
+      ;;
+    *)
+      info_no_spinner "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
+      choose_vscode_extensions_loop
+      ;;
+  esac
+}
+
+install_vscode_extensions() {
+  chosen_extensions=() # When the user opts to install a package it will be added to this array.
+
+  vscode_extensions=(
+    "2gua.rainbow-brackets|Rainbow Brackets|provide rainbow colors for the round brackets"
+    "eamodio.gitlens|GitLens — Git supercharged|supercharges the Git capabilities built into Visual Studio Code"
+    "esbenp.prettier-vscode|Prettier - Code formatter|automatically format your JavaScript / TypeScript / CSS"
+  )
+
+  info_no_spinner "We recommend installing the following extensions:\n\n"
+  for extension in "${vscode_extensions[@]}"; do
+    IFS='|' read -r -a extension_info <<< "$extension"
+    extensions_code="${extension_info[0]}"
+    extensions_name="${extension_info[1]}"
+    extensions_description="${extension_info[2]}"
+    printf " - ${BOLD}%s${NORMAL}${DIM} (%s)${NORMAL}\n   %s\n\n" "${extensions_name}" "${extensions_code}" "${extensions_description}"
+  done
+  echo ""
+  
+  choose_vscode_extensions_loop
+  installed_extensions=$(/usr/local/bin/code --list-extensions)
+
+  for extension in "${chosen_extensions[@]}"; do
+    IFS='|' read -r -a extension_info <<< "$extension"
+    extensions_code="${extension_info[0]}"
+    extensions_name="${extension_info[1]}"
+    extensions_description="${extension_info[2]}"
+    info "${extensions_name} extension : checking"
+    # get executable name from cask to check if it is already installed
+    if [[ "$installed_extensions" == *"$extensions_code"* ]]; then
+      success "${extensions_name} extension : ${BOLD}installed${NORMAL}"
+    else
+      status "${extensions_name} extension : installing"
+      message="${extensions_name} extension"
+      successfully "/usr/local/bin/code --force --install-extension $extensions_code" "perhaps it is already installed."
+    fi
+  done
+}
+
+
+setup_vscode() {
+  if open -R -g -a 'Visual Studio Code' > /dev/null; then
+    _title_ "Setup Visual Studio Code"
+
+    info "VSCode: installing 'code' command"
+    destination="/usr/local/bin/code" 
+    source="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+    if [[ -f "$destination" ]]; then
+      if [[ ! "$(readlink "$destination")" -ef "$source" ]]; then
+        rm "$destination"
+        ln -s "$source" "$destination"
+      fi
+    else
+      ln -s "$source" "$destination"
+    fi
+    success "VSCode: 'code' command installed"
+    install_vscode_extensions
+  fi
+}
+
 setup_macos_defaults
 quicklook_plugins
 install_mac_apps
 setup_iterm
+setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
   _title_ "Done... Have fun!"

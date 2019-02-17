@@ -76,6 +76,9 @@ check "fx (json processor)" "command -v fx"
 check "howdoi (check stackoverflow)" "command -v howdoi"
   successfully "pip install howdoi"
 
+check "tldr (summarized command help)" "command -v tldr"
+  successfully "npm install -g tldr"
+
 check "mklicense (cli tool for generating licenses)" "command -v mklicense"
   successfully "npm install -g mklicense"
 
@@ -134,7 +137,10 @@ check "loadtest (run a load test on the selected url)" "command -v loadtest"
   successfully "npm install -g loadtest"
 
 check "speedtest-net (test your internet speed)" "command -v speedtest-net"
-  successfully "npm install --global speedtest-net"  
+  successfully "npm install -g speedtest-net"  
+
+check "pretty-ms (convert milliseconds to a human readable string)" "command -v pretty-ms"
+  successfully "npm install -g pretty-ms-cli  "  
 
 ## GIT TOOLS ##
 
@@ -153,6 +159,9 @@ check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "br
 
 _title_ "Convenience Stuff:"
 
+check "fkill (fabulously kill processes)" "command -v fkill"
+  successfully "npm install -g fkill-cli"
+
 check "colorls (colorized ls command)" "gem list colorls | grep colorls"
   successfully "gem install colorls"
 
@@ -162,23 +171,11 @@ check "gfi (google font installer)" "command -v gfi"
 check "fuck (autocorrects error in previous command)" "command -v fuck"
   successfully "brew install thefuck"
 
-check "organize (auto organize files based on file type)" "command -v organize"
-  successfully "npm install -g organize-cli"
-
-check "trash (move files and folders to the trash)" "command -v trash"
-  successfully "npm install --global trash-cli"
-
-check "empty-trash (empty the trash)" "command -v empty-trash"
-  successfully "npm install --global empty-trash-cli"
-
-check "rename (utility for renaming files)" "command -v rename"
-  successfully "npm install --global rename-cli"
-
 check "undollar (undollar strips the dollar sign from copy/pasted commands)" "command -v $"
   successfully "npm install -g undollar"
 
 check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill-tabs"
-  successfully "npm install --global kill-tabs"
+  successfully "npm install -g kill-tabs"
 
 ## INFORMATION / NEWS TOOLS ##
 
@@ -196,9 +193,49 @@ check "googler (google cli)" "command -v googler"
 check "is-up (check website via isitup.org)" "command -v is-up"
   successfully "npm install -g is-up-cli"
 
+## MANAGE YOUR MAC ##
+
+_title_ "OSX Management / Helpers:"
+
+check "m-cli (swiss army knife for macOS)" "command -v m"
+  successfully "brew install m-cli"
+
+check "brightness (manage screen brightness)" "command -v brightness"
+  successfully "npm install -g brightness-cli"
+
+check "volume (manage volume)" "command -v volume"
+  successfully "npm install -g gillstrom/vol-cli"
+
+check "battery-level (get battery level)" "command -v battery-level"
+  successfully "npm install -g battery-level-cli"
+
+check "screensaver (start screensaver)" "command -v screensaver"
+  successfully "npm install -g screensaver"
+
+check "organize (auto organize files based on file type)" "command -v organize"
+  successfully "npm install -g organize-cli"
+
+check "rename (utility for renaming files)" "command -v rename"
+  successfully "npm install -g rename-cli"
+
+check "trash (move files and folders to the trash)" "command -v trash"
+  successfully "npm install -g trash-cli"
+
+check "empty-trash (empty the trash)" "command -v empty-trash"
+  successfully "npm install -g empty-trash-cli"
+
+check "public-ip (get your public ip address)" "command -v public-ip"
+  successfully "npm install -g public-ip-cli"  
+
+check "wallpaper (get or set your wallpaper)" "command -v wallpaper"
+  successfully "npm install -g wallpaper-cli"
+
 ## ENTERTAINMENT ##
 
 _title_ "Entertainment:"
+
+check "term-img (display images in iTerm)" "command -v term-img"
+  successfully "npm install -g term-img-cli"
 
 check "splash (beautiful wallpapers from unsplash)" "command -v splash"
   successfully "npm install -g splash-cli"
@@ -223,6 +260,21 @@ check "cowsay (talk like a cow)" "command -v cowsay"
 
 check "lolcat (talk in rainbows)" "command -v lolcat"
   successfully "gem install lolcat"
+
+check "cat-names (get popular cat names)" "command -v cat-names"
+  successfully "npm install -g cat-names"
+
+check "dog-names (get popular dog names)" "command -v dog-names"
+  successfully "npm install -g dog-names"
+
+check "pokemon (get pokemon names)" "command -v pokemon"
+  successfully "npm install -g pokemon-cli"
+
+check "superheroes (get superheroes names)" "command -v superheroes"
+  successfully "npm install -g superheroes-cli"
+
+check "supervillains (get supervillains names)" "command -v supervillains"
+  successfully "npm install -g supervillains-cli"
 
 check "tetris (well... play tetris in the terminal)" "command -v tetris"
   successfully "brew install vitetris"
