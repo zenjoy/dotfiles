@@ -134,23 +134,32 @@ install_vagrant() {
   fi
 }
 
-install_shell_tools() {
-  check "vagrant" "command -v vagrant"
-  successfully "brew cask install vagrant"
+setup_git() {
+  user_ask_yn "Want to setup your Git profile?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
+    bootstrapping=1 $HOME/.dotfiles/script/setup-git
+  else
+    success "Ok, skipping Git profile setup."  
+  fi
 }
 
-setup_git() {
-  bootstrapping=1 $HOME/.dotfiles/script/setup-git
+setup_vscode() {
+  user_ask_yn "Want to setup Visual Studio Code?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
+    bootstrapping=1 $HOME/.dotfiles/script/setup-vscode
+  else
+    success "Ok, skipping VSCode setup."  
+  fi
 }
 
 setup_git
 install_command_line_tools
-install_homebrew
 install_node
+install_homebrew
 install_ruby
 install_docker
 install_vagrant
-install_shell_tools
+setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
   _title_ "Done... Have fun!"

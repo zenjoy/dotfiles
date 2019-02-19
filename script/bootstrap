@@ -1,4 +1,4 @@
-##!/usr/bin/env bash
+#!/usr/bin/env bash
 #
 # bootstrap installs things.
 
@@ -90,16 +90,16 @@ install_zshplugins () {
     for gsub in "${rename[@]}"
     do
       IFS='/' read -ra replacements <<< "$gsub"
-      pattern=$replacements[0]
-      result=$replacements[1]
+      pattern="${replacements[0]}"
+      result="${replacements[1]}"
       directory=${directory/$pattern/$result}
     done
     target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}
 
-    if [ ! -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory} ] 
+    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}" ] 
     then
       info "Cloning plugin ${source} into ${target/$HOME/'~'}}"
-      eval $(echo "git clone ${source} ${target}") &> /dev/null
+      eval "git clone ${source} ${target}" &> /dev/null
       success "pluging ${BOLD}`basename $target`${NORMAL} : installed"
     else
       success "skipping plugin ${BOLD}`basename $target`${NORMAL}: already installed"
@@ -109,8 +109,8 @@ install_zshplugins () {
   target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt
   if [[ ! -d "$target" ]]; then
     info "Installing ${BOLD}spaceship-prompt${NORMAL} theme"
-    eval $(echo "git clone git://github.com/denysdovhan/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt") &> /dev/null
-    eval $(echo "ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme") &> /dev/null
+    eval "git clone git://github.com/denysdovhan/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt" &> /dev/null
+    eval "ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme" &> /dev/null
     success "Installed spaceship-prompt theme. Enjoy! (See https://git.io/fpxOn for all customization options: put this in your ~/.localrc)"
   else
     success "skipping theme ${BOLD}`basename $target`${NORMAL}: already installed"
@@ -139,12 +139,11 @@ install_homebrew() {
     if ! brew doctor; then
       warn "brew doctor : ${BOLD}Oh no! 'brew doctor' reported some warnings.${NORMAL}"
       notice "These warnings may cause you trouble, but they are likely harmless.\n"
-      read -r -p "I'll wait while you read this. Ready to continue? [Y/n] " response
-      case "$response" in
-        [nN][oO]|[nN])
-          exit 1
-          ;;
-      esac
+      
+      user_ask_yn "I'll wait while you read this. Ready to continue?" "y"
+      if [[ "$user_ask_yn_result" == "n" ]]; then
+        exit 1
+      fi
     else
       success "brew doctor : ${BOLD}all good!${NORMAL}"
     fi
@@ -164,16 +163,8 @@ install_1password_cli() {
 }
 
 setup_macos() {
-  continue=1
-  user 'Want to setup macOS (install default apps and plugins)? [Y/n]'
-  read -n 1 response
-  case "$response" in
-    [nN][oO]|[nN])
-      continue=0
-      ;;
-  esac
-
-  if [[ $continue -ne 0 ]]; then
+  user_ask_yn "Want to setup macOS (install default apps and plugins)?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's do this... You may be asked for your password."  
     bootstrapping=1 $HOME/.dotfiles/script/setup-osx
   else
@@ -182,16 +173,8 @@ setup_macos() {
 }
 
 setup_development() {
-  continue=1
-  user 'Want to setup macOS to do development (node, ruby, etc)? [Y/n]'
-  read -n 1 response
-  case "$response" in
-    [nN][oO]|[nN])
-      continue=0
-      ;;
-  esac
-
-  if [[ $continue -ne 0 ]]; then
+  user_ask_yn "Want to setup macOS to do development (node, ruby, etc)?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's go for it... You may be asked for your password.\n"  
     bootstrapping=1 $HOME/.dotfiles/script/setup-dev
   else
@@ -200,16 +183,8 @@ setup_development() {
 }
 
 setup_cli_tools() {
-  continue=1
-  user 'Want to install other convenient cli tools and apps? [Y/n]'
-  read -n 1 response
-  case "$response" in
-    [nN][oO]|[nN])
-      continue=0
-      ;;
-  esac
-
-  if [[ $continue -ne 0 ]]; then
+  user_ask_yn "Want to install other convenient cli tools and apps?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's continue... You may be asked for your password.\n"  
     bootstrapping=1 $HOME/.dotfiles/script/setup-cli-apps
   else
