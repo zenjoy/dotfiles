@@ -148,5 +148,5 @@ register_ssh_keys
 
 if [[ $bootstrapping -ne 1 ]]; then
   trap finish EXIT
-  _title_ "Done... Have fun!"
+  _title_ "Done... Happy Coding!"
 fi

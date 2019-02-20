@@ -12,11 +12,11 @@ if [[ $bootstrapping -ne 1 ]]; then
 fi
 
 choose_vscode_extensions_loop() {
-  user "Would you like to install [a]ll, [n]one, or [s]ome of the extensions? [a/n/s]?"
+  user "Would you like to install ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome of the extensions? [a/n/s]?"
   read -n 1 input
   case "$input" in
     [aA][lL][lL] | [aA])
-      chosen_extensions=("${vscode_extensions[@]}")
+      chosen_extensions=("${chosen_extensions[@]}" "${vscode_extensions[@]}")
       ;;
     [sS][oO][mM][eE] | [sS])
       echo ''
@@ -38,9 +38,7 @@ choose_vscode_extensions_loop() {
   esac
 }
 
-install_vscode_extensions() {
-  chosen_extensions=() # When the user opts to install a package it will be added to this array.
-
+list_vsvode_extensions() {
   # based on https://github.com/viatsko/awesome-vscode
   vscode_extensions=(
     "formulahendry.auto-close-tag|Auto Close Tag|Automatically add HTML/XML close tag"
@@ -75,7 +73,7 @@ install_vscode_extensions() {
     "eg2.vscode-npm-script|npm|run npm scripts from VS Code"
     "christian-kohler.npm-intellisense|npm Intellisense|Autocompletes npm modules in import statements"
     "ziyasal.vscode-open-in-github|Open in GitHub|Jump to a source code line in Github"
-    "IBM.output-colorizer|Output Colorizer|Syntax highlighting for log files"    
+    "IBM.output-colorizer|Output Colorizer|Syntax highlighting for log files"
     "christian-kohler.path-intellisense|Path Intellisense|Visual Studio Code plugin that autocompletes filenames"
     "quicktype.quicktype|Paste JSON as Code|Copy JSON, paste as Go, TypeScript, C#, C++ and more."
     "pnp.polacode|Polacode|Polaroid for your code"
@@ -108,21 +106,8 @@ install_vscode_extensions() {
     "redhat.vscode-yaml|YAML|YAML Language Support, with built-in Kubernetes and Kedge syntax support"
   )
 
-  sublime_text_keymap="ms-vscode.sublime-keybindings"
-
-  vscode_themes=(
-    "bceskavich.theme-dracula-at-night|Dracula At Night"
-    "Equinusocio.vsc-material-theme|Material Theme"
-    "zhuangtongfa.Material-theme|One Dark Pro"
-    "azemoh.one-monokai|One Monokai Theme"
-  )
-
-  vscode_icon_themes=(
-    "PKief.material-icon-theme|Material Icon Theme|Material Design Icons"
-  )
-
   _title_ "Visual Studio Code Extensions"
-  notice "${WHITE}We recommend installing the following extensions:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n\n"
+  notice "${WHITE}We recommend installing the following extensions:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
   for extension in "${vscode_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
     extension_code="${extension_info[0]}"
@@ -133,8 +118,111 @@ install_vscode_extensions() {
     printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "$extension_link" "${extension_name}" "${extension_code}" "${extension_description}"
   done
   echo ""
-  
+
   choose_vscode_extensions_loop
+
+  echo ""
+}
+
+list_vscodes_themes() {
+  vscode_extensions=(
+    "akamud.vscode-theme-onedark|Atom One Dark"
+    "Yummygum.city-lights-theme|City Lights"
+    "wesbos.theme-cobalt2|Cobalt2 Theme Official"
+    "dline.CobaltNext|Cobalt Next"
+    "philsinatra.macos-dark-mode-theme|Dark Mode"
+    "dracula-theme.theme-dracula|Dracula Official"
+    "bceskavich.theme-dracula-at-night|Dracula At Night"
+    "Heron.firefox-devtools-theme|Firefox Theme"
+    "lkytal.FlatUI|Flat UI"
+    "SolarLiner.linux-themes|Linux Themes for VS Code"
+    "Equinusocio.vsc-material-theme|Material Theme"
+    "taniarascia.new-moon-vscode|New Moon"
+    "liviuschera.noctis|Noctis"
+    "arcticicestudio.nord-visual-studio-code|Nord"
+    "zhuangtongfa.Material-theme|One Dark Pro"
+    "azemoh.one-monokai|One Monokai Theme"
+    "tinkertrain.theme-panda|Panda Theme"
+    "ahmadawais.shades-of-purple|Shades of Purple"
+  )
+
+  _title_ "Visual Studio Code Themes"
+  notice "${WHITE}We recommend installing the following themes:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
+  for extension in "${vscode_extensions[@]}"; do
+    IFS='|' read -r -a extension_info <<< "$extension"
+    extension_code="${extension_info[0]}"
+    extension_link="https://marketplace.visualstudio.com/items?itemName=${extension_info[0]}"
+    extension_name="${extension_info[1]}"
+
+    printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n" "$extension_link" "${extension_name}" "${extension_code}"
+  done
+  echo ""
+
+  choose_vscode_extensions_loop
+
+  echo ""
+}
+
+list_icon_themes() {
+  vscode_extensions=(
+    "Yummygum.city-lights-icon-vsc|City Lights Icons"
+    "robertohuertasm.vscode-icons|VSCode Icons"
+    "PKief.material-icon-theme|Material Design Icon Theme"
+  )
+
+  _title_ "Visual Studio Code Icon Themes"
+  notice "${WHITE}We recommend installing the following icon themes:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
+  for extension in "${vscode_extensions[@]}"; do
+    IFS='|' read -r -a extension_info <<< "$extension"
+    extension_code="${extension_info[0]}"
+    extension_link="https://marketplace.visualstudio.com/items?itemName=${extension_info[0]}"
+    extension_name="${extension_info[1]}"
+
+    printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n" "$extension_link" "${extension_name}" "${extension_code}"
+  done
+  echo ""
+
+  choose_vscode_extensions_loop
+
+  echo ""
+}
+
+list_vscode_keymaps() {
+  _title_ "Visual Studio Code Key Binding"
+
+  user "Would you like to use ${BOLD}[v]${NORMAL}im, ${BOLD}[s]${NORMAL}ublime text, ${BOLD}[a]${NORMAL}tom or the ${BOLD}[d]${NORMAL}efault key bindings? [v/s/a/d]?"
+  read -n 1 input
+  case "$input" in
+    [vV])
+      chosen_extensions=("${chosen_extensions[@]}" "vscodevim.vim|Vim Keybindings")
+      ;;
+    [sS])
+      chosen_extensions=("${chosen_extensions[@]}" "ms-vscode.sublime-keybindings|Sublime Text Keybindings")
+      ;;
+    [aA])
+      chosen_extensions=("${chosen_extensions[@]}" "ms-vscode.atom-keybindings|Atom Keybindings")
+      ;;
+    [dD])
+      ;;
+    *)
+      info_no_spinner "Please choose ${BOLD}[v]${NORMAL}im, ${BOLD}[s]${NORMAL}ublime text, ${BOLD}[a]${NORMAL}tom or ${BOLD}[d]${NORMAL}efault...\n"
+      list_vscode_keymaps
+      ;;
+  esac
+
+  echo ""
+}
+
+install_vscode_extensions() {
+  chosen_extensions=() # When the user opts to install a package it will be added to this array.
+
+  list_vsvode_extensions
+  list_vscodes_themes
+  list_icon_themes
+  list_vscode_keymaps
+
+  _title_ "Installing Everything"
+
   installed_extensions=$(/usr/local/bin/code --list-extensions)
 
   for extension in "${chosen_extensions[@]}"; do
@@ -154,13 +242,12 @@ install_vscode_extensions() {
   done
 }
 
-
 setup_vscode() {
   if open -R -g -a 'Visual Studio Code' > /dev/null; then
     _title_ "Setup Visual Studio Code"
 
     info "VSCode: installing 'code' command"
-    destination="/usr/local/bin/code" 
+    destination="/usr/local/bin/code"
     source="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
     if [[ -f "$destination" ]]; then
       if [[ ! "$(readlink "$destination")" -ef "$source" ]]; then
@@ -179,5 +266,5 @@ setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
   trap finish EXIT
-  _title_ "Done... Have fun!"
+  _title_ "Done... Happy Coding!"
 fi

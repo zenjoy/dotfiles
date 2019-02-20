@@ -21,7 +21,7 @@ install_command_line_tools() {
     success "XCode Command Line Tools : ${BOLD}installed${NORMAL}"
   else
     status "XCode Command Line Tools : ${BOLD}installing...${DIM}(a prompt should open to ask you for installation)${NORMAL}"
-    
+
     user_ask_yn "XCode Command Line Tools : is the installation done and can we proceed?" "n"
     if [[ "$user_ask_yn_result" == "n" ]]; then
       fail "XCode Command Line Tools : please install them.. exiting!"
@@ -54,10 +54,10 @@ install_homebrew() {
 install_node() {
   check "node" "command -v node"
     successfully "brew install node"
-  
+
   check "npm" "command -v npm"
     successfully "brew install npm"
-  
+
   check "yarn" "command -v yarn"
     successfully "brew install yarn"
 }
@@ -66,7 +66,7 @@ install_docker() {
   if [[ "$(uname)" == "Darwin" ]]; then
     # check sudo or keep it alive before spinner starts
     sudo -v
-    
+
     check "docker for mac" "command -v docker"
     successfully "brew cask install docker"
   fi
@@ -88,7 +88,7 @@ install_ruby() {
     check "ruby-build" "ls ~/.rbenv/plugins/ruby-build > /dev/null" "cd ~/.rbenv/plugins/ruby-build && git pull"
     successfully "mkdir -p ~/.rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build >> $LOGFILE 2>&1;"
   fi
-  
+
   if [[ -d "/usr/local/rbenv" ]]; then
     export RBENV_ROOT="/usr/local/rbenv"
     export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
@@ -122,13 +122,13 @@ install_vagrant() {
   if [[ "$(uname)" == "Darwin" ]]; then
     # check sudo or keep it alive before spinner starts
     sudo -v
-    
+
     check "virtualbox" "command -v VirtualBox"
     successfully "brew cask install virtualbox"
-    
+
     # check sudo or keep it alive before spinner starts
     sudo -v
-    
+
     check "vagrant" "command -v vagrant"
     successfully "brew cask install vagrant"
   fi
@@ -139,7 +139,7 @@ setup_git() {
   if [[ "$user_ask_yn_result" == "y" ]]; then
     bootstrapping=1 $HOME/.dotfiles/script/setup-git
   else
-    success "Ok, skipping Git profile setup."  
+    success "Ok, skipping Git profile setup."
   fi
 }
 
@@ -148,7 +148,7 @@ setup_vscode() {
   if [[ "$user_ask_yn_result" == "y" ]]; then
     bootstrapping=1 $HOME/.dotfiles/script/setup-vscode
   else
-    success "Ok, skipping VSCode setup."  
+    success "Ok, skipping VSCode setup."
   fi
 }
 
@@ -163,5 +163,5 @@ setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
   trap finish EXIT
-  _title_ "Done... Have fun!"
+  _title_ "Done... Happy Coding!"
 fi
