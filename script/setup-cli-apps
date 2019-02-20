@@ -282,5 +282,6 @@ check "tetris (well... play tetris in the terminal)" "command -v tetris"
 _title_ "Done... Have fun!"
 
 if [[ $bootstrapping -ne 1 ]]; then
+  trap finish EXIT
   _title_ "Done... Have fun!"
 fi

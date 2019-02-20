@@ -13,7 +13,6 @@ LOGFILE=/tmp/dotfiles-setup
 echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
 . $DOTFILES_ROOT/script/shared-functions
-trap exit_warning EXIT
 
 header "Let's install our dotfiles..."
 
@@ -215,6 +214,6 @@ setup_cli_tools
 _title_ '.dotfiles ready & installed!'
 echo ''
 
-trap - EXIT
+trap finish EXIT
 
 env zsh -l

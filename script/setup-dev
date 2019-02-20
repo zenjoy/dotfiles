@@ -162,5 +162,6 @@ install_vagrant
 setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
+  trap finish EXIT
   _title_ "Done... Have fun!"
 fi

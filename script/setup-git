@@ -145,3 +145,8 @@ ssh_auth_loop() {
 setup_gitconfig
 maybe_generate_ssh_keys
 register_ssh_keys
+
+if [[ $bootstrapping -ne 1 ]]; then
+  trap finish EXIT
+  _title_ "Done... Have fun!"
+fi

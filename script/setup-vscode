@@ -22,8 +22,8 @@ choose_vscode_extensions_loop() {
       echo ''
       for extension in "${vscode_extensions[@]}"; do
         IFS='|' read -r -a extension_info <<< "$extension"
-        extensions_name="${extension_info[1]}"
-        user_ask_yn "Would you like to install ${BOLD}${extensions_name}${NORMAL}?" "y"
+        extension_name="${extension_info[1]}"
+        user_ask_yn "Would you like to install ${BOLD}${extension_name}${NORMAL}?" "y"
         if [[ "$user_ask_yn_result" == "y" ]]; then
           chosen_extensions=("${chosen_extensions[@]}" "${extension}")
         fi
@@ -41,19 +41,96 @@ choose_vscode_extensions_loop() {
 install_vscode_extensions() {
   chosen_extensions=() # When the user opts to install a package it will be added to this array.
 
+  # based on https://github.com/viatsko/awesome-vscode
   vscode_extensions=(
-    "2gua.rainbow-brackets|Rainbow Brackets|provide rainbow colors for the round brackets"
+    "formulahendry.auto-close-tag|Auto Close Tag|Automatically add HTML/XML close tag"
+    "formulahendry.auto-rename-tag|Auto Rename Tag|Automatically rename paired HTML/XML tag"
+    "dzannotti.vscode-babel-coloring|Babel ES6/ES7|Adds JS Babel es6/es7 syntax coloring"
+    "karunamurti.haml|Better Haml|Better Haml syntax highlighting, auto close and suggestions"
+    "wwm.better-align|Better Align|Align code without selecting them first."
+    "alefragnani.Bookmarks|Bookmarks|Mark lines and jump to them"
+    "CoenraadS.bracket-pair-colorizer|Bracket Pair Colorizer|A customizable extension for colorizing matching brackets"
+    "wmaurer.change-case|Change Case|Quickly change the case (camelCase, etc.)"
+    "pranaygp.vscode-css-peek|CSS Peek|Allow peeking to css from html files to respective CSS."
+    "deerawan.vscode-dash|Dash|Dash and Zeal integration in Visual Studio Code"
+    "msjsdiag.debugger-for-chrome|Debugger for Chrome|Debug your JavaScript code in the Chrome browser"
+    "PeterJausovec.vscode-docker|Docker|Syntax highlighting, commands, etc. for Dockerfile and docker-compose files."
+    "mrmlnc.vscode-duplicate|Duplicate action|Ability to duplicate files and directories in VS Code"
+    "mkloubert.vs-deploy|Deploy|Commands for deploying files of your workspace to a destination"
+    "EditorConfig.EditorConfig|EditorConfig for VS Code|EditorConfig Support for Visual Studio Code"
+    "dbaeumer.vscode-eslint|ESLint|Integrates ESLint JavaScript into VS Code."
+    "dsznajder.es7-react-js-snippets|ES7 React/Redux/GraphQL/React-Native snippets|Simple extensions for React"
+    "donjayamanne.githistory|Git History|View git log, file history, compare branches or commits"
     "eamodio.gitlens|GitLens — Git supercharged|supercharges the Git capabilities built into Visual Studio Code"
+    "rubbersheep.gi|gi|Generating .gitignore files made easy"
+    "ms-vscode.Go|Go|Rich Go language support for Visual Studio Code"
+    "idleberg.icon-fonts|Icon Fonts|Snippets for popular icon fonts such as Font Awesome"
+    "wix.vscode-import-cost|Import Cost|Display import/require package size in the editor"
+    "SirTori.indenticator|Indenticator|Highlights your current indent depth"
+    "Zignd.html-css-class-completion|IntelliSense for CSS in HTML|CSS class name completion for HTML"
+    "ms-kubernetes-tools.vscode-kubernetes-tools|Kubernetes|Develop, deploy and debug Kubernetes applications"
+    "yzhang.markdown-all-in-one|Markdown All in One|All you need to write Markdown"
+    "shd101wyy.markdown-preview-enhanced|Markdown Preview Enhanced|Markdown Preview Enhanced ported to vscode"
+    "dbankier.vscode-instant-markdown|Instant Markdown|Instant previews of your markdown files as you type."
+    "eg2.vscode-npm-script|npm|run npm scripts from VS Code"
+    "christian-kohler.npm-intellisense|npm Intellisense|Autocompletes npm modules in import statements"
+    "ziyasal.vscode-open-in-github|Open in GitHub|Jump to a source code line in Github"
+    "IBM.output-colorizer|Output Colorizer|Syntax highlighting for log files"    
+    "christian-kohler.path-intellisense|Path Intellisense|Visual Studio Code plugin that autocompletes filenames"
+    "quicktype.quicktype|Paste JSON as Code|Copy JSON, paste as Go, TypeScript, C#, C++ and more."
+    "pnp.polacode|Polacode|Polaroid for your code"
+    "ego-digital.vscode-powertools|Power Tools|A set of useful and handy tools for Visual Studio Code."
     "esbenp.prettier-vscode|Prettier - Code formatter|automatically format your JavaScript / TypeScript / CSS"
+    "alefragnani.project-manager|Project Manager|Easily switch between projects"
+    "mechatroner.rainbow-csv|Rainbow CSV|Highlight CSV and TSV files in different colors, Run SQL-like queries"
+    "vsmobile.vscode-react-native|React Native Tools|Code-hinting, debugging and commands for React Native"
+    "OfHumanBondage.react-proptypes-intellisense|React PropTypes Intellisense|PropTypes intellisense for React components"
+    "humao.rest-client|REST Client|REST Client inside Visual StudioCode"
+    "smulyono.reveal|Reveal In Sidebar|Reveal current open file in sidebar"
+    "Molunerfinn.revealfileinfolder|Reveal File In Folder|Quickly reveal file in folder/finder/explorer"
+    "rebornix.Ruby|Ruby|Provides Ruby language and debugging support for Visual Studio Code"
+    "castwide.solargraph|Ruby Solargraph|Code completion and inline documentation for Ruby"
+    "mrmlnc.vscode-scss|SCSS IntelliSense|Advanced autocompletion and refactoring support for SCSS"
+    "Shan.code-settings-sync|Settings Sync|Synchronize Settings, Snippets, etc. using Github Gist"
+    "shyykoserhiy.vscode-spotify|VSCode Spotify|Use Spotify inside vscode"
+    "Tyriar.sort-lines|Sort lines|Sorts lines of text"
+    "coolbear.systemd-unit-file|systemd-unit-file|Language support for systemd unit files"
+    "cssho.vscode-svgviewer|SVG Viewer|SVG Viewer for Visual Studio Code"
+    "mauve.terraform|Terraform|Syntax highlighting, linting, formatting, etc. for Hashicorp's Terraform"
+    "wayou.vscode-todo-highlight|TODO Highlight|highlight TODOs, FIXMEs, and any keywords, annotations..."
+    "BriteSnow.vscode-toggle-quotes|Toggle Quotes|Toggle between single or double quotes"
+    "ms-vscode.vscode-typescript-tslint-plugin|TSLint|TSLint support for Visual Studio Code"
+    "rbbit.typescript-hero|TypeScript Hero|Additional toolings for typescript"
+    "pflannery.vscode-versionlens|Version Lens|Shows the latest version for each package using code lens"
+    "octref.vetur|Vetur|Vue tooling for VS Code"
+    "MS-vsliveshare.vsliveshare|VS Live Share|Real-time collaborative development"
+    "funkyremi.vscode-google-translate|Vscode Google Translate|Translate text right in your code"
+    "redhat.vscode-yaml|YAML|YAML Language Support, with built-in Kubernetes and Kedge syntax support"
   )
 
-  info_no_spinner "We recommend installing the following extensions:\n\n"
+  sublime_text_keymap="ms-vscode.sublime-keybindings"
+
+  vscode_themes=(
+    "bceskavich.theme-dracula-at-night|Dracula At Night"
+    "Equinusocio.vsc-material-theme|Material Theme"
+    "zhuangtongfa.Material-theme|One Dark Pro"
+    "azemoh.one-monokai|One Monokai Theme"
+  )
+
+  vscode_icon_themes=(
+    "PKief.material-icon-theme|Material Icon Theme|Material Design Icons"
+  )
+
+  _title_ "Visual Studio Code Extensions"
+  notice "${WHITE}We recommend installing the following extensions:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n\n"
   for extension in "${vscode_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
-    extensions_code="${extension_info[0]}"
-    extensions_name="${extension_info[1]}"
-    extensions_description="${extension_info[2]}"
-    printf " - ${BOLD}%s${NORMAL}${DIM} (%s)${NORMAL}\n   %s\n\n" "${extensions_name}" "${extensions_code}" "${extensions_description}"
+    extension_code="${extension_info[0]}"
+    extension_link="https://marketplace.visualstudio.com/items?itemName=${extension_info[0]}"
+    extension_name="${extension_info[1]}"
+    extension_description="${extension_info[2]}"
+
+    printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "$extension_link" "${extension_name}" "${extension_code}" "${extension_description}"
   done
   echo ""
   
@@ -62,17 +139,17 @@ install_vscode_extensions() {
 
   for extension in "${chosen_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
-    extensions_code="${extension_info[0]}"
-    extensions_name="${extension_info[1]}"
-    extensions_description="${extension_info[2]}"
-    info "${extensions_name} extension : checking"
+    extension_code="${extension_info[0]}"
+    extension_name="${extension_info[1]}"
+    extension_description="${extension_info[2]}"
+    info "${extension_name} extension : checking"
     # get executable name from cask to check if it is already installed
-    if [[ "$installed_extensions" == *"$extensions_code"* ]]; then
-      success "${extensions_name} extension : ${BOLD}installed${NORMAL}"
+    if [[ "$installed_extensions" == *"$extension_code"* ]]; then
+      success "${extension_name} extension : ${BOLD}installed${NORMAL}"
     else
-      status "${extensions_name} extension : installing"
-      message="${extensions_name} extension"
-      successfully "/usr/local/bin/code --force --install-extension $extensions_code" "perhaps it is already installed."
+      status "${extension_name} extension : installing"
+      message="${extension_name} extension"
+      successfully "/usr/local/bin/code --force --install-extension $extension_code" "perhaps it is already installed."
     fi
   done
 }
@@ -101,5 +178,6 @@ setup_vscode() {
 setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
+  trap finish EXIT
   _title_ "Done... Have fun!"
 fi

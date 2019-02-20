@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 export DOTFILES=$HOME/.dotfiles
 
+# ensure we capture unexpected exits
+trap exit_warning EXIT
+
 done_message="installed"
+
+# prevent wrapping around for very long lines (gives issue with spinner)
+tput rmam
 
 # Use colors, but only if connected to a terminal, and that terminal
 # supports them.
@@ -427,11 +433,22 @@ ensure_mac_os() {
 
 # If we exit unexpectedly, log this warning.
 # Scripts should call "trap exit_warning EXIT" near the top to enable,
-# then "trap - EXIT" just before exiting on success.
+# then "trap finish EXIT" just before exiting on success.
 exit_warning() {
-    echo "${BOLD}${RED}"
-    echo ""
-    echo "***           FATAL ERROR: dotfiles-setup crashed!             ***"
-    echo "***       Please check the /tmp/dotfiles-setup logs for        ***"
-    echo "***   common errors, or send the output above to @engineering. ***${NORMAL}"
+  # restore shell
+  finish
+
+  echo "${BOLD}${RED}"
+  echo ""
+  echo "***           FATAL ERROR: dotfiles-setup crashed!             ***"
+  echo "***       Please check the /tmp/dotfiles-setup logs for        ***"
+  echo "***   common errors, or send the output above to @engineering. ***${NORMAL}"
+}
+
+finish() {
+  # ensure the spinner is stopped
+  _spinner_stop
+
+  # restore wrapping around long lines of text
+  tput smam
 }

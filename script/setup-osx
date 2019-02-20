@@ -49,7 +49,9 @@ choose_mac_apps_loop() {
     [sS][oO][mM][eE] | [sS])
       echo ''
       for app in "${mac_apps[@]}"; do
-        user_ask_yn "Would you like to install ${BOLD}${app}${NORMAL}?" "y"
+        IFS='|' read -r -a app_info <<< "$app"
+        app_name="${app_info[1]}"
+        user_ask_yn "Would you like to install ${BOLD}${app_name}${NORMAL}?" "y"
         if [[ "$user_ask_yn_result" == "y" ]]; then
           chosen_apps=("${chosen_apps[@]}" "${app}")
         fi
@@ -69,33 +71,63 @@ install_mac_apps() {
 
   mac_apps=(
     # Browsers
-    google-chrome firefox
+    "google-chrome|Google Chrome|Google Chrome Browser|https://www.google.com/chrome/"
+    "firefox|Firefox|Firefox Browser|https://www.mozilla.org/nl/firefox/new/"
     # Tools
-    iterm2 nightowl gfxcardstatus alfred the-unarchiver
+    "iterm2|iTerm2|Terminal Emulator|https://www.iterm2.com/"
+    "nightowl|NightOwl|Easily and automatically toggle MacOS dark mode|https://nightowl.kramser.xyz/"
+    "gfxcardstatus|gfxCardStatus|menu bar app that allows MacBook Pro users to switch between graphics cards|https://gfx.io/"
+    "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
+    "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
     # Zenjoy Essentials
-    slack front harvest dropbox
-    # Text Editors
-    visual-studio-code
+    "slack|Slack|Where work happens|https://slack.com/"
+    "front|FrontApp|The shared inbox for teams|https://frontapp.com/"
+    "harvest|Harvest|Our time tracking tool|https://www.getharvest.com/"
+    "dropbox|Dropbox|File-sharing made easy|https://www.dropbox.com/"
+    # Development
+    "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
+    "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
     # Entertainment
-    vlc aerial fliqlo
+    "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
+    "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
+    "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
   )
 
-  info_no_spinner "We recommend installing the following apps:\n\n"
+  notice "${WHITE}We recommend installing following MacOS apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the site for the app)${NORMAL}:\n\n"
   for app in "${mac_apps[@]}"; do
-    echo " - ${BOLD}$app${NORMAL}"
+    IFS='|' read -r -a app_info <<< "$app"
+    app_code="${app_info[0]}"
+    app_name="${app_info[1]}"
+    app_description="${app_info[2]}"
+    app_link="${app_info[3]}"
+
+    printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "${app_link}" "${app_name}" "${app_code}" "${app_description}"
   done
   echo ""
   
   choose_mac_apps_loop
-  
-  echo ''
+
+  echo ""
+  if [ ${#chosen_apps[@]} -ne 0 ]; then
+    _title_ "Installing Selected Apps"
+  fi
+
   for app in "${chosen_apps[@]}"; do
+    IFS='|' read -r -a app_info <<< "$app"
+    app_code="${app_info[0]}"
+    app_name="${app_info[1]}"
+    app_description="${app_info[2]}"
+    
     # get executable name from cask to check if it is already installed
-    executable=$(brew cask info $app | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
+    executable=$(brew cask info $app_code | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
     # check sudo or keep it alive before spinner starts
     sudo -v
-    check "$app" "open -R -g -a '$executable' > /dev/null"
-    successfully "brew cask install $app" "perhaps it is already installed."
+    if [[ $app_description == *"Screensaver"* ]]; then
+      check "$app_name" "brew cask ls $app_code"
+    else
+      check "$app_name" "open -R -g -a '$executable' > /dev/null"
+    fi
+    successfully "brew cask install $app_code" "perhaps it is already installed."
   done
 }
 
@@ -150,90 +182,12 @@ setup_iterm() {
   echo ''
 }
 
-choose_vscode_extensions_loop() {
-  user "Would you like to install [a]ll, [n]one, or [s]ome of the extensions? [a/n/s]?"
-  read -n 1 input
-  case "$input" in
-    [aA][lL][lL] | [aA])
-      chosen_extensions=("${vscode_extensions[@]}")
-      ;;
-    [sS][oO][mM][eE] | [sS])
-      echo ''
-      for extension in "${vscode_extensions[@]}"; do
-        IFS='|' read -r -a extension_info <<< "$extension"
-        extensions_name="${extension_info[1]}"
-        user_ask_yn "Would you like to install ${BOLD}${extensions_name}${NORMAL}?" "y"
-        if [[ "$user_ask_yn_result" == "y" ]]; then
-          chosen_extensions=("${chosen_extensions[@]}" "${extension}")
-        fi
-      done
-      ;;
-    [nN][oO][nN][eE] | [nN])
-      ;;
-    *)
-      info_no_spinner "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
-      choose_vscode_extensions_loop
-      ;;
-  esac
-}
-
-install_vscode_extensions() {
-  chosen_extensions=() # When the user opts to install a package it will be added to this array.
-
-  vscode_extensions=(
-    "2gua.rainbow-brackets|Rainbow Brackets|provide rainbow colors for the round brackets"
-    "eamodio.gitlens|GitLens — Git supercharged|supercharges the Git capabilities built into Visual Studio Code"
-    "esbenp.prettier-vscode|Prettier - Code formatter|automatically format your JavaScript / TypeScript / CSS"
-  )
-
-  info_no_spinner "We recommend installing the following extensions:\n\n"
-  for extension in "${vscode_extensions[@]}"; do
-    IFS='|' read -r -a extension_info <<< "$extension"
-    extensions_code="${extension_info[0]}"
-    extensions_name="${extension_info[1]}"
-    extensions_description="${extension_info[2]}"
-    printf " - ${BOLD}%s${NORMAL}${DIM} (%s)${NORMAL}\n   %s\n\n" "${extensions_name}" "${extensions_code}" "${extensions_description}"
-  done
-  echo ""
-  
-  choose_vscode_extensions_loop
-  installed_extensions=$(/usr/local/bin/code --list-extensions)
-
-  for extension in "${chosen_extensions[@]}"; do
-    IFS='|' read -r -a extension_info <<< "$extension"
-    extensions_code="${extension_info[0]}"
-    extensions_name="${extension_info[1]}"
-    extensions_description="${extension_info[2]}"
-    info "${extensions_name} extension : checking"
-    # get executable name from cask to check if it is already installed
-    if [[ "$installed_extensions" == *"$extensions_code"* ]]; then
-      success "${extensions_name} extension : ${BOLD}installed${NORMAL}"
-    else
-      status "${extensions_name} extension : installing"
-      message="${extensions_name} extension"
-      successfully "/usr/local/bin/code --force --install-extension $extensions_code" "perhaps it is already installed."
-    fi
-  done
-}
-
-
 setup_vscode() {
-  if open -R -g -a 'Visual Studio Code' > /dev/null; then
-    _title_ "Setup Visual Studio Code"
-
-    info "VSCode: installing 'code' command"
-    destination="/usr/local/bin/code" 
-    source="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
-    if [[ -f "$destination" ]]; then
-      if [[ ! "$(readlink "$destination")" -ef "$source" ]]; then
-        rm "$destination"
-        ln -s "$source" "$destination"
-      fi
-    else
-      ln -s "$source" "$destination"
-    fi
-    success "VSCode: 'code' command installed"
-    install_vscode_extensions
+  user_ask_yn "Want to setup Visual Studio Code?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
+    bootstrapping=1 $HOME/.dotfiles/script/setup-vscode
+  else
+    success "Ok, skipping VSCode setup."  
   fi
 }
 
@@ -244,5 +198,6 @@ setup_iterm
 setup_vscode
 
 if [[ $bootstrapping -ne 1 ]]; then
+  trap finish EXIT
   _title_ "Done... Have fun!"
 fi

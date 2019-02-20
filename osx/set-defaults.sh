@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Sets reasonable OS X defaults.
 #
 # Or, in other words, set shit how I like in OS X.
@@ -66,6 +67,13 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
 defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
 defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
+
+# Sets default save target to be a local disk, not iCloud.
+defaults write -g NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Set Default Finder Location to Home Folder
+defaults write com.apple.finder NewWindowTarget -string "PfLo" && \
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}"
 
 ###############################################################################
 # Quicklook                                                                   #
