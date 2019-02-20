@@ -1,0 +1,3 @@
+function list-apps() {
+  mdfind kMDItemAppStoreHasReceipt=1
+}

@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+set +e
+
+DOTFILES_ROOT="$HOME/.dotfiles"
+LOGFILE=/tmp/dotfiles-setup
+
+. $DOTFILES_ROOT/script/shared-functions
+
+if [[ $bootstrapping -ne 1 ]]; then
+  header "Let's setup Visual Studio Code ..."
+fi
+
+choose_vscode_extensions_loop() {
+  user "Would you like to install [a]ll, [n]one, or [s]ome of the extensions? [a/n/s]?"
+  read -n 1 input
+  case "$input" in
+    [aA][lL][lL] | [aA])
+      chosen_extensions=("${vscode_extensions[@]}")
+      ;;
+    [sS][oO][mM][eE] | [sS])
+      echo ''
+      for extension in "${vscode_extensions[@]}"; do
+        IFS='|' read -r -a extension_info <<< "$extension"
+        extensions_name="${extension_info[1]}"
+        user_ask_yn "Would you like to install ${BOLD}${extensions_name}${NORMAL}?" "y"
+        if [[ "$user_ask_yn_result" == "y" ]]; then
+          chosen_extensions=("${chosen_extensions[@]}" "${extension}")
+        fi
+      done
+      ;;
+    [nN][oO][nN][eE] | [nN])
+      ;;
+    *)
+      info_no_spinner "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
+      choose_vscode_extensions_loop
+      ;;
+  esac
+}
+
+install_vscode_extensions() {
+  chosen_extensions=() # When the user opts to install a package it will be added to this array.
+
+  vscode_extensions=(
+    "2gua.rainbow-brackets|Rainbow Brackets|provide rainbow colors for the round brackets"
+    "eamodio.gitlens|GitLens — Git supercharged|supercharges the Git capabilities built into Visual Studio Code"
+    "esbenp.prettier-vscode|Prettier - Code formatter|automatically format your JavaScript / TypeScript / CSS"
+  )
+
+  info_no_spinner "We recommend installing the following extensions:\n\n"
+  for extension in "${vscode_extensions[@]}"; do
+    IFS='|' read -r -a extension_info <<< "$extension"
+    extensions_code="${extension_info[0]}"
+    extensions_name="${extension_info[1]}"
+    extensions_description="${extension_info[2]}"
+    printf " - ${BOLD}%s${NORMAL}${DIM} (%s)${NORMAL}\n   %s\n\n" "${extensions_name}" "${extensions_code}" "${extensions_description}"
+  done
+  echo ""
+  
+  choose_vscode_extensions_loop
+  installed_extensions=$(/usr/local/bin/code --list-extensions)
+
+  for extension in "${chosen_extensions[@]}"; do
+    IFS='|' read -r -a extension_info <<< "$extension"
+    extensions_code="${extension_info[0]}"
+    extensions_name="${extension_info[1]}"
+    extensions_description="${extension_info[2]}"
+    info "${extensions_name} extension : checking"
+    # get executable name from cask to check if it is already installed
+    if [[ "$installed_extensions" == *"$extensions_code"* ]]; then
+      success "${extensions_name} extension : ${BOLD}installed${NORMAL}"
+    else
+      status "${extensions_name} extension : installing"
+      message="${extensions_name} extension"
+      successfully "/usr/local/bin/code --force --install-extension $extensions_code" "perhaps it is already installed."
+    fi
+  done
+}
+
+
+setup_vscode() {
+  if open -R -g -a 'Visual Studio Code' > /dev/null; then
+    _title_ "Setup Visual Studio Code"
+
+    info "VSCode: installing 'code' command"
+    destination="/usr/local/bin/code" 
+    source="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+    if [[ -f "$destination" ]]; then
+      if [[ ! "$(readlink "$destination")" -ef "$source" ]]; then
+        rm "$destination"
+        ln -s "$source" "$destination"
+      fi
+    else
+      ln -s "$source" "$destination"
+    fi
+    success "VSCode: 'code' command installed"
+    install_vscode_extensions
+  fi
+}
+
+setup_vscode
+
+if [[ $bootstrapping -ne 1 ]]; then
+  _title_ "Done... Have fun!"
+fi
