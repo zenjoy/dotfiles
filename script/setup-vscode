@@ -54,7 +54,7 @@ list_vsvode_extensions() {
     "msjsdiag.debugger-for-chrome|Debugger for Chrome|Debug your JavaScript code in the Chrome browser"
     "PeterJausovec.vscode-docker|Docker|Syntax highlighting, commands, etc. for Dockerfile and docker-compose files."
     "mrmlnc.vscode-duplicate|Duplicate action|Ability to duplicate files and directories in VS Code"
-    "mkloubert.vs-deploy|Deploy|Commands for deploying files of your workspace to a destination"
+    "mkloubert.vscode-deploy-reloaded|Deploy (Reloaded)|Commands for deploying files of your workspace to a destination"
     "EditorConfig.EditorConfig|EditorConfig for VS Code|EditorConfig Support for Visual Studio Code"
     "dbaeumer.vscode-eslint|ESLint|Integrates ESLint JavaScript into VS Code."
     "dsznajder.es7-react-js-snippets|ES7 React/Redux/GraphQL/React-Native snippets|Simple extensions for React"
