@@ -79,6 +79,7 @@ install_mac_apps() {
     "gfxcardstatus|gfxCardStatus|menu bar app that allows MacBook Pro users to switch between graphics cards|https://gfx.io/"
     "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
     "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
+    "numi|Numi|Beautiful calculator app for Mac|https://numi.io/"
     # Zenjoy Essentials
     "slack|Slack|Where work happens|https://slack.com/"
     "front|FrontApp|The shared inbox for teams|https://frontapp.com/"
