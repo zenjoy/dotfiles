@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+set +e
+
+DOTFILES_ROOT="$HOME/.dotfiles"
+LOGFILE=/tmp/dotfiles-setup
+
+. $DOTFILES_ROOT/script/shared-functions
+
+echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
+
+if [[ $bootstrapping -ne 1 ]]; then
+  header "Let's install some Mac App Store apps ..."
+fi
+
+install_mas_cli() {
+  check "mas-cli (command line interface for the Mac App Store)" "command -v mas"
+  successfully "brew install mas"
+}
+
+open_app_store() {
+  notice "\nWe'll open the App Store. Please go to 'Store » Log In' to proceed."
+  notice "Click any key to continue..."
+  read -n 1
+  open -a 'App Store'
+  user_ask_yn "Were you able to login in the App Store?" "y"
+}
+
+check_apple_id() {
+  if [[ $firstrun -ne 1 ]]; then
+    info "Checking currently used Apple ID..."
+  fi
+  firstrun=1
+  if ! mas account > /dev/null; then
+    warn "You are currently not logged in with any Apple ID."
+    open_app_store
+    check_apple_id
+  else
+    login=$(mas account)
+    success "You are currently logged in as ${BOLD}${login}${NORMAL}."
+    user_ask_yn "Would you like to use this Apple account to proceed?" "y"
+    if [[ "$user_ask_yn_result" == "y" ]]; then
+      success "Ok, let's proceed."
+      return 1
+    else
+      success "Ok, let's logout from the app store."
+      mas signout
+      open_app_store
+      check_apple_id
+    fi
+  fi
+
+}
+
+choose_appstore_apps_loop() {
+  user "Would you like to install ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome of these apps? [a/n/s]?"
+  read -n 1 input
+  case "$input" in
+    [aA][lL][lL] | [aA])
+      chosen_apps=("${chosen_apps[@]}" "${appstore_apps[@]}")
+      ;;
+    [sS][oO][mM][eE] | [sS])
+      echo ''
+      for app in "${appstore_apps[@]}"; do
+        IFS='|' read -r -a app_info <<< "$app"
+        app_name="${app_info[2]}"
+        user_ask_yn "Would you like to install ${BOLD}${app_name}${NORMAL}?" "y"
+        if [[ "$user_ask_yn_result" == "y" ]]; then
+          chosen_apps=("${chosen_apps[@]}" "${app}")
+        fi
+      done
+      ;;
+    [nN][oO][nN][eE] | [nN])
+      ;;
+    *)
+      info_no_spinner "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
+      choose_appstore_apps_loop
+      ;;
+  esac
+}
+
+list_appstore_apps() {
+  appstore_apps=(
+    "409201541|pages|Pages|Documenten die eruit springen"
+    "409203825|numbers|Numbers|Opvallende spreadsheets maken"
+    "409183694|keynote|Keynote|Prachtige presentaties maken"
+    "497799835|xcode|XCode|Apple Developer IDE"
+    "419330170|moom|Moom|Easily resize your MacOS windows"
+    "1351639930|gifski|Gifski|Create the highest quality gifs"
+    "525742250|jpegmini-lite|JPEGMini Lite|Reduce image file size without compromising quality"
+  )
+
+  notice_left "${WHITE}We recommend installing following apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the app's website)${NORMAL}:\n"
+  for app in "${appstore_apps[@]}"; do
+    IFS='|' read -r -a app_info <<< "$app"
+    app_id="${app_info[0]}"
+    app_code="${app_info[1]}"
+    app_name="${app_info[2]}"
+    app_description="${app_info[3]}"
+    app_link="https://itunes.apple.com/be/app/${app_code}/id${app_id}?l=nl&mt=12"
+
+    printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} : %s\n" "$app_link" "${app_name}" "${app_description}"
+  done
+  echo ""
+
+  choose_appstore_apps_loop
+
+  echo ""
+}
+
+install_appstore_apps() {
+  chosen_apps=() # When the user opts to install a package it will be added to this array.
+
+  list_appstore_apps
+
+  _title_ "Installing Everything"
+
+  installed_apps=$(mas list)
+
+  for app in "${chosen_apps[@]}"; do
+    IFS='|' read -r -a app_info <<< "$app"
+    app_id="${app_info[0]}"
+    app_code="${app_info[1]}"
+    app_name="${app_info[2]}"
+    info "${app_name} app : checking"
+    # get executable name from cask to check if it is already installed
+    if [[ "$installed_apps" == *"$app_id"* ]]; then
+      success "${app_name} app : ${BOLD}installed${NORMAL}"
+    else
+      status "${app_name} app : installing"
+      message="${app_name} app"
+      successfully "mas install $app_id" "perhaps it is already installed."
+    fi
+  done
+}
+
+
+_title_ "Prerequisites"
+
+install_mas_cli
+check_apple_id
+
+_title_ "App Selection"
+
+install_appstore_apps
+
+if [[ $bootstrapping -ne 1 ]]; then
+  trap finish EXIT
+  _title_ "Done... Happy Coding!"
+fi

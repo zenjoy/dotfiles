@@ -54,7 +54,7 @@ function _spinner_process() {
   # our spinning indicator
   frames=("⠋ " "⠉ " "⠈⠁" " ⠉" " ⠙" " ⠹" " ⠸" " ⠼" " ⠴" " ⠤" "⠠⠄" "⠤ " "⠦ " "⠧ " "⠇ " "⠏ ")
   interval="0.08"
-  
+
   # Create a never-ending loop
   while [[ 1 -eq 1 ]]; do
     # If the statefile has been removed, exit the script
@@ -247,6 +247,10 @@ function header() {
 
 # for printing standard echoish messages
 notice () {
+  printf "        $1\n"
+}
+
+notice_left () {
   printf "$1\n"
 }
 
@@ -415,7 +419,7 @@ user_ask_yn() {
       ;;
     [nN][oO] | [nN])
       user_ask_yn_result="n"
-      echo ''      
+      echo ''
       ;;
     *)
       user_ask_yn_result=$2

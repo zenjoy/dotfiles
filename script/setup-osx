@@ -87,13 +87,19 @@ install_mac_apps() {
     # Development
     "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
     "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
+    "tad|Tad|Easily browse csv or tabular data|https://www.tadviewer.com"
+    "staruml|StarUML|A sophisticated software modeler|http://staruml.io/"
+    "switchhosts|SwitchHosts!|an App for hosts management & switching|https://oldj.github.io/SwitchHosts/"
+    "chrunch|Chrunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
+    "imageoptim|ImageOptim|ImageOptim makes images load faster|https://imageoptim.com/mac"
+    "imagealpha|ImageAlpha|Reduces file sizes of 24-bit PNG files|https://pngmini.com/"
     # Entertainment
     "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
     "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
     "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
   )
 
-  notice "${WHITE}We recommend installing following MacOS apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the site for the app)${NORMAL}:\n\n"
+  notice_left "${WHITE}We recommend installing following MacOS apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the site for the app)${NORMAL}:\n\n"
   for app in "${mac_apps[@]}"; do
     IFS='|' read -r -a app_info <<< "$app"
     app_code="${app_info[0]}"
@@ -104,7 +110,7 @@ install_mac_apps() {
     printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "${app_link}" "${app_name}" "${app_code}" "${app_description}"
   done
   echo ""
-  
+
   choose_mac_apps_loop
 
   echo ""
@@ -117,7 +123,7 @@ install_mac_apps() {
     app_code="${app_info[0]}"
     app_name="${app_info[1]}"
     app_description="${app_info[2]}"
-    
+
     # get executable name from cask to check if it is already installed
     executable=$(brew cask info $app_code | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
     # check sudo or keep it alive before spinner starts
@@ -156,7 +162,7 @@ setup_iterm() {
 
     sed -i "" "s/FuraCodeNerdFontComplete-Medium 14/FuraCodeNerdFontComplete-Medium $font_size/g" "$source_plist"
     success "iTerm profile: generated"
-    
+
     if [[ -f "$destination" ]] || [[ -d "$destination" ]]; then
       if [[ "$(readlink "$destination")" -ef "$source_plist" ]]; then
         success "iTerm profile: already linked"
@@ -187,13 +193,23 @@ setup_vscode() {
   if [[ "$user_ask_yn_result" == "y" ]]; then
     bootstrapping=1 $HOME/.dotfiles/script/setup-vscode
   else
-    success "Ok, skipping VSCode setup."  
+    success "Ok, skipping VSCode setup."
+  fi
+}
+
+install_appstore_apps() {
+  user_ask_yn "Want to install useful apps from Mac App Store?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
+    bootstrapping=1 $HOME/.dotfiles/script/setup-appstore-apps
+  else
+    success "No problem, skipping App Store apps installation."
   fi
 }
 
 setup_macos_defaults
 quicklook_plugins
 install_mac_apps
+install_appstore_apps
 setup_iterm
 setup_vscode
 

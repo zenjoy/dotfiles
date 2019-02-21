@@ -47,8 +47,12 @@ list_vsvode_extensions() {
     "karunamurti.haml|Better Haml|Better Haml syntax highlighting, auto close and suggestions"
     "wwm.better-align|Better Align|Align code without selecting them first."
     "alefragnani.Bookmarks|Bookmarks|Mark lines and jump to them"
+    "aaron-bond.better-comments|Better Comments|Improve your code commenting by annotating with alerts and more..."
     "CoenraadS.bracket-pair-colorizer|Bracket Pair Colorizer|A customizable extension for colorizing matching brackets"
     "wmaurer.change-case|Change Case|Quickly change the case (camelCase, etc.)"
+    "streetsidesoftware.code-spell-checker|Code Spell Checker|Spelling checker for source code"
+    "streetsidesoftware.code-spell-checker-dutch|Code Spell Checker - Dutch|Dutch dictionary extension for VS Code"
+    "streetsidesoftware.code-spell-checker-french|Code Spell Checker - French|French dictionary extension for VS Code"
     "pranaygp.vscode-css-peek|CSS Peek|Allow peeking to css from html files to respective CSS."
     "deerawan.vscode-dash|Dash|Dash and Zeal integration in Visual Studio Code"
     "msjsdiag.debugger-for-chrome|Debugger for Chrome|Debug your JavaScript code in the Chrome browser"
@@ -90,7 +94,6 @@ list_vsvode_extensions() {
     "castwide.solargraph|Ruby Solargraph|Code completion and inline documentation for Ruby"
     "mrmlnc.vscode-scss|SCSS IntelliSense|Advanced autocompletion and refactoring support for SCSS"
     "Shan.code-settings-sync|Settings Sync|Synchronize Settings, Snippets, etc. using Github Gist"
-    "shyykoserhiy.vscode-spotify|VSCode Spotify|Use Spotify inside vscode"
     "Tyriar.sort-lines|Sort lines|Sorts lines of text"
     "coolbear.systemd-unit-file|systemd-unit-file|Language support for systemd unit files"
     "cssho.vscode-svgviewer|SVG Viewer|SVG Viewer for Visual Studio Code"
@@ -104,10 +107,11 @@ list_vsvode_extensions() {
     "MS-vsliveshare.vsliveshare|VS Live Share|Real-time collaborative development"
     "funkyremi.vscode-google-translate|Vscode Google Translate|Translate text right in your code"
     "redhat.vscode-yaml|YAML|YAML Language Support, with built-in Kubernetes and Kedge syntax support"
+    "DotJoshJohnson.xml|XML Tools|XML Formatting, XQuery, and XPath Tools for Visual Studio Code"
   )
 
   _title_ "Visual Studio Code Extensions"
-  notice "${WHITE}We recommend installing the following extensions:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
+  notice_left "${WHITE}We recommend installing the following extensions:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
   for extension in "${vscode_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
     extension_code="${extension_info[0]}"
@@ -127,14 +131,20 @@ list_vsvode_extensions() {
 list_vscodes_themes() {
   vscode_extensions=(
     "akamud.vscode-theme-onedark|Atom One Dark"
+    "dustinsanders.an-old-hope-theme-vscode|An Old Hope Theme"
+    "wart.ariake-dark|Ariake Dark"
+    "ultradracula.captain-sweetheart|Captain Sweetheart"
     "Yummygum.city-lights-theme|City Lights"
     "wesbos.theme-cobalt2|Cobalt2 Theme Official"
     "dline.CobaltNext|Cobalt Next"
     "philsinatra.macos-dark-mode-theme|Dark Mode"
     "dracula-theme.theme-dracula|Dracula Official"
     "bceskavich.theme-dracula-at-night|Dracula At Night"
+    "bogdanlazar.edge|Edge Theme"
+    "fisheva.eva-theme|Eva Theme"
     "Heron.firefox-devtools-theme|Firefox Theme"
     "lkytal.FlatUI|Flat UI"
+    "thomaspink.theme-github|Github Theme"
     "SolarLiner.linux-themes|Linux Themes for VS Code"
     "Equinusocio.vsc-material-theme|Material Theme"
     "taniarascia.new-moon-vscode|New Moon"
@@ -142,16 +152,19 @@ list_vscodes_themes() {
     "arcticicestudio.nord-visual-studio-code|Nord"
     "zhuangtongfa.Material-theme|One Dark Pro"
     "azemoh.one-monokai|One Monokai Theme"
+    "whizkydee.material-palenight-theme|Palenight Theme"
     "tinkertrain.theme-panda|Panda Theme"
+    "will-stone.plastic|Plastic Theme"
     "ahmadawais.shades-of-purple|Shades of Purple"
+    "smlombardi.slime|Slime Theme"
   )
 
   _title_ "Visual Studio Code Themes"
-  notice "${WHITE}We recommend installing the following themes:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
+  notice_left "${WHITE}We recommend installing the following themes:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
   for extension in "${vscode_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
     extension_code="${extension_info[0]}"
-    extension_link="https://marketplace.visualstudio.com/items?itemName=${extension_info[0]}"
+    extension_link="https://vscodethemes.com/e/${extension_info[0]}"
     extension_name="${extension_info[1]}"
 
     printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n" "$extension_link" "${extension_name}" "${extension_code}"
@@ -171,7 +184,7 @@ list_icon_themes() {
   )
 
   _title_ "Visual Studio Code Icon Themes"
-  notice "${WHITE}We recommend installing the following icon themes:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
+  notice_left "${WHITE}We recommend installing the following icon themes:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the description of the extension)${NORMAL}:\n"
   for extension in "${vscode_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
     extension_code="${extension_info[0]}"

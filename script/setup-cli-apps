@@ -41,8 +41,8 @@ if [[ $bootstrapping -ne 1 ]]; then
   header "Let's install some interesting cli apps ..."
 fi
 
-notice "Feel free to follow the details by running:"
-notice "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
+notice_left "Feel free to follow the details by running:"
+notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
 
 message=""
 
@@ -58,7 +58,7 @@ check "python 2.x" "brew ls --versions python@2"
 check "python 3.x" "brew ls --versions python@3"
   successfully "brew install python"
 
-notice "\nNow the interesting things..."
+notice_left "\nNow the interesting things..."
 
 ## GENERAL DEVELOPMENT TOOLS ##
 
@@ -94,6 +94,9 @@ check "add-gitignore (generates a .gitignore for your project)" "command -v add-
 check "carbon-now (beautiful images of your code)" "command -v carbon-now"
   successfully "npm i -g carbon-now-cli"
 
+check "bat (a cat clone with wings)" "command -v bat"
+  successfully "brew install bat"
+
 ## FRONTEND DEVELOPMENT TOOLS ##
 
 _title_ "Frontend Development:"
@@ -105,7 +108,13 @@ check "pageres (capture screenshots of websites)" "command -v pageres"
   successfully "npm install -g pageres-cli"
 
 check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
-  successfully "pip3 install pillow"  
+  successfully "pip3 install pillow"
+
+check "chrunch (the best png size crusher)" "command -v crunch"
+  successfully "brew install crunch"
+
+check "imageoptim-cli (CLI for ImageOptim, ImageAlpha and JPEGmini)" "command -v imageoptim"
+  successfully "npm install -g imageoptim-cli"
 
 ## MOBILE DEVELOPMENT ##
 
@@ -137,10 +146,10 @@ check "loadtest (run a load test on the selected url)" "command -v loadtest"
   successfully "npm install -g loadtest"
 
 check "speedtest-net (test your internet speed)" "command -v speedtest-net"
-  successfully "npm install -g speedtest-net"  
+  successfully "npm install -g speedtest-net"
 
 check "pretty-ms (convert milliseconds to a human readable string)" "command -v pretty-ms"
-  successfully "npm install -g pretty-ms-cli  "  
+  successfully "npm install -g pretty-ms-cli  "
 
 ## GIT TOOLS ##
 
@@ -200,6 +209,9 @@ _title_ "OSX Management / Helpers:"
 check "m-cli (swiss army knife for macOS)" "command -v m"
   successfully "brew install m-cli"
 
+check "mas-cli (command line interface for the Mac App Store)" "command -v mas"
+  successfully "brew install mas"
+
 check "brightness (manage screen brightness)" "command -v brightness"
   successfully "npm install -g brightness-cli"
 
@@ -225,7 +237,7 @@ check "empty-trash (empty the trash)" "command -v empty-trash"
   successfully "npm install -g empty-trash-cli"
 
 check "public-ip (get your public ip address)" "command -v public-ip"
-  successfully "npm install -g public-ip-cli"  
+  successfully "npm install -g public-ip-cli"
 
 check "wallpaper (get or set your wallpaper)" "command -v wallpaper"
   successfully "npm install -g wallpaper-cli"
