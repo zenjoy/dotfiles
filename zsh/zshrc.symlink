@@ -21,6 +21,7 @@ ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
+# We'll leave this blank and use the async Pure prompt
 ZSH_THEME=""
 
 # Spaceship customization
@@ -47,79 +48,71 @@ SPACESHIP_PROMPT_ORDER=(
 	host          # Hostname section
 	dir           # Current directory section
 	git           # Git section (git_branch + git_status)
-	# hg          # Mercurial section (hg_branch  + hg_status)
 	package       # Package version
 	node          # Node.js section
 	ruby          # Ruby section
-	# elixir      # Elixir section
-	# xcode         # Xcode section
-	# swift         # Swift section
 	golang        # Go section
-	# php         # PHP section
 	rust          # Rust section
-	# haskell     # Haskell Stack section
-	# julia       # Julia section
-	# docker      # Docker section
-	# aws         # Amazon Web Services section
-	# venv        # virtualenv section
-	# conda       # conda virtualenv section
-	# pyenv       # Pyenv section
-	# dotnet      # .NET section
-	# ember       # Ember.js section
 	kubecontext   # Kubectl context section
 	terraform     # Terraform workspace section
 	exec_time     # Execution time
 	line_sep      # Line break
 	battery       # Battery level and status
-	# vi_mode     # Vi-mode indicator
 	jobs          # Background jobs indicator
 	exit_code     # Exit code section
 	char          # Prompt character
 )
 
-# PURE CUSTOMIZATION
+# Pure Prompt Customization
 PURE_PROMPT_SYMBOL="○"
 PURE_PROMPT_DIR_TRUNC_PREFIX="…/"
 PURE_PROMPT_DIR_TRUNC="3"
+PURE_PROMPT_GIT_SYMBOL="\ue725 "
+PURE_PROMPT_KUBECONTEXT_SYMBOL="\ue7b2 "
+PURE_PROMPT_KUBECONTEXT_SHOW=false
+PURE_PROMPT_TERRAFORM_SYMBOL="\uf9fd"
 
 # Comment following line if you do not want red dots to be displayed while waiting for completion
 COMPLETION_WAITING_DOTS="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 plugins=(brew
-					droplr
-					docker
-					docker-compose
-					extract
-					gem
-					gitignore
-					git-open-pr
-					git-extras
-					git-hubflow
-					git-remote-branch
-					git-it-on
-					fzf
-					helm
-					httpie
-					iterm2
-					kubectl
-					oh-my-matrix
-					npm
-					osx
-					react-native
-					vagrant
-					xcode
-					vault
-					zshmarks
-					zsh-brew-services
-					zsh-dropbox
-#				 zsh-iterm-touchbar
-					zsh-autosuggestions
-					zsh-yarn-autocompletions
-					zsh-completions)
+				 droplr
+				 docker
+				 docker-compose
+				 extract
+				 gem
+				 gitignore
+				 git-open-pr
+				 git-extras
+				 git-hubflow
+				 git-remote-branch
+				 git-it-on
+				 fzf
+				 helm
+				 httpie
+				 iterm2
+				 kubectl
+				 oh-my-matrix
+				 npm
+				 osx
+				 react-native
+				 vagrant
+				 xcode
+				 vault
+				 zshmarks
+				 zsh-brew-services
+				 zsh-dropbox
+				 zsh-autosuggestions
+				 zsh-yarn-autocompletions
+				 zsh-completions)
+
+# Load any cached paths upfront
+if [[ -a $ZSH/cache/zsh_plugin_paths ]]; then
+	source $ZSH/cache/zsh_plugin_paths
+fi
 
 # Load them all
-
 source $ZSH/oh-my-zsh.sh
 
 # your project folder that we can `c [tab]` to
@@ -127,8 +120,7 @@ export PROJECTS=~/Development
 
 # use .localrc for SUPER SECRET CRAP that you don't
 # want in your public, versioned repo.
-if [[ -a ~/.localrc ]]
-then
+if [[ -a ~/.localrc ]]; then
   source ~/.localrc
 fi
 
@@ -167,7 +159,9 @@ else
 fi;
 
 # autocompletions for certain aliases
-compdef k='kubectl'
+if [ -x "$(command -v kubectl)" ]; then
+	compdef k='kubectl'
+fi
 
 unset config_files
 

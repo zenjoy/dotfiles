@@ -160,6 +160,9 @@ install_brew_essentials() {
   # A command-line fuzzy finder (https://github.com/junegunn/fzf)
   check "command-line fuzzy finder" "command -v fzf"
   successfully "brew install fzf"
+  if grep -q $ZSH/cache/zsh_plugin_paths "FZF_BASE"; then
+    echo "FZF_BASE=\"$(brew --prefix fzf)\"" >> $ZSH/cache/zsh_plugin_paths
+  fi
 }
 
 install_1password_cli() {
