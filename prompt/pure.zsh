@@ -28,6 +28,7 @@
 PURE_PROMPT_BATTERY_SYMBOL_CHARGING="${PURE_PROMPT_BATTERY_SYMBOL_CHARGING="⇡"}"
 PURE_PROMPT_BATTERY_SYMBOL_DISCHARGING="${PURE_PROMPT_BATTERY_SYMBOL_DISCHARGING="⇣"}"
 PURE_PROMPT_BATTERY_SYMBOL_FULL="${PURE_PROMPT_BATTERY_SYMBOL_FULL="•"}"
+PURE_PROMPT_BATTERY_WARNING_THRESHOLD="${PURE_PROMPT_BATTERY_WARNING_THRESHOLD=20}"
 PURE_PROMPT_BATTERY_THRESHOLD="${PURE_PROMPT_BATTERY_THRESHOLD=10}"
 
 PURE_PROMPT_KUBECONTEXT_SHOW="${PURE_PROMPT_KUBECONTEXT_SHOW=true}"
@@ -376,11 +377,12 @@ prompt_pure_async_battery_info() {
   elif [[ $battery_percent -lt $PURE_PROMPT_BATTERY_THRESHOLD ]]; then
     battery_color="%F{red}"
   else
-    battery_color="%F{yellow}"
+    battery_color="%F{214}"
   fi
 
   # Escape % for display since it's a special character in Zsh prompt expansion
   if [[ $PURE_PROMPT_BATTERY_SHOW == 'always' ||
+				$battery_percent -lt $PURE_PROMPT_BATTERY_WARNING_THRESHOLD ||
         $battery_percent -lt $PURE_PROMPT_BATTERY_THRESHOLD ||
         $PURE_PROMPT_BATTERY_SHOW == 'charged' && $battery_status =~ "(charged|full)" ]]; then
     battery_info="${battery_color}${battery_symbol}${battery_percent}%%"

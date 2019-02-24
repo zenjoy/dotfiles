@@ -161,7 +161,7 @@ setup_iterm() {
     info "iTerm profile: ${BOLD}generating${NORMAL}"
     plutil -convert xml1 "$source_json" -o "$source_plist"
 
-    sed -i "" "s/FuraCodeNerdFontComplete-Medium 14/FuraCodeNerdFontComplete-Medium $font_size/g" "$source_plist"
+    sed -i "" "s/FuraCodeNerdFontComplete-Medium 12/FuraCodeNerdFontComplete-Medium $font_size/g" "$source_plist"
     success "iTerm profile: generated"
 
     if [[ -f "$destination" ]] || [[ -d "$destination" ]]; then
