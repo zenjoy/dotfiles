@@ -40,6 +40,15 @@ else
   NORMAL=""
 fi
 
+function ask_sudo_password() {
+  # Ask for the administrator password upfront
+  _title_ "We'll ask for your password once upfront..."
+  sudo -v
+
+  # Keep-alive: update existing `sudo` time stamp until `osx.sh` has finished
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+}
+
 ###
 # The main spinner process, which contains the loop
 ###

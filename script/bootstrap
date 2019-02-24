@@ -156,6 +156,12 @@ install_homebrew() {
   successfully "brew update > /dev/null"
 }
 
+install_brew_essentials() {
+  # A command-line fuzzy finder (https://github.com/junegunn/fzf)
+  check "command-line fuzzy finder" "command -v fzf"
+  successfully "brew install fzf"
+}
+
 install_1password_cli() {
   check "1password-cli" "brew cask ls 1password-cli" "brew cask upgrade 1password-cli"
   successfully "brew cask install 1password-cli"
@@ -191,12 +197,15 @@ setup_cli_tools() {
   fi
 }
 
+ask_sudo_password
+
 install_zsh
 install_dotfiles
 install_zshplugins
 
 _title_ 'essential tools'
 install_homebrew
+install_brew_essentials
 
 if [[ "$(uname)" == "Darwin" ]]; then
   install_1password_cli

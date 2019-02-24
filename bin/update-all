@@ -1,0 +1,1 @@
+env DOTFILES=$DOTFILES zsh -f $DOTFILES/script/bootstrap

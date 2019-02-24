@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Tldr wrapper to show docs from ~/dotfiles/docs
+#
+# Usage:
+#   help command
+#
+
+root="$(dirname $(dirname $0))"
+md="$root/docs/$1.md"
+
+if [ -f "$md" ]; then
+	tldr --render "$md"
+else
+  if [ -z "$1" ]; then
+    tldr --render "$root/docs/help.md"
+  else
+	  tldr "$@"
+  fi
+fi

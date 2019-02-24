@@ -13,6 +13,8 @@ echo "Running in $0 $BASH_VERSION" >> $LOGFILE
 
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's setup Git and Github ..."
+
+  ask_sudo_password
 fi
 
 setup_gitconfig () {

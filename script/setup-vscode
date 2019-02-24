@@ -9,6 +9,8 @@ LOGFILE=/tmp/dotfiles-setup
 
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's setup Visual Studio Code ..."
+
+  ask_sudo_password
 fi
 
 choose_vscode_extensions_loop() {

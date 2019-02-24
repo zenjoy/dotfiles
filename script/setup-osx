@@ -11,13 +11,12 @@ LOGFILE=/tmp/dotfiles-setup
 
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's setup OSX with some apps ..."
+
+  ask_sudo_password
 fi
 
 setup_macos_defaults() {
   # Ask for the administrator password upfront
-  _title_ "We'll ask for your password once upfront..."
-  sudo -v
-
   user_ask_yn "Would you like to hide icons on your desktop?" "y"
   if [[ "$user_ask_yn_result" == "y" ]]; then
     hide_desktop_icons=1
@@ -91,9 +90,10 @@ install_mac_apps() {
     "tad|Tad|Easily browse csv or tabular data|https://www.tadviewer.com"
     "staruml|StarUML|A sophisticated software modeler|http://staruml.io/"
     "switchhosts|SwitchHosts!|an App for hosts management & switching|https://oldj.github.io/SwitchHosts/"
-    "chrunch|Chrunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
+    "crunch|Crunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
     "imageoptim|ImageOptim|ImageOptim makes images load faster|https://imageoptim.com/mac"
     "imagealpha|ImageAlpha|Reduces file sizes of 24-bit PNG files|https://pngmini.com/"
+    "github|Github Desktop|Github from your desktop|https://desktop.github.com/"
     # Entertainment
     "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
     "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"

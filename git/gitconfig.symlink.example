@@ -2,44 +2,57 @@
 #
 
 [hub]
-        protocol = https
+  protocol = https
 [user]
-        name = AUTHORNAME
-        email = AUTHOREMAIL
+  name = AUTHORNAME
+  email = AUTHOREMAIL
 [credential]
-        helper = GIT_CREDENTIAL_HELPER
+  helper = GIT_CREDENTIAL_HELPER
 [alias]
-        co = checkout
-        promote = !$DOTFILES/bin/git-promote
-        wtf     = !$DOTFILES/bin/git-wtf
-        rank-contributers = !$DOTFILES/bin/git-rank-contributers
-        count   = !git shortlog -sn
-        lg      = !git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
-        ls = ls-tree -r --full-tree HEAD
-
-[color]
-        diff = auto
-        status = auto
-        branch = auto
-        ui = true
-[core]
-        excludesfile = ~/.gitignore
-        editor = code --wait
-        ignorecase = false
+  aa = add --all
+  co = checkout
+  ci = commit -v
+  branches = for-each-ref --sort=-committerdate --format=\"%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
+  promote = !$DOTFILES/bin/git-promote
+  wtf     = !$DOTFILES/bin/git-wtf
+  rank-contributers = !$DOTFILES/bin/git-rank-contributers
+  count   = !git shortlog -sn
+  lg      = !git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+  ls = ls-tree -r --full-tree HEAD
+  st = status
 [apply]
-        whitespace = nowarn
-[mergetool]
-        keepBackup = false
+  whitespace = nowarn
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+  ui = true
+[core]
+  excludesfile = ~/.gitignore
+  editor = code --wait
+  ignorecase = false
+[commit]
+  template = ~/.gitmessage
 [difftool]
-        prompt = false
+  prompt = false
+[diff]
+  colorMoved = zebra
+[fetch]
+  prune = true
 [help]
-        autocorrect = 1
+  autocorrect = 1
+[merge]
+  ff = only
+[mergetool]
+  keepBackup = false
 [push]
-        # See `git help config` (search for push.default)
-        # for more information on different options of the below setting.
-        #
-        # Setting to git 2.0 default to surpress warning message
-        default = simple
+  # See `git help config` (search for push.default)
+  # for more information on different options of the below setting.
+  #
+  # Setting to git 2.0 default to surpress warning message
+  default = simple
+[rebase]
+  autosquash = true
 
 [include]
-        path = ~/.gitconfig.local
+  path = ~/.gitconfig.local

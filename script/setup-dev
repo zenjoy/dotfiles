@@ -13,6 +13,8 @@ echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's get ready for development ..."
+
+  ask_sudo_password
 fi
 
 install_command_line_tools() {

@@ -96,3 +96,20 @@ function show-local-ip() {
 function convert-clipboard-to-plain-text() {
   pbpaste | textutil -convert txt -stdin -stdout -encoding 30 | pbcopy
 }
+
+function dock-wipe-all() {
+  # Wipe all (default) app icons from the Dock
+  # This is only really useful when setting up a new Mac, or if you don’t use
+  # the Dock to launch apps.
+  defaults write com.apple.dock persistent-apps -array
+}
+
+function dock-show-open-apps-only() {
+  # Show only open applications in the Dock
+  defaults write com.apple.dock static-only -bool true
+}
+
+function dock-show-all-apps() {
+  # Show only open applications in the Dock
+  defaults write com.apple.dock static-only -bool false
+}
