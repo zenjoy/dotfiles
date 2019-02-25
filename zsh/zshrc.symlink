@@ -165,6 +165,10 @@ unset config_files
 export CC=/usr/bin/gcc
 unsetopt correct_all
 
+# On an ambiguous completion, instead of listing possibilities
+# or beeping, insert the first match immediately
+setopt menu_complete
+
 # Put local stuff that you want at the end of everything in here
 if [[ -a ~/.localrc.late ]]; then
 	source ~/.localrc.late

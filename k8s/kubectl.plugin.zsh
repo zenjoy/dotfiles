@@ -1,8 +1,6 @@
 # autocompletions for certain aliases
 if [ -x "$(command -v kubectl)" ]; then
   # This command is used a LOT both below and in daily life
-  alias k=kubectl
-
   # Apply a YML file
   alias kaf='kubectl apply -f'
 
@@ -113,6 +111,16 @@ if [ -x "$(command -v kubectl)" ]; then
   }
 
   function kubectl() {
+    if ! type __start_kubectl >/dev/null 2>&1; then
+      lazy_load_kubectl
+
+      compdef k='kubectl'
+    fi
+
+    command kubectl "$@"
+  }
+
+  function k() {
     if ! type __start_kubectl >/dev/null 2>&1; then
       lazy_load_kubectl
 
