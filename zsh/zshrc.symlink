@@ -151,11 +151,14 @@ done
 
 # completion; use cache if updated within 24h
 autoload -Uz compinit
+setopt EXTENDEDGLOB
 if [[ -n $HOME/.zcompdump(#qN.mh+24) ]]; then
+	echo "I am here"
   compinit -d $HOME/.zcompdump;
 else
   compinit -C;
 fi;
+unsetopt EXTENDEDGLOB
 
 unset config_files
 
