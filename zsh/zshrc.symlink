@@ -89,10 +89,8 @@ plugins=(brew
 				 git-remote-branch
 				 git-it-on
 				 fzf
-				 helm
 				 httpie
 				 iterm2
-				 kubectl
 				 oh-my-matrix
 				 npm
 				 osx
@@ -158,11 +156,6 @@ if [[ -n $HOME/.zcompdump(#qN.mh+24) ]]; then
 else
   compinit -C;
 fi;
-
-# autocompletions for certain aliases
-if [ -x "$(command -v kubectl)" ]; then
-	compdef k='kubectl'
-fi
 
 unset config_files
 
