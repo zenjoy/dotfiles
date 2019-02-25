@@ -104,6 +104,7 @@ plugins=(brew
 				 zsh-brew-services
 				 zsh-dropbox
 				 zsh-autosuggestions
+				 #zsh-iterm-touchbar
 				 zsh-yarn-autocompletions
 				 zsh-completions)
 
