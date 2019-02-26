@@ -98,6 +98,7 @@ install_mac_apps() {
     "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
     "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
     "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
+    "brooklyn|Brooklyn|Screensaver with very nice visuals|https://github.com/pedrommcarrasco/Brooklyn"
   )
 
   notice_left "${WHITE}We recommend installing following MacOS apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the site for the app)${NORMAL}:\n\n"

@@ -9,9 +9,7 @@ if command -v gls >/dev/null 2>&1; then
   alias la='gls -A --color'
 fi
 
-if command -v colorls >/dev/null 2>&1; then
-  alias lc="colorls -lA --sd"
-fi
+alias lc="colorls -A --group-directories-first"
 
 alias k9="killall -9"
 

@@ -188,6 +188,9 @@ check "undollar (undollar strips the dollar sign from copy/pasted commands)" "co
 check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill-tabs"
   successfully "npm install -g kill-tabs"
 
+check "autojump (cd command that learns where you went)" "command -v autojump"
+  successfully "brew install autojump"
+
 ## INFORMATION / NEWS TOOLS ##
 
 _title_ "Information & Search:"
