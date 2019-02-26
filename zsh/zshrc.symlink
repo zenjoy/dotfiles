@@ -54,6 +54,7 @@ plugins=(alias-tips
 				 fzf
 				 httpie
 				 iterm2
+				 iosctl
 				 oh-my-matrix
 				 npm
 				 osx
@@ -64,7 +65,6 @@ plugins=(alias-tips
 				 zshmarks
 				 zsh-brew-services
 				 zsh-autosuggestions
-				 zsh-diff-so-fancy
 				 #zsh-iterm-touchbar
 				 zsh-yarn-autocompletions
 				 zsh-completions)
@@ -116,7 +116,6 @@ done
 autoload -Uz compinit
 setopt EXTENDEDGLOB
 if [[ -n $HOME/.zcompdump(#qN.mh+24) ]]; then
-	echo "I am here"
   compinit -d $HOME/.zcompdump;
 else
   compinit -C;

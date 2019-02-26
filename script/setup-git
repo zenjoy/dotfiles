@@ -17,6 +17,11 @@ if [[ $bootstrapping -ne 1 ]]; then
   ask_sudo_password
 fi
 
+install_diff_so_fancy() {
+  check "diff-so-fancy (beautiful git diff)" "command -v diff-so-fancy"
+  successfully "brew install diff-so-fancy"
+}
+
 setup_gitconfig () {
   _title_ 'Checking Git Config'
   info 'setup gitconfig'
@@ -144,6 +149,7 @@ ssh_auth_loop() {
   fi
 }
 
+install_diff_so_fancy
 setup_gitconfig
 maybe_generate_ssh_keys
 register_ssh_keys

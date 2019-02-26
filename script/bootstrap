@@ -75,10 +75,10 @@ install_zshplugins () {
                       "zsh-users/zsh-autosuggestions"
                       "amstrad/oh-my-matrix"
                       "vasyharan/zsh-brew-services"
-                      "so-fancy/diff-so-fancy"
                       "zsh-users/zsh-completions"
                       "g-plane/zsh-yarn-autocompletions"
                       "djui/alias-tips"
+                      "obayer/iosctl"
                       "peterhurford/git-it-on.zsh")
 
   declare -a rename=("git-it-on.zsh/git-it-on")
