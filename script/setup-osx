@@ -96,6 +96,8 @@ install_mac_apps() {
     "github|Github Desktop|Github from your desktop|https://desktop.github.com/"
     # Entertainment
     "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
+    "motrix|Motrix|A full-featured download manager.|https://motrix.app"
+    "iina|IINA|The modern media player for macOS|https://iina.io"
     "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
     "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
     "brooklyn|Brooklyn|Screensaver with very nice visuals|https://github.com/pedrommcarrasco/Brooklyn"
