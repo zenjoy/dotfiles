@@ -812,12 +812,7 @@ prompt_pure_async_callback() {
 			;;
 		prompt_pure_async_battery_info)
 			typeset -g prompt_pure_battery_info
-
-			# parse output (z) and unquote as array (Q@)
-			if [[ -n $output ]]; then
-				prompt_pure_battery_info=$output
-			fi
-
+			prompt_pure_battery_info=$output
 			do_render=1
 			;;
 		prompt_pure_async_vcs_info)
