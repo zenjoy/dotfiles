@@ -8,6 +8,9 @@ LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
 
+# ensure we capture unexpected exits
+trap exit_warning EXIT
+
 echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
 if [[ $bootstrapping -ne 1 ]]; then
@@ -162,7 +165,10 @@ install_docker
 install_vagrant
 setup_vscode
 
+_spinner_stop
+
+trap finish EXIT
+
 if [[ $bootstrapping -ne 1 ]]; then
-  trap finish EXIT
   _title_ "Done... Happy Coding!"
 fi

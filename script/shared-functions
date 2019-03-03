@@ -66,12 +66,6 @@ function _spinner_process() {
 
   # Create a never-ending loop
   while [[ 1 -eq 1 ]]; do
-    # If the statefile has been removed, exit the script
-    # to prevent it from being orphaned
-    if [[ ! -f $statefile ]]; then
-      exit 1
-    fi
-
     # Check for the existence of the parent process
     $(kill -s 0 $pid 2&>/dev/null)
 
@@ -81,9 +75,16 @@ function _spinner_process() {
       return 1
     fi
 
+    # If the statefile has been removed, exit the script
+    # to prevent it from being orphaned
+    if [ ! -f $statefile ]; then
+      exit 1
+    fi
+
+
     # Load the current state, and parse it to get
     # the message to be displayed
-    state=($(cat $statefile))
+    state=($(cat $statefile 2>/dev/null))
     state=("${state[@]:1}")
     msg="${state[@]}"
 
@@ -109,7 +110,6 @@ function _spinner_spin() {
   lim=$(tput cols)
 
   # Clear the line and move the cursor to the start
-  printf ' %.0s' {1..$lim}
   printf "\r"
 
   # Echo the current frame and message, and overwrite
@@ -132,28 +132,30 @@ function _spinner_spin() {
 ###
 function _spinner_stop() {
   local dir statefile state pid
-  tput cnorm
 
   # Find the directory and load the statefile
   dir="$HOME/.dotfiles/.spinner"
   statefile="$dir/$PPID"
 
-
   # If the statefile does not exist, raise an error.
   # The spinner process itself performs the same check
   # and kills itself, so it should never be orphaned
-  if [[ ! -f $statefile ]]; then
+  if [ ! -f $statefile ]; then
+    tput cnorm
+
+    # Clear the line and move the cursor to the start
+    printf ' %.0s' {1..$(tput cols)}
+    printf "\r"
+
     return 1
   fi
 
   # Get the current state, and parse it to find the PID
   # of the spinner process
-  state=($(cat $statefile))
-  pid=${state[0]}
-
-  # Clear the line and move the cursor to the start
-  printf ' %.0s' {1..$(tput cols)}
-  printf "\r"
+  state=($(cat $statefile 2>/dev/null))
+  if [[ ! -z $state ]]; then
+    pid=${state[0]}
+  fi
 
   # If a PID has been found, kill the process
   if [[ ! -z $pid ]]; then
@@ -161,6 +163,12 @@ function _spinner_stop() {
     wait "$pid" 2>/dev/null
   fi
   unset pid
+
+  tput cnorm
+
+  # Clear the line and move the cursor to the start
+  tput el
+  printf "\r"
 
   # Remove the statefile
   rm $statefile
@@ -178,18 +186,18 @@ function _spinner_update() {
   # If the statefile does not exist, raise an error.
   # The spinner process itself performs the same check
   # and kills itself, so it should never be orphaned
-  if [[ ! -f $statefile ]]; then
+  if [ ! -f $statefile ]; then
     # echo '\033[0;31mRevolver process could not be found\033[0;m'
     return 1
   fi
 
   # Get the current state, and parse it to find the PID
   # of the spinner process
-  state=($(cat $statefile))
+  state=($(cat $statefile 2>/dev/null))
   pid=${state[0]}
 
   # Clear the line and move the cursor to the start
-  printf ' %.0s' {1..$(tput cols)}
+  tput el
   printf "\r"
 
   # Echo the new message to the statefile, to be
@@ -214,7 +222,7 @@ function _spinner_start() {
   statefile="$dir/$PPID"
 
   touch $statefile
-  if [[ ! -f $statefile ]]; then
+  if [ ! -f $statefile ]; then
     echo '\033[0;31mSpinner process could not create state file\033[0;m'
     echo "Check that the directory $dir is writable"
     return 1
@@ -227,7 +235,27 @@ function _spinner_start() {
   echo "$! $msg" > $statefile
 }
 
+function clean_spinner_leftovers() {
+  local dir spinners pid
+
+  dir="$HOME/.dotfiles/.spinner"
+  if [[ -d $dir ]]; then
+    spinners=($(ls "$dir"))
+    for pid in "${spinners[@]}"
+    do
+      kill "$pid" >/dev/null 2>&1
+      wait "$pid" 2>/dev/null
+      rm -rf "$HOME/.dotfiles/.spinner/$pid"
+    done
+
+
+  fi
+}
+
 function header() {
+  # as this is called at the start of each script, cleanup spinner leftover
+  clean_spinner_leftovers
+
   headertitle="$*"
   headertitle_length=${#headertitle}
   padding=$(expr 66 - $headertitle_length)
@@ -255,28 +283,28 @@ function header() {
 
 
 # for printing standard echoish messages
-notice () {
+notice() {
   printf "        $1\n"
 }
 
-notice_left () {
+notice_left() {
   printf "$1\n"
 }
 
 # for replacing previous input prompts with success messages
-success () {
+success() {
   _spinner_stop
   printf "\r\033[2K [ \033[00;32mOK\033[0m ] $*\n"
 }
 
 # for printing logging messages that *may* be replaced by
 # a success/warn/error message
-status () {
+status() {
   _spinner_update "$1"
   #printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
 }
 
-info () {
+info() {
   proceed=1
   _spinner_start "$1"
   #printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"
@@ -286,7 +314,7 @@ info () {
   fi
 }
 
-info_no_spinner () {
+info_no_spinner() {
   proceed=1
   _spinner_stop
   printf "\r\033[2K [ \033[00;34m..\033[0m ] $1"

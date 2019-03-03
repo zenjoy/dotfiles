@@ -14,6 +14,9 @@ echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
 . $DOTFILES_ROOT/script/shared-functions
 
+# ensure we capture unexpected exits
+trap exit_warning EXIT
+
 header "Let's install our dotfiles..."
 
 update_path() {
@@ -62,14 +65,17 @@ install_homebrew() {
   #successfully "sudo chgrp -R staff /usr/local/*; sudo chmod -R g+rwxXs /usr/local/*"
 
   info "updating (but not upgrading) homebrew" "done"
-  successfully "brew update > /dev/null"
+  successfully "brew update"
 }
 
 install_brew_essentials() {
   # A command-line fuzzy finder (https://github.com/junegunn/fzf)
   check "command-line fuzzy finder" "command -v fzf"
   successfully "brew install fzf"
-  if ! ls "$HOME/.oh-my-zsh/cache/zsh_plugin_paths" &> /dev/null || grep -q "$HOME/.oh-my-zsh/cache/zsh_plugin_paths" "FZF_BASE"; then
+
+  if ! ls "$HOME/.oh-my-zsh/cache/zsh_plugin_paths" > /dev/null 2>&1 || grep -q "$HOME/.oh-my-zsh/cache/zsh_plugin_paths" "FZF_BASE" > /dev/null 2>&1; then
+    tput el
+    printf "\r"
     echo "FZF_BASE=\"$(brew --prefix fzf)\"" >> $HOME/.oh-my-zsh/cache/zsh_plugin_paths
   fi
 }

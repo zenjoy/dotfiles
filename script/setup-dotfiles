@@ -2,11 +2,15 @@
 
 set +e
 proceed=1
+result=0
 
 DOTFILES_ROOT="$HOME/.dotfiles"
 LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
+
+# ensure we capture unexpected exits
+trap exit_warning EXIT
 
 echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
@@ -108,7 +112,8 @@ install_zsh
 install_dotfiles
 install_zshplugins
 
+trap finish EXIT
+
 if [[ $bootstrapping -ne 1 ]]; then
-  trap finish EXIT
   _title_ "Done... Enjoy!"
 fi

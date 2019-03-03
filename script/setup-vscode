@@ -7,6 +7,9 @@ LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
 
+# ensure we capture unexpected exits
+trap exit_warning EXIT
+
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's setup Visual Studio Code ..."
 
@@ -277,7 +280,8 @@ setup_vscode() {
 
 setup_vscode
 
+trap finish EXIT
+
 if [[ $bootstrapping -ne 1 ]]; then
-  trap finish EXIT
   _title_ "Done... Happy Coding!"
 fi

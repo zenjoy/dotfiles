@@ -9,6 +9,9 @@ LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
 
+# ensure we capture unexpected exits
+trap exit_warning EXIT
+
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's setup OSX with some apps ..."
 
@@ -217,7 +220,8 @@ install_appstore_apps
 setup_iterm
 setup_vscode
 
+trap finish EXIT
+
 if [[ $bootstrapping -ne 1 ]]; then
-  trap finish EXIT
   _title_ "Done... Have fun!"
 fi
