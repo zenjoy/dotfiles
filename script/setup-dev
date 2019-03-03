@@ -2,7 +2,6 @@
 
 set +e
 proceed=1
-result=0
 
 DOTFILES_ROOT="$HOME/.dotfiles"
 LOGFILE=/tmp/dotfiles-setup

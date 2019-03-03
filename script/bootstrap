@@ -25,98 +25,6 @@ update_path() {
   export PATH="/usr/local/bin:/usr/local/sbin:$DOTFILES/bin:$PATH"
 }
 
-install_zsh() {
-  _title_ 'Checking ZSH environment:'
-  check "zsh" "command -v zsh"
-  if [[ $proceed -ne 0 ]]; then
-    if [[ "$(uname)" == "Darwin" ]]; then
-      successfully "brew install zsh"
-    elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
-      successfully "sudo apt-get -y install zsh"
-    fi
-  fi
-
-  check "oh-my-zsh" "ls ~/.oh-my-zsh" "cd ~/.oh-my-zsh && git pull"
-  if [[ $proceed -ne 0 ]]; then
-    info_no_spinner "oh-my-zsh : ${BOLD}installing${NORMAL} (please provide password when asked)\n\n"
-    sudo -v
-    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -o /tmp/omz.sh >> $LOGFILE 2>&1;
-    sed -i''  '/echo/d' /tmp/omz.sh
-    sed -i''  '/env zsh/d' /tmp/omz.sh
-    sh /tmp/omz.sh | tee $LOGFILE;
-    rm -rf /tmp/omz.sh
-    echo ''
-    success "oh-my-zsh : ${BOLD}installed${NORMAL}"
-  fi
-}
-
-install_dotfiles () {
-  _title_ 'Installing dotfiles:'
-
-  for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
-  do
-    info "$source"
-    link_dotfile "$source"
-  done
-
-  info "Fix OSX zsh environment bug"
-  if [[ -f /etc/{zshenv} ]]; then
-    successfully "sudo mv /etc/{zshenv,zprofile}"
-  else
-    success "Fix OSX zsh environment bug : not needed"
-  fi
-}
-
-install_zshplugins () {
-  _title_ 'Installing ZSH plugins'
-
-  declare -a plugins=("jocelynmallon/zshmarks"
-                      "iam4x/zsh-iterm-touchbar"
-                      "zsh-users/zsh-autosuggestions"
-                      "amstrad/oh-my-matrix"
-                      "vasyharan/zsh-brew-services"
-                      "zsh-users/zsh-completions"
-                      "g-plane/zsh-yarn-autocompletions"
-                      "djui/alias-tips"
-                      "obayer/iosctl"
-                      "peterhurford/git-it-on.zsh")
-
-  declare -a rename=("git-it-on.zsh/git-it-on")
-
-  for plugin in "${plugins[@]}"
-  do
-    source="git://github.com/${plugin}.git"
-    directory=${plugin#*/}
-    for gsub in "${rename[@]}"
-    do
-      IFS='/' read -ra replacements <<< "$gsub"
-      pattern="${replacements[0]}"
-      result="${replacements[1]}"
-      directory=${directory/$pattern/$result}
-    done
-    target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}
-
-    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}" ]
-    then
-      info "Cloning plugin ${source} into ${target/$HOME/'~'}}"
-      eval "git clone ${source} ${target}" &> /dev/null
-      success "pluging ${BOLD}`basename $target`${NORMAL} : installed"
-    else
-      success "skipping plugin ${BOLD}`basename $target`${NORMAL}: already installed"
-    fi
-  done
-
-  target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt
-  if [[ ! -d "$target" ]]; then
-    info "Installing ${BOLD}spaceship-prompt${NORMAL} theme"
-    eval "git clone git://github.com/denysdovhan/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt" &> /dev/null
-    eval "ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme" &> /dev/null
-    success "Installed spaceship-prompt theme. Enjoy! (See https://git.io/fpxOn for all customization options: put this in your ~/.localrc)"
-  else
-    success "skipping theme ${BOLD}`basename $target`${NORMAL}: already installed"
-  fi
-}
-
 install_homebrew() {
   check "homebrew" "command -v brew"
   if [[ "$(uname)" == "Darwin" ]]; then
@@ -166,10 +74,15 @@ install_brew_essentials() {
   fi
 }
 
+setup_dotfiles() {
+  bootstrapping=1 $HOME/.dotfiles/script/setup-dotfiles
+}
+
 install_1password_cli() {
   check "1password-cli" "brew cask ls 1password-cli" "brew cask upgrade 1password-cli"
   successfully "brew cask install 1password-cli"
 }
+
 
 setup_macos() {
   user_ask_yn "Want to setup macOS (install default apps and plugins)?" "y"
@@ -202,10 +115,7 @@ setup_cli_tools() {
 }
 
 ask_sudo_password
-
-install_zsh
-install_dotfiles
-install_zshplugins
+setup_dotfiles
 
 _title_ 'essential tools'
 install_homebrew

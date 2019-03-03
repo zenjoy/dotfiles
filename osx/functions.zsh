@@ -64,6 +64,7 @@ function enable-touchid-sudo() {
     # (where 1 is the number of backups, so that rerunning this doesn't make you lose your original)
     file=/etc/pam.d/sudo
     # suppress file not found errors
+    # suppress file not found errors
     exec 2>/dev/null
     bak=$(dirname $file)/$(basename $file).backup.$(echo $(ls $(dirname $file)/$(basename $file).backup* | wc -l))
     cp $file $bak

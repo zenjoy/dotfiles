@@ -25,8 +25,8 @@ cd "$DOTFILES"
 if git pull --rebase --stat origin master
 then
   printf '%s' "$GREEN"
-  printf '%s\n' '               _                   _       _    __ _ _    '       
-  printf '%s\n' '              (_)                 | |     | |  / _(_) |    '      
+  printf '%s\n' '               _                   _       _    __ _ _    '
+  printf '%s\n' '              (_)                 | |     | |  / _(_) |    '
   printf '%s\n' ' _______ _ __  _  ___  _   _    __| | ___ | |_| |_ _| | ___  ___ '
   printf '%s\n' "|_  / _ \ '_ \| |/ _ \| | | |  / _\` |/ _ \\| __|  _| | |/ _ \\/ __|"
   printf '%s\n' ' / /  __/ | | | | (_) | |_| | | (_| | (_) | |_| | | | |  __/\__ \'
@@ -34,6 +34,7 @@ then
   printf '%s\n' '             _/ |       __/ |                                    '
   printf '%s\n' '            |__/       |___/'
   printf "${BLUE}\n%s\n" "Hooray! Your ~/.dotfiles have been updated and/or is at the current version."
+  printf "${BLUE}\n%s ${BOLD}%s${NORMAL}.\n" "Want to check if everything is nicely installed? Run" "update-all"
 else
   printf "${RED}%s${NORMAL}\n" 'There was an error updating. Try again later?'
 fi

@@ -397,6 +397,31 @@ link_dotfile() {
   fi
 }
 
+link_config() {
+  source=$1
+  source_filename="${source%.*}"
+  dest="$HOME/.config${source_filename/$DOTFILES\/config/}"
+  dest_directory=$(dirname "${dest}")
+
+  mkdir -p $dest_directory
+
+  if [[ -f $dest ]] || [[ -d $dest ]]; then
+    if [[ "$(readlink $dest)" -ef "$source" ]]; then
+      success "${BOLD}${dest/$HOME/'~'}${NORMAL} symlinked"
+    else
+      info "File already exists: `basename $source`. I'll back it up at ${BOLD}${dest/$HOME/'~'}.backup${NORMAL}"
+      if [[ -f $dest\.backup ]] || [[ -d $dest\.backup ]]; then
+        rm -rf $dest\.backup
+      fi
+      mv $dest $dest\.backup
+      success "moved ${dest/$HOME/'~'} to ${dest/$HOME/'~'}.backup"
+      link_files $source $dest
+    fi
+  else
+    link_files $source $dest
+  fi
+}
+
 link_files () {
   ln -s "$1" "$2"
   filename=$(basename "$1")

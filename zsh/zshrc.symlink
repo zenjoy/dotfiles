@@ -1,6 +1,15 @@
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
 
+# ensure the correct locales are used
+export LANG="nl_BE.UTF-8"
+export LC_COLLATE="nl_BE.UTF-8"
+export LC_CTYPE="nl_BE.UTF-8"
+export LC_MESSAGES="nl_BE.UTF-8"
+export LC_MONETARY="nl_BE.UTF-8"
+export LC_NUMERIC="nl_BE.UTF-8"
+export LC_TIME="nl_BE.UTF-8"
+
 if [[ -a "$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist" ]]; then
 	echo -e "\033]50;SetProfile=Zenjoy\a"
 fi
