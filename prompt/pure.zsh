@@ -668,7 +668,7 @@ prompt_pure_async_git_arrows() {
 }
 
 prompt_pure_async_autojump() {
-	if [ $AUTOJUMP_SOURCED -eq 1 ]; then
+	if [[ $AUTOJUMP_SOURCED -eq 1 ]]; then
 		if [[ -f "${AUTOJUMP_ERROR_PATH}" ]]; then
 				autojump --add "$(pwd)" >/dev/null 2>>${AUTOJUMP_ERROR_PATH} &!
 		else
@@ -726,7 +726,7 @@ prompt_pure_async_tasks() {
 	async_job "prompt_pure" prompt_pure_async_docker_compose
 
 	# if autojump is loaded, add the current dir asynchronously
-	if [ $AUTOJUMP_SOURCED -eq 1 ]; then
+	if [[ $AUTOJUMP_SOURCED -eq 1 ]]; then
 		async_job "prompt_pure" prompt_pure_async_autojump
 	fi
 
@@ -992,7 +992,7 @@ prompt_pure_state_setup() {
 }
 
 prompt_pure_autojump_setup() {
-	if [ $AUTOJUMP_SOURCED -eq 1 ]; then
+	if [[ $AUTOJUMP_SOURCED -eq 1 ]]; then
 		typeset -gaU chpwd_functions
 		delete=(autojump_chpwd)
 		new_chpwd_functions=()
