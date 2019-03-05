@@ -80,7 +80,9 @@ copy_ssh_key () {
     pbcopy < "$source"
   else
     printf "\nSorry, I could not copy the public key to the clipboard automatically. Please copy following key:\n\n"
+    tput smam # enable line-wrapping
     cat "$source"
+    tput rmam # prevent wrapping around again
     echo ""
   fi
 }
