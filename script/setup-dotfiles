@@ -109,9 +109,18 @@ install_zshplugins () {
   done
 }
 
+check_os () {
+  # the ubuntu subsystem on windows works a bit different
+  if [[ $(uname -r) =~ Microsoft$ ]]; then
+    touch "$DOTFILES_ROOT/.multiuser"
+    export ZSH_DISABLE_COMPFIX="true"
+  fi
+}
+
 install_zsh
 install_dotfiles
 install_zshplugins
+check_os
 
 trap finish EXIT
 
