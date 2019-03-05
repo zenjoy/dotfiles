@@ -125,7 +125,7 @@ setup_dotfiles
 
 _title_ 'essential tools'
 install_homebrew
-install_brew_essentials
+install_command_line_essentials
 
 if [[ "$(uname)" == "Darwin" ]]; then
   install_1password_cli
