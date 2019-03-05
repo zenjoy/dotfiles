@@ -176,6 +176,7 @@ export YARN_ENABLED=true
 
 # Fix direcory autocompletion when using autosuggestions
 ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(expand-or-complete)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
 
 # Needed to run Helm Secrets
 if [[ -a /usr/local/opt/gnu-getopt/bin/getopt ]]
