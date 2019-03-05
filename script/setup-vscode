@@ -239,7 +239,7 @@ install_vscode_extensions() {
 
   _title_ "Installing Everything"
 
-  installed_extensions=$(/usr/local/bin/code --list-extensions)
+  installed_extensions=$(code --list-extensions)
 
   for extension in "${chosen_extensions[@]}"; do
     IFS='|' read -r -a extension_info <<< "$extension"
@@ -253,7 +253,7 @@ install_vscode_extensions() {
     else
       status "${extension_name} extension : installing"
       message="${extension_name} extension"
-      successfully "/usr/local/bin/code --force --install-extension $extension_code" "perhaps it is already installed."
+      successfully "code --force --install-extension $extension_code" "perhaps it is already installed."
     fi
   done
 }
