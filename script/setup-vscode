@@ -15,7 +15,7 @@ if [[ $bootstrapping -ne 1 ]]; then
 
   ask_sudo_password
 
-  notice_left "Feel free to follow the details by running:"
+  notice_left "\nFeel free to follow the details by running:"
   notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
 fi
 
