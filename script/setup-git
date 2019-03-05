@@ -67,15 +67,20 @@ maybe_generate_ssh_keys () {
 }
 
 copy_ssh_key () {
-  if [[ -e ~/.ssh/id_rsa ]]
-  then
-    pbcopy < ~/.ssh/id_rsa.pub
-  elif [[ -e ~/.ssh/id_dsa ]]
-  then
-    pbcopy < ~/.ssh/id_dsa.pub
+  if [[ -e ~/.ssh/id_rsa ]]; then
+    source="$HOME/.ssh/id_rsa"
+  elif [[ -e ~/.ssh/id_dsa ]]; then
+    source="$HOME/.ssh/id_dsa"
   else
     error "no ssh public keys found"
     exit
+  fi
+
+  if command -v pbcopy >/dev/null 2>&1; then
+    pbcopy < "$source"
+  else
+    printf "\nSorry, I could not copy the public key to the clipboard automatically. Please copy following key:\n\n"
+    printf "$source\n"
   fi
 }
 
@@ -130,7 +135,11 @@ ssh_auth_loop() {
     case $ssh_option in
       o|O)
         success "opening GitHub's webpage to register your key!"
-        open $service_url
+        if [[ $(uname -r) =~ Microsoft$ ]]; then
+          explorer.exe $service_url
+        else
+          open $service_url
+        fi
         ssh_auth_loop $service_url "false"
         ;;
       c|C)
