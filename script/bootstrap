@@ -120,8 +120,16 @@ setup_cli_tools() {
   fi
 }
 
+setup_locale() {
+  if [[ "`uname -s`" != "Darwin" ]]; then
+    sudo locale-gen "nl_BE.UTF-8"
+  fi
+}
+
 ask_sudo_password
+
 setup_dotfiles
+setup_locale
 
 _title_ 'essential tools'
 install_homebrew

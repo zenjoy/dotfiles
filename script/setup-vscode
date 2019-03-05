@@ -258,7 +258,7 @@ install_vscode_extensions() {
   done
 }
 
-setup_vscode() {
+setup_vscode_macos() {
   if open -R -g -a 'Visual Studio Code' > /dev/null; then
     _title_ "Setup Visual Studio Code"
 
@@ -278,7 +278,19 @@ setup_vscode() {
   fi
 }
 
-setup_vscode
+setup_vscode_other() {
+  if command -v code >/dev/null 2>&1; then
+    _title_ "Setup Visual Studio Code"
+
+    install_vscode_extensions
+  fi
+}
+
+if [[ "`uname -s`" == "Darwin" ]]; then
+  setup_vscode_macos
+else
+  setup_vscode_other
+fi
 
 trap finish EXIT
 
