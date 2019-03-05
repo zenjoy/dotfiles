@@ -80,7 +80,8 @@ copy_ssh_key () {
     pbcopy < "$source"
   else
     printf "\nSorry, I could not copy the public key to the clipboard automatically. Please copy following key:\n\n"
-    printf "$source\n"
+    cat "$source"
+    echo ""
   fi
 }
 
