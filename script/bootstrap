@@ -101,7 +101,7 @@ setup_macos() {
 }
 
 setup_development() {
-  user_ask_yn "Want to setup macOS to do development (node, ruby, etc)?" "y"
+  user_ask_yn "Want to setup $(machine_type) to do development (node, ruby, etc)?" "y"
   if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's go for it... You may be asked for your password.\n"
     bootstrapping=1 $HOME/.dotfiles/script/setup-dev

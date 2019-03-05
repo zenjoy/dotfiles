@@ -497,6 +497,18 @@ ensure_mac_os() {
   fi
 }
 
+machine_type() {
+  if [[ "`uname -s`" == "Darwin" ]]; then
+    echo "macOS"
+  else
+    if [[ $(uname -r) =~ Microsoft$ ]]; then
+      echo "Ubuntu on Windows"
+    else
+      echo "your machine"
+    fi
+  fi
+}
+
 # If we exit unexpectedly, log this warning.
 # Scripts should call "trap exit_warning EXIT" near the top to enable,
 # then "trap finish EXIT" just before exiting on success.

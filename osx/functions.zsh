@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+if [[ "`uname -s`" != "Darwin" ]]; then
+  return
+fi
+
 function enable-safari-dev-menu() {
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true && \
     defaults write com.apple.Safari IncludeDevelopMenu -bool true && \
@@ -113,4 +117,17 @@ function dock-show-open-apps-only() {
 function dock-show-all-apps() {
   # Show only open applications in the Dock
   defaults write com.apple.dock static-only -bool false
+}
+
+code () {
+  if [ ! -f "/usr/local/bin/code" ]; then
+    if ! open -R -g -a 'Visual Studio Code' > /dev/null; then
+      echo "Visual Studio Code is not installed."
+    else
+      ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "/usr/local/bin/code"
+      /usr/local/bin/code $*
+    fi
+  fi
+
+  /usr/local/bin/code $*
 }
