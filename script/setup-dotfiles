@@ -27,7 +27,7 @@ install_zsh() {
     if [[ "$(uname)" == "Darwin" ]]; then
       successfully "brew install zsh"
     elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
-      successfully "sudo apt-get -y install zsh"
+      successfully "sudo apt-get update && sudo apt-get -y install zsh"
     fi
   fi
 
