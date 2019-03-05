@@ -60,11 +60,13 @@ install_dotfiles () {
     link_config "$source"
   done
 
-  info "Fix OSX zsh environment bug"
-  if [[ -f /etc/{zshenv} ]]; then
-    successfully "sudo mv /etc/{zshenv,zprofile}"
-  else
-    success "Fix OSX zsh environment bug : not needed"
+  if [[ "`uname -s`" == "Darwin" ]]; then
+    info "Fix OSX zsh environment bug"
+    if [[ -f /etc/{zshenv} ]]; then
+      successfully "sudo mv /etc/{zshenv,zprofile}"
+    else
+      success "Fix OSX zsh environment bug : not needed"
+    fi
   fi
 }
 
