@@ -46,8 +46,7 @@ PURE_PROMPT_TERRAFORM_SYMBOL="\uf9fd"
 COMPLETION_WAITING_DOTS="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-plugins=(alias-tips
-				 brew
+plugins=(brew
 				 droplr
 				 docker
 				 docker-compose
@@ -85,6 +84,11 @@ fi
 
 if [[ ! -z "$FZF_BASE" ]]; then
 	plugins+=('fzf')
+fi
+
+# only load alias tips when python is installed
+if command -v python >/dev/null 2>&1; then
+	plugins+=('alias-tips')
 fi
 
 # Load them all
