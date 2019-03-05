@@ -84,6 +84,8 @@ copy_ssh_key () {
     cat "$source"
     tput rmam # prevent wrapping around again
     echo ""
+    echo "(select the key and right click to copy)"
+    echo ""
   fi
 }
 
