@@ -60,7 +60,6 @@ plugins=(alias-tips
 				 git-hubflow
 				 git-remote-branch
 				 git-it-on
-				 fzf
 				 httpie
 				 iterm2
 				 iosctl
@@ -75,12 +74,17 @@ plugins=(alias-tips
 				 zsh-brew-services
 				 zsh-autosuggestions
 				 #zsh-iterm-touchbar
+				 zsh-syntax-highlighting
 				 zsh-yarn-autocompletions
 				 zsh-completions)
 
 # Load any cached paths upfront
 if [[ -a $ZSH/cache/zsh_plugin_paths ]]; then
 	source $ZSH/cache/zsh_plugin_paths
+fi
+
+if [[ ! -z "$FZF_BASE" ]]; then
+	plugins+=('fzf')
 fi
 
 # Load them all
@@ -129,12 +133,10 @@ if [[ -n $HOME/.zcompdump(#qN.mh+24) ]]; then
 else
   compinit -C;
 fi;
-unsetopt EXTENDEDGLOB
 
 unset config_files
 
 export CC=/usr/bin/gcc
-unsetopt correct_all
 
 # Put local stuff that you want at the end of everything in here
 if [[ -a ~/.localrc.late ]]; then

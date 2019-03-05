@@ -80,6 +80,7 @@ install_zshplugins () {
                       "g-plane/zsh-yarn-autocompletions"
                       "djui/alias-tips"
                       "obayer/iosctl"
+                      "zsh-users/zsh-syntax-highlighting"
                       "peterhurford/git-it-on.zsh")
 
   declare -a rename=("git-it-on.zsh/git-it-on")

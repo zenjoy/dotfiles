@@ -68,7 +68,7 @@ install_homebrew() {
   successfully "brew update"
 }
 
-install_brew_essentials() {
+install_command_line_essentials() {
   # A command-line fuzzy finder (https://github.com/junegunn/fzf)
   check "command-line fuzzy finder" "command -v fzf"
   successfully "brew install fzf"
