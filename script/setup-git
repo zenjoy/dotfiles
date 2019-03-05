@@ -68,9 +68,9 @@ maybe_generate_ssh_keys () {
 
 copy_ssh_key () {
   if [[ -e ~/.ssh/id_rsa ]]; then
-    source="$HOME/.ssh/id_rsa"
+    source="$HOME/.ssh/id_rsa.pub"
   elif [[ -e ~/.ssh/id_dsa ]]; then
-    source="$HOME/.ssh/id_dsa"
+    source="$HOME/.ssh/id_dsa.pub"
   else
     error "no ssh public keys found"
     exit
