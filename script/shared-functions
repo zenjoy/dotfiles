@@ -281,6 +281,23 @@ function header() {
   printf '%s\n' "$NORMAL"
 }
 
+function mini_header() {
+  # as this is called at the start of each script, cleanup spinner leftover
+  clean_spinner_leftovers
+
+  headertitle="$*"
+  headertitle_length=${#headertitle}
+  padding=$(expr 66 - $headertitle_length)
+  padding=$(expr $padding / 2 - 1)
+  printf '%s' "$DIM"
+  printf '%s\n' "================================================================="
+  printf '%s' "$NORMAL$BOLD"
+  printf "%*s%s%*s\n" $padding "" "$headertitle" $padding ""
+  printf '%s' "$DIM"
+  printf '%s\n' "================================================================="
+  printf '%s\n' "$NORMAL"
+}
+
 
 # for printing standard echoish messages
 notice() {

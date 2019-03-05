@@ -17,7 +17,11 @@ echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 # ensure we capture unexpected exits
 trap exit_warning EXIT
 
-header "Let's install our dotfiles..."
+if [[ $UPDATING -ne 1 ]]; then
+  header "Let's install our dotfiles..."
+else
+  mini_header "Let's update your dotfiles..."
+fi
 
 update_path() {
   # We need /usr/local/bin to come before /usr/bin on the path, to

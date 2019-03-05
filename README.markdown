@@ -62,13 +62,19 @@ or to install new additions to the dotfiles.
 
 Run following commands from anywhere to install:
 
+- **update-dotfiles**: update your local copy of this repository
+- **update-all**: update your local copy of this repository AND check if everything is nicely installed
+- **setup-dotfiles**: ensure the minimal setup is done to properly work with these dotfile
 - **setup-osx**: setup macOS sane defaults and multiple useful apps
 - **setup-dev**: setup all requirements to get started for (web|mobile|backend|k8s) development
 - **setup-cli-apps**: install several useful, convenient or just fun command line tools
+- **setup-git**: setup git and related utilities
+- **setup-vscode**: setup Visual Studio Code, most useful extensions and several nice themes
 
 ## Tips
 
-To disable the 'e.Go:Digital' popup upon starting VS Code, open the Command Pallette, search for 'Power Tools: Global Settings' and disable the 'Open Changelog on startup' in Notification.
+- To disable the 'e.Go:Digital' popup upon starting VS Code, open the Command Pallette, search for 'Power Tools: Global Settings' and disable the 'Open Changelog on startup' in Notification.
+- Use https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync to create (or restore from) a backup with all your VSCode user settings.
 
 ## Credits & Thanks
 

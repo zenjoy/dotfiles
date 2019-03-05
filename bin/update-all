@@ -1,1 +1,2 @@
-bash -c "$DOTFILES/script/bootstrap"
+env DOTFILES=$DOTFILES zsh -f $DOTFILES/tools/upgrade.sh
+env UPDATING=1 bash -c "$DOTFILES/script/bootstrap"
