@@ -16,6 +16,9 @@ if [[ $bootstrapping -ne 1 ]]; then
   header "Let's install some Mac App Store apps ..."
 
   ask_sudo_password
+
+  notice_left "\nFeel free to follow the details by running:"
+  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 fi
 
 install_mas_cli() {

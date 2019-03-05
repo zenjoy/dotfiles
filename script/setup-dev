@@ -19,7 +19,7 @@ if [[ $bootstrapping -ne 1 ]]; then
   ask_sudo_password
 
   notice_left "\nFeel free to follow the details by running:"
-  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
+  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 fi
 
 install_command_line_tools() {

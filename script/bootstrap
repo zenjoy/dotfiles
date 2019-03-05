@@ -156,7 +156,6 @@ _title_ 'Other convenient cli tools'
 setup_cli_tools
 
 _title_ '.dotfiles ready & installed!'
-echo ''
 
 trap finish EXIT
 

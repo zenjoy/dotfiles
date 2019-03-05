@@ -18,7 +18,7 @@ if [[ $bootstrapping -ne 1 ]]; then
   ask_sudo_password
 
   notice_left "\nFeel free to follow the details by running:"
-  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
+  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 fi
 
 setup_macos_defaults() {
@@ -33,6 +33,16 @@ setup_macos_defaults() {
   info "default settings for macOS : ${BOLD}installing${NORMAL}"
   hide_desktop_icons=$hide_desktop_icons $HOME/.dotfiles/osx/set-defaults.sh
   success "MacOS defaults : installed"
+
+  if command -v bioutil >/dev/null 2>&1; then
+    nb_fingerprints=$(bioutil -c | grep 'fingerprint' | sed -E 's/User[^:]+://' | sed -E 's/fingerprint\(s\)//' | awk '{$1=$1};1')
+    if (( $nb_fingerprints > 0 )); then
+      info "setup TouchID support for sudo"
+      . $DOTFILES_ROOT/osx/enable-touchid-sudo.zsh
+      output=$(enable-touchid-sudo 2>&1)
+      success "TouchID support for sudo : done"
+    fi
+  fi
 }
 
 quicklook_plugins() {
