@@ -19,6 +19,9 @@ trap exit_warning EXIT
 
 header "Let's install our dotfiles..."
 
+notice_left "Feel free to follow the details by running:"
+notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
+
 update_path() {
   # We need /usr/local/bin to come before /usr/bin on the path, to
   # pick up brew files we install.  To do this, we just source
