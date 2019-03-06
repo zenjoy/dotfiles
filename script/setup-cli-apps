@@ -102,6 +102,9 @@ check "carbon-now (beautiful images of your code)" "command -v carbon-now"
 check "bat (a cat clone with wings)" "command -v bat"
   successfully "brew install bat"
 
+check "ag (lightning-fast code search)" "command -v ag"
+  successfully "brew install the_silver_searcher"
+
 ## FRONTEND DEVELOPMENT TOOLS ##
 
 _title_ "Frontend Development:"

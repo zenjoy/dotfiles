@@ -54,8 +54,6 @@
   prune = true
 [help]
   autocorrect = 1
-[merge]
-  ff = only
 [mergetool]
   keepBackup = false
 [push]
