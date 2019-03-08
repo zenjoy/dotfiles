@@ -13,3 +13,5 @@ alias powl='powder log'
 
 alias mc="open http://localhost:1080"
 alias mcs="mailcatcher --growl -b"
+
+alias dcrc="docker-compose run --rm app bundle exec rails console"
