@@ -56,6 +56,10 @@ module.exports = {
       .splitpane_divider {
         background-color: #686b78 !important;
       }
+
+      .line {
+        justify-content: space-between !important;
+      }
     `,
 
     // custom CSS to embed in the terminal window
