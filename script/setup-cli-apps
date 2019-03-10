@@ -284,6 +284,9 @@ check "cowsay (talk like a cow)" "command -v cowsay"
 check "lolcat (talk in rainbows)" "command -v lolcat"
   successfully "gem install lolcat"
 
+check "artii (asci art titles)" "command -v artii"
+  successfully "gem install artii"
+
 check "cat-names (get popular cat names)" "command -v cat-names"
   successfully "npm install -g cat-names"
 

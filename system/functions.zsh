@@ -150,3 +150,11 @@ function tre() {
 
 	tree -aC -I '.idea|.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
 }
+
+function hide-cursor() {
+	echo '\u001b[?25l'
+}
+
+function show-cursor() {
+	echo '\u001b[?25h'
+}

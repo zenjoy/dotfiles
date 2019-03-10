@@ -12,6 +12,7 @@ export LC_TIME="nl_BE.UTF-8"
 
 if [[ -a "$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist" ]]; then
 	echo -e "\033]50;SetProfile=Zenjoy\a"
+	tput reset
 fi
 
 if [[ -d "$HOME/.zcompcache" ]]

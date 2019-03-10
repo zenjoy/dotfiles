@@ -69,6 +69,7 @@ list_vsvode_extensions() {
     "EditorConfig.EditorConfig|EditorConfig for VS Code|EditorConfig Support for Visual Studio Code"
     "dbaeumer.vscode-eslint|ESLint|Integrates ESLint JavaScript into VS Code."
     "dsznajder.es7-react-js-snippets|ES7 React/Redux/GraphQL/React-Native snippets|Simple extensions for React"
+    "sleistner.vscode-fileutils|File Utils|A convenient way of creating, duplicating, moving, renaming and deleting files and directories."
     "donjayamanne.githistory|Git History|View git log, file history, compare branches or commits"
     "eamodio.gitlens|GitLens — Git supercharged|supercharges the Git capabilities built into Visual Studio Code"
     "rubbersheep.gi|gi|Generating .gitignore files made easy"
@@ -94,6 +95,7 @@ list_vsvode_extensions() {
     "vsmobile.vscode-react-native|React Native Tools|Code-hinting, debugging and commands for React Native"
     "OfHumanBondage.react-proptypes-intellisense|React PropTypes Intellisense|PropTypes intellisense for React components"
     "humao.rest-client|REST Client|REST Client inside Visual StudioCode"
+    "jakob101.RelativePath|Relative Path|Get relative url paths from files in the current workspace."
     "smulyono.reveal|Reveal In Sidebar|Reveal current open file in sidebar"
     "Molunerfinn.revealfileinfolder|Reveal File In Folder|Quickly reveal file in folder/finder/explorer"
     "rebornix.Ruby|Ruby|Provides Ruby language and debugging support for Visual Studio Code"
@@ -112,7 +114,9 @@ list_vsvode_extensions() {
     "octref.vetur|Vetur|Vue tooling for VS Code"
     "MS-vsliveshare.vsliveshare|VS Live Share|Real-time collaborative development"
     "funkyremi.vscode-google-translate|Vscode Google Translate|Translate text right in your code"
+    "planbcoding.vscode-react-refactor|VSCode React Refactor|Recompose your overgrown JSX."
     "redhat.vscode-yaml|YAML|YAML Language Support, with built-in Kubernetes and Kedge syntax support"
+    "gamunu.vscode-yarn|yarn|yarn commands for VSCode"
     "DotJoshJohnson.xml|XML Tools|XML Formatting, XQuery, and XPath Tools for Visual Studio Code"
   )
 

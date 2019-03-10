@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set +e
+proceed=1
+
+DOTFILES_ROOT="$HOME/.dotfiles"
+LOGFILE=/tmp/dotfiles-setup
+
+. $DOTFILES_ROOT/script/shared-functions
+
+# ensure we capture unexpected exits
+trap exit_warning EXIT
+
+echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
+
+setup_hyper () {
+  _title_ 'Hyper Profile Setup'
+
+  if [[ $(uname -r) =~ Microsoft$ ]]; then
+    hyper_shell='C:\\Windows\\System32\\bash.exe'
+  else
+    hyper_shell=''
+  fi
+  sed -e "s/HYPER_SHELL_COMMAND/$hyper_shell/g" $DOTFILES_ROOT/system/hyper.js.symlink.example > $DOTFILES_ROOT/system/hyper.js.symlink
+  info "Installing .hyper.js"
+  link_dotfile "$DOTFILES_ROOT/system/hyper.js.symlink"
+
+  success 'Hyper profile successfully installed!'
+}
+
+setup_hyper
+
+trap finish EXIT
+
+if [[ $bootstrapping -ne 1 ]]; then
+  _title_ "Done... Happy Coding!"
+fi

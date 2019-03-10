@@ -160,6 +160,16 @@ setup_vscode() {
   fi
 }
 
+setup_hyper () {
+  user_ask_yn "Would you like to use the Hyper Terminal?" "y"
+  if [[ "$user_ask_yn_result" == "y" ]]; then
+    bootstrapping=1 $HOME/.dotfiles/script/setup-hyper
+  else
+    success "Ok, no probs!"
+  fi
+}
+
+
 setup_git
 install_command_line_tools
 install_node
@@ -168,6 +178,7 @@ install_ruby
 install_docker
 install_vagrant
 setup_vscode
+setup_hyper
 
 _spinner_stop
 
