@@ -105,6 +105,9 @@ check "bat (a cat clone with wings)" "command -v bat"
 check "ag (lightning-fast code search)" "command -v ag"
   successfully "brew install the_silver_searcher"
 
+check "nnn (lightning fast, feature-packed file manager)" "command -v nnn"
+  successfully "brew install nnn"
+
 ## FRONTEND DEVELOPMENT TOOLS ##
 
 _title_ "Frontend Development:"
@@ -114,6 +117,9 @@ check "caniuse (check caniuse.com)" "command -v caniuse"
 
 check "pageres (capture screenshots of websites)" "command -v pageres"
   successfully "npm install -g pageres-cli"
+
+check "capture-website (capture screenshots of websites)" "command -v capture-website"
+  successfully "npm install -g capture-website-cli"
 
 check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
   successfully "pip3 install pillow"
@@ -155,6 +161,9 @@ check "loadtest (run a load test on the selected url)" "command -v loadtest"
 
 check "speedtest-net (test your internet speed)" "command -v speedtest-net"
   successfully "npm install -g speedtest-net"
+
+check "fast-cli (test your internet speed using fast.com)" "command -v fast"
+  successfully "npm install -g fast-cli"
 
 check "pretty-ms (convert milliseconds to a human readable string)" "command -v pretty-ms"
   successfully "npm install -g pretty-ms-cli  "
@@ -212,6 +221,13 @@ check "googler (google cli)" "command -v googler"
 
 check "is-up (check website via isitup.org)" "command -v is-up"
   successfully "npm install -g is-up-cli"
+
+## DEVOPS STUFF ##
+
+_title_ "DevOps Stuff:"
+
+check "agrind (slice and dice log files on the command line)" "command -v agrind"
+  successfully "brew install angle-grinder"
 
 ## MANAGE YOUR MAC ##
 
@@ -304,6 +320,9 @@ check "supervillains (get supervillains names)" "command -v supervillains"
 
 check "tetris (well... play tetris in the terminal)" "command -v tetris"
   successfully "brew install vitetris"
+
+check "ohshit (helps you unfuck your git mistake)" "command -v ohshit"
+  successfully "npm install -g ohshitgit"
 
 _title_ "Done... Have fun!"
 

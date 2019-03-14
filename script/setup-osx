@@ -12,14 +12,55 @@ LOGFILE=/tmp/dotfiles-setup
 # ensure we capture unexpected exits
 trap exit_warning EXIT
 
-if [[ $bootstrapping -ne 1 ]]; then
-  header "Let's setup OSX with some apps ..."
+mac_apps=(
+  # Browsers
+  "google-chrome|Google Chrome|Google Chrome Browser|https://www.google.com/chrome/"
+  "firefox|Firefox|Firefox Browser|https://www.mozilla.org/nl/firefox/new/"
+  # Tools
+  "iterm2|iTerm2|Terminal Emulator|https://www.iterm2.com/"
+  "nightowl|NightOwl|Easily and automatically toggle MacOS dark mode|https://nightowl.kramser.xyz/"
+  "gfxcardstatus|gfxCardStatus|menu bar app that allows MacBook Pro users to switch between graphics cards|https://gfx.io/"
+  "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
+  "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
+  "numi|Numi|Beautiful calculator app for Mac|https://numi.io/"
+  # Zenjoy Essentials
+  "slack|Slack|Where work happens|https://slack.com/"
+  "front|FrontApp|The shared inbox for teams|https://frontapp.com/"
+  "harvest|Harvest|Our time tracking tool|https://www.getharvest.com/"
+  "dropbox|Dropbox|File-sharing made easy|https://www.dropbox.com/"
+  # Development
+  "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
+  "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
+  "table-tool|Table Tool|A simple CSV editor for macOS|https://github.com/jakob/TableTool"
+  "staruml|StarUML|A sophisticated software modeler|http://staruml.io/"
+  "switchhosts|SwitchHosts!|an App for hosts management & switching|https://oldj.github.io/SwitchHosts/"
+  "crunch|Crunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
+  "imageoptim|ImageOptim|ImageOptim makes images load faster|https://imageoptim.com/mac"
+  "imagealpha|ImageAlpha|Reduces file sizes of 24-bit PNG files|https://pngmini.com/"
+  "github|Github Desktop|Github from your desktop|https://desktop.github.com/"
+  "pine|Pin|A lightweight macOS markdown editor|https://github.com/lukakerr/Pine|lukakerr/casks"
+  "insomnia|Insomnia|A Cross-platform HTTP and GraphQL Client|https://insomnia.rest"
+  # Entertainment
+  "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
+  "motrix|Motrix|A full-featured download manager.|https://motrix.app"
+  "iina|IINA|The modern media player for macOS|https://iina.io"
+  "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
+  "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
+  "brooklyn|Brooklyn|Screensaver with very nice visuals|https://github.com/pedrommcarrasco/Brooklyn"
+)
 
-  ask_sudo_password
-
-  notice_left "\nFeel free to follow the details by running:"
-  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
-fi
+function usage() {
+  printf "This script sets up your macOS system and installs various recommended apps.\n\n"
+  printf "Usage: setup-osx [options]\n\n"
+  printf "Options\n"
+  printf "  -a --apps               Only install macOS apps, skip rest of the setup\n"
+  printf "  -d --defaults           Only setup macOS defaults, skip rest of the setup\n"
+  printf "  -i --iterm              Only setup iTerms, skip rest of the setup\n"
+  printf "  -l --list               Show list of apps that can be installed\n"
+  printf "  -q --quicklook          Only install quicklook plugins, skip rest of the setup\n"
+  printf "  -s --single-app <app>   Install app <app> only (use code as reference)\n"
+  printf "\n"
+}
 
 setup_macos_defaults() {
   # Ask for the administrator password upfront
@@ -81,45 +122,8 @@ choose_mac_apps_loop() {
   esac
 }
 
-install_mac_apps() {
-  chosen_apps=() # When the user opts to install a package it will be added to this array.
-
-  mac_apps=(
-    # Browsers
-    "google-chrome|Google Chrome|Google Chrome Browser|https://www.google.com/chrome/"
-    "firefox|Firefox|Firefox Browser|https://www.mozilla.org/nl/firefox/new/"
-    # Tools
-    "iterm2|iTerm2|Terminal Emulator|https://www.iterm2.com/"
-    "nightowl|NightOwl|Easily and automatically toggle MacOS dark mode|https://nightowl.kramser.xyz/"
-    "gfxcardstatus|gfxCardStatus|menu bar app that allows MacBook Pro users to switch between graphics cards|https://gfx.io/"
-    "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
-    "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
-    "numi|Numi|Beautiful calculator app for Mac|https://numi.io/"
-    # Zenjoy Essentials
-    "slack|Slack|Where work happens|https://slack.com/"
-    "front|FrontApp|The shared inbox for teams|https://frontapp.com/"
-    "harvest|Harvest|Our time tracking tool|https://www.getharvest.com/"
-    "dropbox|Dropbox|File-sharing made easy|https://www.dropbox.com/"
-    # Development
-    "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
-    "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
-    "tad|Tad|Easily browse csv or tabular data|https://www.tadviewer.com"
-    "staruml|StarUML|A sophisticated software modeler|http://staruml.io/"
-    "switchhosts|SwitchHosts!|an App for hosts management & switching|https://oldj.github.io/SwitchHosts/"
-    "crunch|Crunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
-    "imageoptim|ImageOptim|ImageOptim makes images load faster|https://imageoptim.com/mac"
-    "imagealpha|ImageAlpha|Reduces file sizes of 24-bit PNG files|https://pngmini.com/"
-    "github|Github Desktop|Github from your desktop|https://desktop.github.com/"
-    # Entertainment
-    "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
-    "motrix|Motrix|A full-featured download manager.|https://motrix.app"
-    "iina|IINA|The modern media player for macOS|https://iina.io"
-    "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
-    "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
-    "brooklyn|Brooklyn|Screensaver with very nice visuals|https://github.com/pedrommcarrasco/Brooklyn"
-  )
-
-  notice_left "${WHITE}We recommend installing following MacOS apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the site for the app)${NORMAL}:\n\n"
+show_possible_apps() {
+  notice_left "${WHITE}We recommend installing following MacOS apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the site for the app)${NORMAL}:\n"
   for app in "${mac_apps[@]}"; do
     IFS='|' read -r -a app_info <<< "$app"
     app_code="${app_info[0]}"
@@ -130,10 +134,29 @@ install_mac_apps() {
     printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "${app_link}" "${app_name}" "${app_code}" "${app_description}"
   done
   echo ""
+}
 
-  choose_mac_apps_loop
+install_mac_apps() {
+  chosen_apps=() # When the user opts to install a package it will be added to this array.
 
-  echo ""
+  if [[ -z "$1" ]]; then
+    show_possible_apps
+    choose_mac_apps_loop
+
+    echo ""
+  else
+    IFS=',' read -r -a given_appnames <<< "$1"
+    for selected in "${given_appnames[@]}"; do
+      for app in "${mac_apps[@]}"; do
+        IFS='|' read -r -a app_info <<< "$app"
+        app_code="${app_info[0]}"
+        if [[ "$app_code" == "$selected" ]]; then
+          chosen_apps=("${chosen_apps[@]}" "${app}")
+        fi
+      done
+    done
+  fi
+
   if [ ${#chosen_apps[@]} -ne 0 ]; then
     _title_ "Installing Selected Apps"
   fi
@@ -143,6 +166,12 @@ install_mac_apps() {
     app_code="${app_info[0]}"
     app_name="${app_info[1]}"
     app_description="${app_info[2]}"
+    app_cask_tap="${app_info[4]}"
+
+    if [[ -n "$app_cask_tap" ]]; then
+      # we need to install a specific tap first
+      brew tap "$app_cask_tap" > /dev/null
+    fi
 
     # get executable name from cask to check if it is already installed
     executable=$(brew cask info $app_code | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
@@ -225,6 +254,65 @@ install_appstore_apps() {
     success "No problem, skipping App Store apps installation."
   fi
 }
+
+while [[ "$1" == -* ]]; do
+  case "$1" in
+  -a|--apps)
+    ask_sudo_password
+    install_mac_apps
+    trap finish EXIT
+    exit
+    ;;
+  -d|--defaults)
+    ask_sudo_password
+    setup_macos_defaults
+    trap finish EXIT
+    exit
+    ;;
+  -i|--iterm)
+    ask_sudo_password
+    setup_iterm
+    trap finish EXIT
+    exit
+    ;;
+  -q|--quicklook_plugins)
+    ask_sudo_password
+    setup_iterm
+    trap finish EXIT
+    exit
+    ;;
+  -l|--list)
+    show_possible_apps
+    trap finish EXIT
+    exit
+    ;;
+  -s|--single-app)
+    shift
+    install_mac_apps "$1"
+    trap finish EXIT
+    exit
+    ;;
+  -h|--help)
+    usage
+    trap finish EXIT
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  esac
+  shift
+done
+
+if [[ $bootstrapping -ne 1 ]]; then
+  header "Let's setup OSX with some apps ..."
+
+  ask_sudo_password
+
+  notice_left "\nFeel free to follow the details by running:"
+  notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
+fi
 
 setup_macos_defaults
 quicklook_plugins
