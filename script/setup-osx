@@ -13,37 +13,44 @@ LOGFILE=/tmp/dotfiles-setup
 trap exit_warning EXIT
 
 mac_apps=(
-  # Browsers
+  "--Browsers"
   "google-chrome|Google Chrome|Google Chrome Browser|https://www.google.com/chrome/"
   "firefox|Firefox|Firefox Browser|https://www.mozilla.org/nl/firefox/new/"
-  # Tools
-  "iterm2|iTerm2|Terminal Emulator|https://www.iterm2.com/"
+  "brave-browser|Brave|Brave - A Privacy Centric Browser|https://brave.com/"
+  "--Productivity"
+  "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
+  "numi|Numi|Beautiful calculator app for Mac|https://numi.io/"
+  "--macOS Tools"
+  "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
+  "keka|Keka|macOS file archiver with focus on privacy|http://www.kekaosx.com/"
   "nightowl|NightOwl|Easily and automatically toggle MacOS dark mode|https://nightowl.kramser.xyz/"
   "gfxcardstatus|gfxCardStatus|menu bar app that allows MacBook Pro users to switch between graphics cards|https://gfx.io/"
-  "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
-  "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
-  "numi|Numi|Beautiful calculator app for Mac|https://numi.io/"
-  # Zenjoy Essentials
+  "mounty|Mounty for NTFS|Allows write access to Windows-formatted disks|https://mounty.app/"
+  "bartender|Bartender|Organize your menu bar icons|https://www.macbartender.com/"
+  "--Zenjoy Essentials Apps"
   "slack|Slack|Where work happens|https://slack.com/"
   "front|FrontApp|The shared inbox for teams|https://frontapp.com/"
   "harvest|Harvest|Our time tracking tool|https://www.getharvest.com/"
   "dropbox|Dropbox|File-sharing made easy|https://www.dropbox.com/"
-  # Development
-  "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
-  "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
-  "table-tool|Table Tool|A simple CSV editor for macOS|https://github.com/jakob/TableTool"
-  "staruml|StarUML|A sophisticated software modeler|http://staruml.io/"
-  "switchhosts|SwitchHosts!|an App for hosts management & switching|https://oldj.github.io/SwitchHosts/"
+  "--Design Tools"
   "crunch|Crunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
   "imageoptim|ImageOptim|ImageOptim makes images load faster|https://imageoptim.com/mac"
   "imagealpha|ImageAlpha|Reduces file sizes of 24-bit PNG files|https://pngmini.com/"
+  "--Development"
+  "iterm2|iTerm2|Terminal Emulator|https://www.iterm2.com/"
+  "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
+  "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
   "github|Github Desktop|Github from your desktop|https://desktop.github.com/"
-  "pine|Pin|A lightweight macOS markdown editor|https://github.com/lukakerr/Pine|lukakerr/casks"
+  "fork|Fork|A fast and friendly git client|https://git-fork.com/"
+  "switchhosts|SwitchHosts!|an App for hosts management & switching|https://oldj.github.io/SwitchHosts/"
+  "lukakerr/casks/pine|Pin|A lightweight macOS markdown editor|https://github.com/lukakerr/Pine"
+  "table-tool|Table Tool|A simple CSV editor for macOS|https://github.com/jakob/TableTool"
   "insomnia|Insomnia|A Cross-platform HTTP and GraphQL Client|https://insomnia.rest"
-  # Entertainment
+  "--Entertainment"
   "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
   "motrix|Motrix|A full-featured download manager.|https://motrix.app"
   "iina|IINA|The modern media player for macOS|https://iina.io"
+  "--Screensavers"
   "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
   "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
   "brooklyn|Brooklyn|Screensaver with very nice visuals|https://github.com/pedrommcarrasco/Brooklyn"
@@ -106,10 +113,13 @@ choose_mac_apps_loop() {
       echo ''
       for app in "${mac_apps[@]}"; do
         IFS='|' read -r -a app_info <<< "$app"
+        app_code="${app_info[0]}"
         app_name="${app_info[1]}"
-        user_ask_yn "Would you like to install ${BOLD}${app_name}${NORMAL}?" "y"
-        if [[ "$user_ask_yn_result" == "y" ]]; then
-          chosen_apps=("${chosen_apps[@]}" "${app}")
+        if [[ $app_code != --* ]]; then
+          user_ask_yn "Would you like to install ${BOLD}${app_name}${NORMAL}?" "y"
+          if [[ "$user_ask_yn_result" == "y" ]]; then
+            chosen_apps=("${chosen_apps[@]}" "${app}")
+          fi
         fi
       done
       ;;
@@ -131,7 +141,12 @@ show_possible_apps() {
     app_description="${app_info[2]}"
     app_link="${app_info[3]}"
 
-    printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "${app_link}" "${app_name}" "${app_code}" "${app_description}"
+    if [[ $app_code == --* ]]; then
+      app_code="${app_code#*--}"
+      printf "${BOLD}${YELLOW}%s${NORMAL}:\n\n" "${app_code}"
+    else
+      printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n   %s\n\n" "${app_link}" "${app_name}" "${app_code}" "${app_description}"
+    fi
   done
   echo ""
 }
@@ -158,7 +173,16 @@ install_mac_apps() {
   fi
 
   if [ ${#chosen_apps[@]} -ne 0 ]; then
-    _title_ "Installing Selected Apps"
+    function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+
+    chosen_apps_names=()
+    for app in "${chosen_apps[@]}"; do
+      IFS='|' read -r -a app_info <<< "$app"
+      app_name="${app_info[1]}"
+      chosen_apps_names=("${chosen_apps_names[@]}" "${app_name}")
+    done
+    chosen_apps_names_str=$(join_by ', ' "${chosen_apps_names[@]}")
+    _title_ "Installing Selected Apps ${NORMAL}${DIM}(${chosen_apps_names_str})${NORMAL}"
   fi
 
   for app in "${chosen_apps[@]}"; do
@@ -166,12 +190,6 @@ install_mac_apps() {
     app_code="${app_info[0]}"
     app_name="${app_info[1]}"
     app_description="${app_info[2]}"
-    app_cask_tap="${app_info[4]}"
-
-    if [[ -n "$app_cask_tap" ]]; then
-      # we need to install a specific tap first
-      brew tap "$app_cask_tap" > /dev/null
-    fi
 
     # get executable name from cask to check if it is already installed
     executable=$(brew cask info $app_code | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')

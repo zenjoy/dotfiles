@@ -24,7 +24,7 @@ if [[ -t 1 ]] && [[ -n "$ncolors" ]] && [[ "$ncolors" -ge 8 ]]; then
   CYAN="$(tput setaf 6)"
   WHITE="$(tput setaf 7)"
   BOLD="$(tput bold)"
-  DIM="$(tput dim)"
+  DIM="$(tput setaf 246)"
   NORMAL="$(tput sgr0)"
 else
   BLACK=""

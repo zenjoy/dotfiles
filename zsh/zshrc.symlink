@@ -53,6 +53,7 @@ plugins=(brew
 				 docker-compose
 				 extract
 				 encode64
+				 fast-syntax-highlighting
 				 gem
 				 gitignore
 				 git-open-pr
@@ -74,7 +75,6 @@ plugins=(brew
 				 zsh-brew-services
 				 zsh-autosuggestions
 				 #zsh-iterm-touchbar
-				 zsh-syntax-highlighting
 				 zsh-yarn-autocompletions
 				 zsh-completions)
 
