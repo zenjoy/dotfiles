@@ -13,14 +13,127 @@ echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 # ensure we capture unexpected exits
 trap exit_warning EXIT
 
-while :; do
-  case $1 in
-    -h|--help) showhelp=1
-    ;;
-    *) break
-  esac
-  shift
-done
+cli_apps=(
+  "--Development Tools"
+
+  "httpie|a user-friendly http client|command -v http|brew install httpie"
+  "jq|json processor|command -v jq|brew install jq"
+  "fx|json processor|command -v fx|brew install fx"
+  "howdoi|check stackoverflow|command -v howdoi|pip install howdoi"
+  "tldr|summarized command help|command -v tldr|npm install -g tldr"
+  "mklicense|cli tool for generating licenses|command -v mklicense|npm install -g mklicense"
+  "dockly|managing Docker containers|command -v dockly|npm install -g dockly"
+  "serve|easy to use static file server|command -v serve|npm install -g serve"
+  "add|itignore (generates a .gitignore for your project|command -v add-gitignore|npm install -g add-gitignore"
+  "carbon|ow (beautiful images of your code|command -v carbon-now|npm i -g carbon-now-cli"
+  "bat|a cat clone with wings|command -v bat|brew install bat"
+  "ag|lightning-fast code search|command -v ag|brew install the_silver_searcher"
+  "nnn|lightning fast, feature-packed file manager|command -v nnn|brew install nnn"
+
+  "--Frontend Development"
+
+  "caniuse|check caniuse.com|command -v caniuse|npm install -g caniuse-cmd"
+  "pageres|capture screenshots of websites|command -v pageres|npm install -g pageres-cli"
+  "capture-website|capture screenshots of websites|command -v capture-website|npm install -g capture-website-cli"
+  "imgp|blazing fast image resizer and rotator|command -v imgp|pip3 install pillow"
+  "chrunch|the best png size crusher|command -v crunch|brew install crunch"
+  "imageoptim-cli|CLI for ImageOptim, ImageAlpha and JPEGmini|command -v imageoptim|npm install -g imageoptim-cli"
+
+  "--Mobile Development"
+
+  "mobicon|mobile app icon generator|command -v mobicon|npm install -g mobicon-cli"
+  "mobisplash|mobile app splash screen generator|command -v mobisplash|npm install -g mobisplash-cli"
+  "dframe|put device frames around app screenshots|command -v dframe|npm install -g deviceframe"
+  "viewport-list|list of devices and their viewports|command -v viewport-list|npm install -g viewport-list-cli"
+
+  "--Backend Development"
+
+  "aws|universal cli for amazon web services|command -v aws|pip install awscli"
+  "s3cmd|fully-featured s3 client|command -v s3cmd|pip install s3cmd"
+  "loadtest|run a load test on the selected url|command -v loadtest|npm install -g loadtest"
+  "speedtest-net|test your internet speed|command -v speedtest-net|npm install -g speedtest-net"
+  "fast-cli|test your internet speed using fast.com|command -v fast|npm install -g fast-cli"
+  "pretty-ms|convert milliseconds to a human readable string|command -v pretty-ms|npm install -g pretty-ms-cli"
+
+  "--Git Things"
+
+  "hub|tool that wraps git|command -v hub|brew install hub"
+  "git-secret|stores private data inside a git repo|brew ls --versions git-secret|brew install git-secret"
+  "git-extras|repo summary, repl, changelog, commit percentages, etc.|brew ls --versions git-extras|brew install git-extras"
+
+  "--Git Things"
+
+  "hub|tool that wraps git|command -v hub|brew install hub"
+  "git-secret|stores private data inside a git repo|brew ls --versions git-secret|brew install git-secret"
+  "git-extras|repo summary, repl, changelog, commit percentages, etc.|brew ls --versions git-extras|brew install git-extras"
+
+  "--Convenience Stuff"
+
+  "fkill|fabulously kill processes|command -v fkill|npm install -g fkill-cli"
+  "colorls|colorized ls command|gem list colorls | grep colorls|gem install colorls"
+  "gfi|google font installer|command -v gfi|npm install -g google-font-installer"
+  "fuck|autocorrects error in previous command|command -v fuck|brew install thefuck"
+  "undollar|undollar strips the dollar sign from copy/pasted commands|command -v $|npm install -g undollar"
+  "kill-tabs|kill all Chrome tabs to improve performance|command -v kill-tabs|npm install -g kill-tabs"
+  "autojump|cd command that learns where you went|command -v autojump|brew install autojump"
+  "ffsend|Fully featured Firefox Send client|command -v ffsend|brew install ffsend"
+
+  "--Information & Search"
+
+  "bitly-client|make and manage bitly/zenjoy.me shortlinks|command -v bitly-client|npm install -g bitly-client"
+  "haxor-news|hacker news reader|command -v hn|pip install haxor-news"
+  "googler|google cli|command -v googler|brew install googler"
+  "is-up|check website via isitup.org|command -v is-up|npm install -g is-up-cli"
+
+  "--DevOps Stuff"
+
+  "agrind|slice and dice log files on the command line|command -v agrind|brew install angle-grinder"
+
+  "--OSX Management / Helpers"
+
+  "m-cli|swiss army knife for macOS|command -v m|brew install m-cli"
+  "mas-cli|command line interface for the Mac App Store|command -v mas|brew install mas"
+  "brightness|manage screen brightness|command -v brightness|npm install -g brightness-cli"
+  "volume|manage volume|command -v volume|npm install -g gillstrom/vol-cli"
+  "battery-level|get battery level|command -v battery-level|npm install -g battery-level-cli"
+  "screensaver|start screensaver|command -v screensaver|npm install -g screensaver"
+  "organize|auto organize files based on file type|command -v organize|npm install -g organize-cli"
+  "rename|utility for renaming files|command -v rename|npm install -g rename-cli"
+  "trash|move files and folders to the trash|command -v trash|npm install -g trash-cli"
+  "empty-trash|empty the trash|command -v empty-trash|npm install -g empty-trash-cli"
+  "public-ip|get your public ip address|command -v public-ip|npm install -g public-ip-cli"
+  "wallpaper|get or set your wallpaper|command -v wallpaper|npm install -g wallpaper-cli"
+
+  "--Entertainment"
+
+  "term-img|display images in iTerm|command -v term-img|npm install -g term-img-cli"
+  "splash|beautiful wallpapers from unsplash|command -v splash|npm install -g splash-cli"
+  "mplayer|command line music player|command -v mplayer|brew install mplayer"
+  "youtube-dl|youtube downloader|command -v youtube-dl|brew install youtube-dl"
+  "open-pip-cli|play movies in macos native picture-in-picture|command -v open-pip|npm install -g open-pip-cli"
+  "mapscii|google maps in your terminal|command -v mapscii|npm install -g mapscii"
+  "asciinema|record and share what happens in terminal|command -v asciinema|pip3 install asciinema"
+  "cowsay|talk like a cow|command -v cowsay|brew install cowsay"
+  "lolcat|talk in rainbows|command -v lolcat|gem install lolcat"
+  "artii|asci art titles|command -v artii|gem install artii"
+  "cat-names|get popular cat names|command -v cat-names|npm install -g cat-names"
+  "dog-names|get popular dog names|command -v dog-names|npm install -g dog-names"
+  "pokemon|get pokemon names|command -v pokemon|npm install -g pokemon-cli"
+  "superheroes|get superheroes names|command -v superheroes|npm install -g superheroes-cli"
+  "supervillains|get supervillains names|command -v supervillains|npm install -g supervillains-cli"
+  "tetris|well... play tetris in the terminal|command -v tetris|brew install vitetris"
+  "ohshit|helps you unfuck your git mistake|command -v ohshit|npm install -g ohshitgit"
+)
+
+
+function usage() {
+  printf "This script installs various interesting command line apps.\n\n"
+  printf "Usage: setup-cli-apps [options]\n\n"
+  printf "Options\n"
+  printf "  -l --list               Show list of apps that can be installed\n"
+  printf "  -s --single-app <app>   Install app <app> only (use code as reference)\n"
+  printf "\n"
+}
 
 install_homebrew() {
   check "homebrew" "command -v brew"
@@ -40,6 +153,146 @@ install_homebrew() {
   fi
 }
 
+install_fundamentals() {
+  check "node / npm" "command -v npm"
+    successfully "brew install npm"
+
+  check "python 2.x" "brew ls --versions python@2"
+    successfully "brew install python@2"
+
+  check "python 3.x" "brew ls --versions python@3"
+    successfully "brew install python"
+}
+
+choose_cli_apps_loop() {
+  user "Would you like to install [a]ll, [n]one, or [s]ome of the apps? [a/n/s]?"
+  read -n 1 input
+  case "$input" in
+    [aA][lL][lL] | [aA])
+      for app in "${cli_apps[@]}"; do
+        IFS='|' read -r -a app_info <<< "$app"
+        app_name="${app_info[0]}"
+        app_description="${app_info[1]}"
+        if [[ $app_name != --* ]]; then
+          chosen_apps=("${chosen_apps[@]}" "${app}")
+        fi
+      done
+      ;;
+    [sS][oO][mM][eE] | [sS])
+      echo ''
+      for app in "${cli_apps[@]}"; do
+        IFS='|' read -r -a app_info <<< "$app"
+        app_name="${app_info[0]}"
+        app_description="${app_info[1]}"
+        if [[ $app_name != --* ]]; then
+          user_ask_yn "Would you like to install ${BOLD}${app_name}${NORMAL} ${DIM}(${app_description})${NORMAL}?" "y"
+          if [[ "$user_ask_yn_result" == "y" ]]; then
+            chosen_apps=("${chosen_apps[@]}" "${app}")
+          fi
+        fi
+      done
+      ;;
+    [nN][oO][nN][eE] | [nN])
+      ;;
+    *)
+      info_no_spinner "Please choose ${BOLD}[a]${NORMAL}ll, ${BOLD}[n]${NORMAL}one, or ${BOLD}[s]${NORMAL}ome.\n"
+      choose_cli_apps_loop
+      ;;
+  esac
+}
+
+show_possible_apps() {
+  notice_left "${WHITE}We recommend installing following cli apps:\n"
+  for app in "${cli_apps[@]}"; do
+    IFS='|' read -r -a app_info <<< "$app"
+    app_name="${app_info[0]}"
+    app_description="${app_info[1]}"
+
+    if [[ $app_name == --* ]]; then
+      app_name="${app_name#*--}"
+      printf "\n${BOLD}${YELLOW}%s${NORMAL}:\n\n" "${app_name}"
+    else
+      printf " - ${BOLD}%s${NORMAL} ${DIM}(%s)${NORMAL}\n" "${app_name}" "${app_description}"
+    fi
+  done
+  echo ""
+}
+
+install_cli_apps() {
+  chosen_apps=() # When the user opts to install a package it will be added to this array.
+
+  if [[ -z "$1" ]]; then
+    show_possible_apps
+    choose_cli_apps_loop
+
+    echo ""
+  else
+    IFS=',' read -r -a given_appnames <<< "$1"
+    for selected in "${given_appnames[@]}"; do
+      for app in "${cli_apps[@]}"; do
+        IFS='|' read -r -a app_info <<< "$app"
+        app_code="${app_info[0]}"
+        if [[ "$app_code" == "$selected" ]]; then
+          chosen_apps=("${chosen_apps[@]}" "${app}")
+        fi
+      done
+    done
+  fi
+
+  if [ ${#chosen_apps[@]} -ne 0 ]; then
+    function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+
+    chosen_apps_names=()
+    for app in "${chosen_apps[@]}"; do
+      IFS='|' read -r -a app_info <<< "$app"
+      app_name="${app_info[0]}"
+      chosen_apps_names=("${chosen_apps_names[@]}" "${app_name}")
+    done
+    chosen_apps_names_str=$(join_by ', ' "${chosen_apps_names[@]}")
+    tput smam
+    _title_ "Installing Selected Apps ${NORMAL}${DIM}(${chosen_apps_names_str})${NORMAL}"
+    tput rmam
+  fi
+
+  for app in "${chosen_apps[@]}"; do
+    IFS='|' read -r -a app_info <<< "$app"
+    app_name="${app_info[0]}"
+    app_description="${app_info[1]}"
+    app_check="${app_info[2]}"
+    app_installer="${app_info[3]}"
+
+    check "$app_name" "$app_check"
+    successfully "$app_installer" "perhaps it is already installed."
+  done
+}
+
+
+while [[ "$1" == -* ]]; do
+  case "$1" in
+  -l|--list)
+    show_possible_apps
+    trap finish EXIT
+    exit
+    ;;
+  -s|--single-app)
+    shift
+    install_cli_apps "$1"
+    trap finish EXIT
+    exit
+    ;;
+  -h|--help)
+    usage
+    trap finish EXIT
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  esac
+  shift
+done
+
 if [[ $bootstrapping -ne 1 ]]; then
   header "Let's install some interesting cli apps ..."
 
@@ -49,282 +302,11 @@ if [[ $bootstrapping -ne 1 ]]; then
   notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal\n"
 fi
 
-message=""
+_title_ "First some base stuff, we just need:"
 
-_title_ "First some base stuff we just need:"
 install_homebrew
-
-check "node / npm" "command -v npm"
-  successfully "brew install npm"
-
-check "python 2.x" "brew ls --versions python@2"
-  successfully "brew install python@2"
-
-check "python 3.x" "brew ls --versions python@3"
-  successfully "brew install python"
-
-notice_left "\nNow the interesting things..."
-
-## GENERAL DEVELOPMENT TOOLS ##
-
-_title_ "Development Tools:"
-
-check "httpie (a user-friendly http client)" "command -v http"
-  successfully "brew install httpie"
-
-check "jq (json processor)" "command -v jq"
-  successfully "brew install jq"
-
-check "fx (json processor)" "command -v fx"
-  successfully "brew install fx"
-
-check "howdoi (check stackoverflow)" "command -v howdoi"
-  successfully "pip install howdoi"
-
-check "tldr (summarized command help)" "command -v tldr"
-  successfully "npm install -g tldr"
-
-check "mklicense (cli tool for generating licenses)" "command -v mklicense"
-  successfully "npm install -g mklicense"
-
-check "dockly (managing Docker containers)" "command -v dockly"
-  successfully "npm install -g dockly"
-
-check "serve (easy to use static file server)" "command -v serve"
-  successfully "npm install -g serve"
-
-check "add-gitignore (generates a .gitignore for your project)" "command -v add-gitignore"
-  successfully "npm install -g add-gitignore"
-
-check "carbon-now (beautiful images of your code)" "command -v carbon-now"
-  successfully "npm i -g carbon-now-cli"
-
-check "bat (a cat clone with wings)" "command -v bat"
-  successfully "brew install bat"
-
-check "ag (lightning-fast code search)" "command -v ag"
-  successfully "brew install the_silver_searcher"
-
-check "nnn (lightning fast, feature-packed file manager)" "command -v nnn"
-  successfully "brew install nnn"
-
-## FRONTEND DEVELOPMENT TOOLS ##
-
-_title_ "Frontend Development:"
-
-check "caniuse (check caniuse.com)" "command -v caniuse"
-  successfully "npm install -g caniuse-cmd"
-
-check "pageres (capture screenshots of websites)" "command -v pageres"
-  successfully "npm install -g pageres-cli"
-
-check "capture-website (capture screenshots of websites)" "command -v capture-website"
-  successfully "npm install -g capture-website-cli"
-
-check "imgp (blazing fast image resizer and rotator)" "command -v imgp"
-  successfully "pip3 install pillow"
-
-check "chrunch (the best png size crusher)" "command -v crunch"
-  successfully "brew install crunch"
-
-check "imageoptim-cli (CLI for ImageOptim, ImageAlpha and JPEGmini)" "command -v imageoptim"
-  successfully "npm install -g imageoptim-cli"
-
-## MOBILE DEVELOPMENT ##
-
-_title_ "Mobile Development:"
-
-check "mobicon (mobile app icon generator)" "command -v mobicon"
-  successfully "npm install -g mobicon-cli"
-
-check "mobisplash (mobile app splash screen generator)" "command -v mobisplash"
-  successfully "npm install -g mobisplash-cli"
-
-check "dframe (put device frames around app screenshots)" "command -v dframe"
-  successfully "npm install -g deviceframe"
-
-check "viewport-list (list of devices and their viewports)" "command -v viewport-list"
-  successfully "npm install -g viewport-list-cli"
-
-## BACKEND DEVELOPMENT ##
-
-_title_ "Backend Development:"
-
-check "aws (universal cli for amazon web services)" "command -v aws"
-  successfully "pip install awscli"
-
-check "s3cmd (fully-featured s3 client)" "command -v s3cmd"
-  successfully "pip install s3cmd"
-
-check "loadtest (run a load test on the selected url)" "command -v loadtest"
-  successfully "npm install -g loadtest"
-
-check "speedtest-net (test your internet speed)" "command -v speedtest-net"
-  successfully "npm install -g speedtest-net"
-
-check "fast-cli (test your internet speed using fast.com)" "command -v fast"
-  successfully "npm install -g fast-cli"
-
-check "pretty-ms (convert milliseconds to a human readable string)" "command -v pretty-ms"
-  successfully "npm install -g pretty-ms-cli  "
-
-## GIT TOOLS ##
-
-_title_ "Git Things:"
-
-check "hub (tool that wraps git)" "command -v hub"
-  successfully "brew install hub"
-
-check "git-secret (stores private data inside a git repo)" "brew ls --versions git-secret"
-  successfully "brew install git-secret"
-
-check "git-extras (repo summary, repl, changelog, commit percentages, etc.)" "brew ls --versions git-extras"
-  successfully "brew install git-extras"
-
-## CONVENIENCE TOOLS ##
-
-_title_ "Convenience Stuff:"
-
-check "fkill (fabulously kill processes)" "command -v fkill"
-  successfully "npm install -g fkill-cli"
-
-check "colorls (colorized ls command)" "gem list colorls | grep colorls"
-  successfully "gem install colorls"
-
-check "gfi (google font installer)" "command -v gfi"
-  successfully "npm install -g google-font-installer"
-
-check "fuck (autocorrects error in previous command)" "command -v fuck"
-  successfully "brew install thefuck"
-
-check "undollar (undollar strips the dollar sign from copy/pasted commands)" "command -v $"
-  successfully "npm install -g undollar"
-
-check "kill-tabs (kill all Chrome tabs to improve performance)" "command -v kill-tabs"
-  successfully "npm install -g kill-tabs"
-
-check "autojump (cd command that learns where you went)" "command -v autojump"
-  successfully "brew install autojump"
-
-## INFORMATION / NEWS TOOLS ##
-
-_title_ "Information & Search:"
-
-check "bitly-client (make and manage bitly/zenjoy.me shortlinks)" "command -v bitly-client"
-  successfully "npm install -g bitly-client"
-
-check "haxor-news (hacker news reader)" "command -v hn"
-  successfully "pip install haxor-news"
-
-check "googler (google cli)" "command -v googler"
-  successfully "brew install googler"
-
-check "is-up (check website via isitup.org)" "command -v is-up"
-  successfully "npm install -g is-up-cli"
-
-## DEVOPS STUFF ##
-
-_title_ "DevOps Stuff:"
-
-check "agrind (slice and dice log files on the command line)" "command -v agrind"
-  successfully "brew install angle-grinder"
-
-## MANAGE YOUR MAC ##
-
-_title_ "OSX Management / Helpers:"
-
-check "m-cli (swiss army knife for macOS)" "command -v m"
-  successfully "brew install m-cli"
-
-check "mas-cli (command line interface for the Mac App Store)" "command -v mas"
-  successfully "brew install mas"
-
-check "brightness (manage screen brightness)" "command -v brightness"
-  successfully "npm install -g brightness-cli"
-
-check "volume (manage volume)" "command -v volume"
-  successfully "npm install -g gillstrom/vol-cli"
-
-check "battery-level (get battery level)" "command -v battery-level"
-  successfully "npm install -g battery-level-cli"
-
-check "screensaver (start screensaver)" "command -v screensaver"
-  successfully "npm install -g screensaver"
-
-check "organize (auto organize files based on file type)" "command -v organize"
-  successfully "npm install -g organize-cli"
-
-check "rename (utility for renaming files)" "command -v rename"
-  successfully "npm install -g rename-cli"
-
-check "trash (move files and folders to the trash)" "command -v trash"
-  successfully "npm install -g trash-cli"
-
-check "empty-trash (empty the trash)" "command -v empty-trash"
-  successfully "npm install -g empty-trash-cli"
-
-check "public-ip (get your public ip address)" "command -v public-ip"
-  successfully "npm install -g public-ip-cli"
-
-check "wallpaper (get or set your wallpaper)" "command -v wallpaper"
-  successfully "npm install -g wallpaper-cli"
-
-## ENTERTAINMENT ##
-
-_title_ "Entertainment:"
-
-check "term-img (display images in iTerm)" "command -v term-img"
-  successfully "npm install -g term-img-cli"
-
-check "splash (beautiful wallpapers from unsplash)" "command -v splash"
-  successfully "npm install -g splash-cli"
-
-check "mplayer (command line music player)" "command -v mplayer"
-  successfully "brew install mplayer"
-
-check "youtube-dl (youtube downloader)" "command -v youtube-dl"
-  successfully "brew install youtube-dl"
-
-check "open-pip-cli (play movies in macos native picture-in-picture)" "command -v open-pip"
-  successfully "npm install -g open-pip-cli"
-
-check "mapscii (google maps in your terminal)" "command -v mapscii"
-  successfully "npm install -g mapscii"
-
-check "asciinema (record and share what happens in terminal)" "command -v asciinema"
-  successfully "pip3 install asciinema"
-
-check "cowsay (talk like a cow)" "command -v cowsay"
-  successfully "brew install cowsay"
-
-check "lolcat (talk in rainbows)" "command -v lolcat"
-  successfully "gem install lolcat"
-
-check "artii (asci art titles)" "command -v artii"
-  successfully "gem install artii"
-
-check "cat-names (get popular cat names)" "command -v cat-names"
-  successfully "npm install -g cat-names"
-
-check "dog-names (get popular dog names)" "command -v dog-names"
-  successfully "npm install -g dog-names"
-
-check "pokemon (get pokemon names)" "command -v pokemon"
-  successfully "npm install -g pokemon-cli"
-
-check "superheroes (get superheroes names)" "command -v superheroes"
-  successfully "npm install -g superheroes-cli"
-
-check "supervillains (get supervillains names)" "command -v supervillains"
-  successfully "npm install -g supervillains-cli"
-
-check "tetris (well... play tetris in the terminal)" "command -v tetris"
-  successfully "brew install vitetris"
-
-check "ohshit (helps you unfuck your git mistake)" "command -v ohshit"
-  successfully "npm install -g ohshitgit"
-
-_title_ "Done... Have fun!"
+install_fundamentals
+install_cli_apps
 
 trap finish EXIT
 

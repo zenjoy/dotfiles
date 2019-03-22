@@ -36,7 +36,6 @@ unsetopt hist_ignore_space      # ignore space prefixed commands
 setopt auto_cd                  # if command is a path, cd into it
 setopt auto_remove_slash        # self explicit
 setopt chase_links              # resolve symlinks
-setopt correct                  # try to correct spelling of commands
 setopt extended_glob            # activate complex pattern globbing
 setopt glob_dots                # include dotfiles in globbing
 setopt auto_pushd               # make cd push old dir in dir stack
@@ -44,6 +43,7 @@ setopt pushd_ignore_dups        # no duplicates in dir stack
 setopt pushd_silent             # no dir stack after pushd or popd
 setopt pushd_to_home            # `pushd` = `pushd $HOME`
 unsetopt correct_all            # do not try to spelling correct commands
+unsetopt correct                # do not try to spelling correct commands
 unsetopt rm_star_silent         # ask for confirmation for `rm *' or `rm path/*'
 unsetopt bg_nice                # no lower prio for background jobs
 unsetopt hist_beep              # no bell on error in history

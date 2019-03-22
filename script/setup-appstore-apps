@@ -96,6 +96,8 @@ list_appstore_apps() {
     "419330170|moom|Moom|Easily resize your MacOS windows"
     "1351639930|gifski|Gifski|Create the highest quality gifs"
     "525742250|jpegmini-lite|JPEGMini Lite|Reduce image file size without compromising quality"
+    '824183456|affinity-photo|Affinity Photo|Professional photo editing software'
+    '824171161|affinity-designer|Affinity Designer|Precise vector graphic design software'
   )
 
   notice_left "${WHITE}We recommend installing following apps:\n${NORMAL}${DIM}(note: you can CMD-click on a title to go the app's website)${NORMAL}:\n"

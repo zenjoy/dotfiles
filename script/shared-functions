@@ -506,6 +506,14 @@ user_ask_yn() {
   esac
 }
 
+user_wait_for_key() {
+  _spinner_stop
+  prefix=" [ ${YELLOW}??${NORMAL} ]"
+  prompt="${1}"
+
+  read -n 1 -r -p "$prefix $prompt" input
+}
+
 # Exit with an error if the script is not being run on a Mac. (iOS development
 # can only be done on Macs.)
 ensure_mac_os() {
