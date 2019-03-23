@@ -9,6 +9,10 @@ if command -v gls >/dev/null 2>&1; then
   alias la='gls -A --color'
 fi
 
+if command -v bat >/dev/null 2>&1; then
+  alias cat="bat"
+fi
+
 # Colorls alias
 alias lc="colorls -A --group-directories-first"
 

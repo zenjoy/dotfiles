@@ -14,15 +14,21 @@ trap exit_warning EXIT
 
 mac_apps=(
   "--Browsers"
+
   "google-chrome|Google Chrome|Google Chrome Browser|https://www.google.com/chrome/"
   "firefox|Firefox|Firefox Browser|https://www.mozilla.org/nl/firefox/new/"
+  "firefox-developer-edition|Firefox Developer Edition|Firefox Developer Edition|https://www.mozilla.org/en-US/firefox/developer/"
   "brave-browser|Brave|Brave - A Privacy Centric Browser|https://brave.com/"
+
   "--Productivity"
+
   "alfred|Alfred for Mac|MacOS productivity app, using hotkeys, keywords, clipboard memory, etc.|https://www.alfredapp.com/"
   "droplr|Droplr|Easiest File Transfer with customized short link|https://droplr.com/"
   "numi|Numi|Beautiful calculator app for Mac|https://numi.io/"
   "franz|Franz|Messaging app forWhatsApp, Messenger, Slack, Telegram, Gmail, etc|https://meetfranz.com"
+
   "--macOS Tools"
+
   "the-unarchiver|The Unarchiver|Open any archive in seconds|https://theunarchiver.com/"
   "keka|Keka|macOS file archiver with focus on privacy|http://www.kekaosx.com/"
   "nightowl|NightOwl|Easily and automatically toggle MacOS dark mode|https://nightowl.kramser.xyz/"
@@ -30,16 +36,23 @@ mac_apps=(
   "mounty|Mounty for NTFS|Allows write access to Windows-formatted disks|https://mounty.app/"
   "bartender|Bartender|Organize your menu bar icons|https://www.macbartender.com/"
   "rocket|Rocket|Mind-blowing emoji on your Mac|https://matthewpalmer.net/rocket/"
+  "appcleaner|AppCleaner|Uninstall unwanted macOS apps|https://freemacsoft.net/appcleaner/"
+
   "--Zenjoy Essentials Apps"
+
   "slack|Slack|Where work happens|https://slack.com/"
   "front|FrontApp|The shared inbox for teams|https://frontapp.com/"
   "harvest|Harvest|Our time tracking tool|https://www.getharvest.com/"
   "dropbox|Dropbox|File-sharing made easy|https://www.dropbox.com/"
+
   "--Design Tools"
+
   "crunch|Crunch|The best png size crusher|https://github.com/chrissimpkins/Crunch"
   "imageoptim|ImageOptim|ImageOptim makes images load faster|https://imageoptim.com/mac"
   "imagealpha|ImageAlpha|Reduces file sizes of 24-bit PNG files|https://pngmini.com/"
+
   "--Development"
+
   "iterm2|iTerm2|Terminal Emulator|https://www.iterm2.com/"
   "visual-studio-code|Visual Studio Code|Code editing. Redefined.|https://code.visualstudio.com/"
   "dash|Dash|Offline access to 200+ API documentation|https://kapeli.com/dash"
@@ -49,12 +62,16 @@ mac_apps=(
   "lukakerr/casks/pine|Pin|A lightweight macOS markdown editor|https://github.com/lukakerr/Pine"
   "table-tool|Table Tool|A simple CSV editor for macOS|https://github.com/jakob/TableTool"
   "insomnia|Insomnia|A Cross-platform HTTP and GraphQL Client|https://insomnia.rest"
+
   "--Entertainment"
+
   "vlc|VLC Media Player|Free and open source media player|https://www.videolan.org/vlc"
   "motrix|Motrix|A full-featured download manager.|https://motrix.app"
   "iina|IINA|The modern media player for macOS|https://iina.io"
   "flume|Flume|A beautiful Instagram experience for your Mac|https://flumeapp.com/"
+
   "--Screensavers"
+
   "aerial|Aerial Screensaver|Apple TV Aerial Screensaver for Mac|https://github.com/JohnCoates/Aerial"
   "fliqlo|Fliqlo|The Flip Clock Screensaver|https://fliqlo.com/"
   "brooklyn|Brooklyn|Screensaver with very nice visuals|https://github.com/pedrommcarrasco/Brooklyn"
