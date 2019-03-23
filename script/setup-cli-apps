@@ -74,6 +74,7 @@ cli_apps=(
   "autojump|cd command that learns where you went|command -v autojump|brew install autojump|https://github.com/wting/autojump#readme"
   "ffsend|Fully featured Firefox Send client|command -v ffsend|brew install ffsend|https://github.com/timvisee/ffsend#readme"
   "csvkit|Utilities for converting to and working with CSV|command -v in2csv|brew install csvkit|http://csvkit.rtfd.org/"
+  "xsv|Another fast CSV command line toolkit|command -v xsv|brew install xsv|https://github.com/BurntSushi/xsv#readme"
   "ncdu|A handy disk usage analyzer|command -v ncdu|brew install ncdu|https://dev.yorhel.nl/ncdu"
   "noti|Show a notification at the end of a process|command -v noti|brew install noti|https://github.com/variadico/noti#readme"
   "entr|Run arbitrary commands when files change|command -v entr|brew install entr|http://eradman.com/entrproject/"
