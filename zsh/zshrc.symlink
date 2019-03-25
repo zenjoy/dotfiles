@@ -56,7 +56,6 @@ plugins=(brew
 				 fast-syntax-highlighting
 				 gem
 				 gitignore
-				 git-open-pr
 				 git-extras
 				 git-hubflow
 				 git-remote-branch
@@ -74,8 +73,6 @@ plugins=(brew
 				 zshmarks
 				 zsh-brew-services
 				 zsh-autosuggestions
-				 #zsh-iterm-touchbar
-				 zsh-yarn-autocompletions
 				 zsh-completions)
 
 # Load any cached paths upfront
