@@ -103,6 +103,11 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}"
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
+# Disable disk image verification
+defaults write com.apple.frameworks.diskimages skip-verify -bool true
+defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
+defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
+
 ###############################################################################
 # Quicklook                                                                   #
 ###############################################################################
