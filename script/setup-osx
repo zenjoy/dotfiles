@@ -91,6 +91,20 @@ alfred_workflows=(
   "com.vitorgalvao.alfred.recentdownloads|RecentDownloads|List and act on the contents of a directory|https://github.com/vitorgalvao/alfred-workflows/tree/master/RecentDownloads|https://raw.githubusercontent.com/vitorgalvao/alfred-workflows/master/RecentDownloads/RecentDownloads.alfredworkflow"
   "com.vitorgalvao.alfred.strongpassword|StrongPassword|Get a strong password by leveraging multiple sources|https://github.com/vitorgalvao/alfred-workflows/tree/master/StrongPassword|https://raw.githubusercontent.com/vitorgalvao/alfred-workflows/master/StrongPassword/StrongPassword.alfredworkflow"
   "com.vitorgalvao.alfred.temporaryemail|TemporaryEmail|Get a temporary email inbox|https://github.com/vitorgalvao/alfred-workflows/tree/master/TemporaryEmail|https://raw.githubusercontent.com/vitorgalvao/alfred-workflows/master/TemporaryEmail/TemporaryEmail.alfredworkflow"
+  "de.gh01.alfred.github|Github|GitHub Workflow|https://github.com/gharlan/alfred-github-workflow/releases/download/v1.6.2/github.alfredworkflow"
+  "com.farrell.encode-decode.alfredworkflow|Encode / Decode|Encoding and decoding a string into multiple variations|https://raw.github.com/willfarrell/alfred-encode-decode-workflow/master/encode-decode.alfredworkflow"
+  "com.ruedap.font-awesome|Font Awesome|Search Font Awesome Icons|https://github.com/ruedap/alfred-font-awesome-workflow/releases/download/5.8.0.0/Font-Awesome.alfredworkflow"
+  "com.tedwise.showdesktop|Show Desktop|Quickly show your desktop|http://tedwi.se/u/dj"
+  "com.tedwise.urlencode|URL Encode/Decode|Encode or decode url's|http://tedwi.se/u/dk"
+  "nikivi.search.files|Search files|A lot of file filters to find files quickly|https://raw.githubusercontent.com/nikitavoloboev/small-workflows/master/search-files/Search%20files.alfredworkflow"
+  "nikivi.wifi.workflow|Wifi-Tools|Check WiFi connection / Restart WiFi / Toggle it on/off|https://raw.githubusercontent.com/nikitavoloboev/small-workflows/master/wifi-tools/WiFi%20tools.alfredworkflow"
+  "nikivi.go.to.sub|Go to Reddit Subreddit|Go to a subreddit that you specify|https://raw.githubusercontent.com/nikitavoloboev/small-workflows/master/goto-subreddit/Go%20to%20subreddit.alfredworkflow"
+  "nikivi.birthday|Alfred Birthday|See time passed since your birthday|https://raw.githubusercontent.com/nikitavoloboev/small-workflows/master/birthday/Birthday.alfredworkflow"
+  "net.deanishe.alfred-fakeum|Alfred Fakeum|Generate fake test data in Alfred for testing.|https://github.com/deanishe/alfred-fakeum/releases/download/v2.2.0/Fakeum-2.2.0.alfred3workflow"
+  "recentdownloads.ddjfreedom|Recent Downloads|Quickly do things with your recent downloads|https://github.com/nikitavoloboev/small-workflows/blob/master/augmentations/Recent%20Downloads.alfredworkflow?raw=true"
+  "io.github.ilstar.httpcode|HTTP Status Codes|Checking out http status code very quickly|https://github.com/ilstar/http_status_code/releases/download/v0.2.2/HTTP.Status.Code.alfredworkflow"
+  "nikivi.awesome.lists|Awesome Lists|Alfred workflow to search awesome lists|https://github.com/nikitavoloboev/alfred-awesome-lists/releases/download/v1.2/Awesome.lists.alfredworkflow"
+  "com.tillkruss.loremipsum|Lorem Ipsum|An ultra-fast Lorem Ipsum workflow|https://github.com/tillkruss/alfred-lorem-ipsum/releases/download/v0.2.0/Lorem.Ipsum.alfredworkflow"
 )
 
 function usage() {
