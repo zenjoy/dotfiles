@@ -1,0 +1,1 @@
+for i in *.otf; do fontforge -script ~/.dotfiles/tools/otf2ttf-script.sh $i; done
