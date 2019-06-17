@@ -165,6 +165,7 @@ list_vscodes_themes() {
     "will-stone.plastic|Plastic Theme"
     "ahmadawais.shades-of-purple|Shades of Purple"
     "smlombardi.slime|Slime Theme"
+    "ashrafhadden.dracula-dot-min|Dracula.min"
   )
 
   _title_ "Visual Studio Code Themes"

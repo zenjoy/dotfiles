@@ -21,14 +21,17 @@ alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
 
 alias k9="killall -9"
 
-alias iphone4s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-4s"
-alias iphone5s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-5"
-alias ipad="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPad-Air"
+alias iphone5s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-5s"
+alias ipad="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPad-Pro"
 alias iphone6plus="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus"
 alias iphone6="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-6"
 alias iphone6s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-6s"
 alias iphone7="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-7"
+alias iphone8="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-8"
+alias iphone8s="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-8s"
 alias iphoneSE="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-SE"
+alias iphoneX="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-X"
+alias iphoneXs="ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-Xs"
 
 # see https://github.com/fcambus/ansiweather for installation anc customization
 alias we="ansiweather"
