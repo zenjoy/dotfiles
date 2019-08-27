@@ -276,7 +276,7 @@ setup_iterm() {
     warn "iTerm2 not found, skipping setup..."
   else
     check "Fura Code Nerd font" "brew cask ls font-firacode-nerd-font"
-    successfully "brew cask install font-firacode-nerd-font"
+    successfully "brew tap homebrew/cask-fonts && brew cask install font-firacode-nerd-font"
 
     user_ask_yn "iTerm profile: would you like a larger font size?" "y"
     if [[ "$user_ask_yn_result" == "y" ]]; then
