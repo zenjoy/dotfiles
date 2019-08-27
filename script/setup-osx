@@ -156,7 +156,7 @@ quicklook_plugins() {
   plugins=("qlcolorcode" "qlstephen" "qlmarkdown" "quicklook-json" "webpquicklook" "suspicious-package" "quicklookase" "qlvideo")
   for plugin in "${plugins[@]}"; do
     check "quicklook plugin ${BOLD}$plugin${NORMAL}" "brew cask ls $plugin"
-    successfully "brew cask install $app"
+    successfully "brew cask install $plugin"
   done
 }
 
