@@ -38,6 +38,7 @@ cli_apps=(
   "capture-website|capture screenshots of websites|command -v capture-website|npm install -g capture-website-cli|https://github.com/sindresorhus/capture-website-cli#usage"
   "imgp|multi-core batch image resizer and rotator|command -v imgp|pip3 install pillow|https://github.com/jarun/imgp#imgp"
   "imageoptim-cli|CLI for ImageOptim, ImageAlpha and JPEGmini|command -v imageoptim|npm install -g imageoptim-cli|https://imageoptim.com/command-line.html"
+  "pastel|Generate, analyze, convert and manipulate colors|command -v pastel|brew install pastel|https://github.com/sharkdp/pastel"
 
   "--Mobile Development"
 
@@ -61,6 +62,7 @@ cli_apps=(
   "git-secret|stores private data inside a git repo|brew ls --versions git-secret|brew install git-secret|https://git-secret.io/"
   "git-extras|repo summary, repl, changelog, commit percentages, etc.|brew ls --versions git-extras|brew install git-extras|https://github.com/tj/git-extras/blob/master/Commands.md"
   "ohshit|helps you unfuck your git mistake|command -v ohshit|npm install -g ohshitgit|https://ohshitgit.com/"
+  "gitmoji|use gitmojis on commit messages|command -v gitmoji|npm i -g gitmoji-cli|https://github.com/carloscuesta/gitmoji-cli"
 
   "--Convenience Stuff"
 
@@ -85,6 +87,7 @@ cli_apps=(
   "haxor-news|hacker news reader|command -v hn|pip install haxor-news|https://github.com/donnemartin/haxor-news#readme"
   "googler|google cli|command -v googler|brew install googler|https://github.com/jarun/googler#readme"
   "is-up|check website via isitup.org|command -v is-up|npm install -g is-up-cli|https://github.com/sindresorhus/is-up-cli#readme"
+  "tty-clock|display a clock using tty-clock|command -v tty-clock|brew install tty-clock|https://github.com/xorg62/tty-clock"
 
   "--DevOps Stuff"
 
@@ -117,6 +120,8 @@ cli_apps=(
   "mapscii|google maps in your terminal|command -v mapscii|npm install -g mapscii|https://github.com/rastapasta/mapscii#readme"
   "asciinema|record and share what happens in terminal|command -v asciinema|pip3 install asciinema|https://asciinema.org/"
   "tetris|well... play tetris in the terminal|command -v tetris|brew install vitetris|https://www.victornils.net/tetris/"
+  "ninvaders|Space Invaders in the terminal|command -v ninvaders|brew install ninvaders|http://ninvaders.sourceforge.net/"
+  "tty-solitaire|Solitaire in the terminal|command -v ttysolitaire|brew install tty-solitaire|https://github.com/mpereira/tty-solitaire"
 
   "--Fun"
 

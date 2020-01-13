@@ -17,7 +17,6 @@ mac_apps=(
 
   "google-chrome|Google Chrome|Google Chrome Browser|https://www.google.com/chrome/"
   "firefox|Firefox|Firefox Browser|https://www.mozilla.org/nl/firefox/new/"
-  "firefox-developer-edition|Firefox Developer Edition|Firefox Developer Edition|https://www.mozilla.org/en-US/firefox/developer/"
   "brave-browser|Brave|Brave - A Privacy Centric Browser|https://brave.com/"
 
   "--Productivity"
