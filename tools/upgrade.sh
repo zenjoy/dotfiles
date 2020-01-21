@@ -22,7 +22,7 @@ fi
 # ASCII Art generated with https://ascii.today/
 printf "${BLUE}%s${NORMAL}\n" "Updating your ~/.dotfiles ..."
 cd "$DOTFILES"
-if git pull --rebase --stat origin master
+if git pull --rebase --stat origin master && bootstrapping=1 $HOME/.dotfiles/script/setup-dotfiles
 then
   printf '%s' "$GREEN"
   printf '%s\n' '               _                   _       _    __ _ _    '

@@ -107,7 +107,7 @@ prompt_pure_set_title() {
 	setopt localoptions noshwordsplit
 
 	# emacs terminal does not support settings the title
-	(( ${+EMACS} )) && return
+	(( ${+EMACS} || ${+INSIDE_EMACS} )) && return
 
 	case $TTY in
 		# Don't set title over serial console.
@@ -170,7 +170,7 @@ prompt_pure_preprompt_render() {
 	fi
 
 	# Username and machine, if applicable.
-	[[ -n $prompt_pure_state[username] ]] && preprompt_parts+=('${prompt_pure_state[username]}')
+	[[ -n $prompt_pure_state[username] ]] && preprompt_parts+=($prompt_pure_state[username])
 
 	# Execution time.
 	if [[ -n $prompt_pure_current_time ]]; then
@@ -272,7 +272,7 @@ prompt_pure_preprompt_render() {
 		print
 	elif [[ $prompt_pure_last_prompt != $expanded_prompt ]]; then
 		# Redraw the prompt.
-		zle && zle .reset-prompt
+		prompt_pure_reset_prompt
 	fi
 
 	typeset -g prompt_pure_last_prompt=$expanded_prompt
@@ -679,6 +679,20 @@ prompt_pure_async_autojump() {
 	echo ''
 }
 
+# Try to lower the priority of the worker so that disk heavy operations
+# like `git status` has less impact on the system responsivity.
+prompt_pure_async_renice() {
+	setopt localoptions noshwordsplit
+
+	if command -v renice >/dev/null; then
+		command renice +15 -p $$
+	fi
+
+	if command -v ionice >/dev/null; then
+		command ionice -c 3 -p $$
+	fi
+}
+
 prompt_pure_async_tasks() {
 	setopt localoptions noshwordsplit
 
@@ -687,6 +701,7 @@ prompt_pure_async_tasks() {
 		async_start_worker "prompt_pure" -u -n
 		async_register_callback "prompt_pure" prompt_pure_async_callback
 		typeset -g prompt_pure_async_init=1
+		async_job "prompt_pure" prompt_pure_async_renice
 	}
 
 	# Update the current working directory of the async worker.
@@ -781,10 +796,24 @@ prompt_pure_async_callback() {
 
 	case $job in
 		\[async])
-			# code is 1 for corrupted worker output and 2 for dead worker
-			if [[ $code -eq 2 ]]; then
-				# our worker died unexpectedly
+			# Error codes from zsh-async:
+			#     1 Corrupted worker output.
+			#     2 ZLE watcher detected an error on the worker fd.
+			#     3 Response from async_job when worker is missing.
+			#   130 Async worker exited, this should never happen in
+			#       Pure so the file descriptor is corrupted.
+			if (( code == 2 )) || (( code == 3 )) || (( code == 130 )); then
+				# Our worker died unexpectedly, recovery
+				# will happen on next prompt.
 				typeset -g prompt_pure_async_init=0
+				async_stop_worker prompt_pure
+			fi
+			;;
+		\[async/eval])
+			if (( code )); then
+				# Looks like async_worker_eval failed,
+				# rerun async tasks just in case.
+				prompt_pure_async_tasks
 			fi
 			;;
 		prompt_pure_async_kubecontext|prompt_pure_async_terraform|prompt_pure_async_ruby|prompt_pure_async_node|prompt_pure_async_golang|prompt_pure_async_docker_compose)
@@ -913,6 +942,8 @@ prompt_pure_async_callback() {
 					;;
 			esac
 			;;
+		prompt_pure_async_renice)
+			;;
 	esac
 
 	if (( next_pending )); then
@@ -924,6 +955,20 @@ prompt_pure_async_callback() {
 	unset prompt_pure_async_render_requested
 }
 
+prompt_pure_reset_prompt() {
+	if [[ $CONTEXT == cont ]]; then
+		# When the context is "cont", PS2 is active and calling
+		# reset-prompt will have no effect on PS1, but it will
+		# reset the execution context (%_) of PS2 which we don't
+		# want. Unfortunately, we can't save the output of "%_"
+		# either because it is only ever rendered as part of the
+		# prompt, expanding in-place won't work.
+		return
+	fi
+
+	zle && zle .reset-prompt
+}
+
 prompt_pure_reset_prompt_symbol() {
 	prompt_pure_state[prompt]=${PURE_PROMPT_SYMBOL:-❯}
 }
@@ -931,13 +976,15 @@ prompt_pure_reset_prompt_symbol() {
 prompt_pure_update_vim_prompt_widget() {
 	setopt localoptions noshwordsplit
 	prompt_pure_state[prompt]=${${KEYMAP/vicmd/${PURE_PROMPT_VICMD_SYMBOL:-❮}}/(main|viins)/${PURE_PROMPT_SYMBOL:-❯}}
-	zle && zle .reset-prompt
+	prompt_pure_reset_prompt
 }
 
 prompt_pure_reset_vim_prompt_widget() {
 	setopt localoptions noshwordsplit
 	prompt_pure_reset_prompt_symbol
-	zle && zle .reset-prompt
+
+	# We can't perform a prompt reset at this point because it
+	# removes the prompt marks inserted by macOS Terminal.
 }
 
 prompt_pure_state_setup() {
@@ -1038,6 +1085,7 @@ prompt_pure_setup() {
 	prompt_pure_state_setup
 	prompt_pure_autojump_setup
 
+	zle -N prompt_pure_reset_prompt
 	zle -N prompt_pure_update_vim_prompt_widget
 	zle -N prompt_pure_reset_vim_prompt_widget
 	if (( $+functions[add-zle-hook-widget] )); then
@@ -1050,6 +1098,9 @@ prompt_pure_setup() {
 
 	# prompt turns red if the previous command didn't exit with 0
 	PROMPT+='%(?.%F{green}.%F{red})${prompt_pure_state[prompt]}%f '
+
+	# Indicate continuation prompt by … and use a darker color for it.
+	PROMPT2='%F{242}%_… %f%(?.%F{magenta}.%F{red})${prompt_pure_state[prompt]}%f '
 
 	# Store prompt expansion symbols for in-place expansion via (%). For
 	# some reason it does not work without storing them in a variable first.
@@ -1077,6 +1128,11 @@ prompt_pure_setup() {
 	# Improve the debug prompt (PS4), show depth by repeating the +-sign and
 	# add colors to highlight essential parts like file and function name.
 	PROMPT4="${ps4_parts[depth]} ${ps4_symbols}${ps4_parts[prompt]}"
+  
+	# Guard against Oh My Zsh themes overriding Pure.
+	unset ZSH_THEME
 
-	unset ZSH_THEME  # Guard against Oh My Zsh themes overriding Pure.
+	# Guard against (ana)conda changing the PS1 prompt
+	# (we manually insert the env when it's available).
+	export CONDA_CHANGEPS1=no
 }
