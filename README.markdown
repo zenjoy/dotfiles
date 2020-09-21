@@ -9,6 +9,8 @@
 You can get Xcode from the [Mac App Store](https://itunes.apple.com/be/app/xcode/id497799835?l=nl&mt=12). You’ll need at least version 4.4 of Xcode for it to work with OS X Mountain Lion. After the installation, open up Xcode in your /Applications folder.
 You’d want to go to Xcode -> Preferences -> Downloads tab then install the “Command Line Tools.” Or run `xcode-select --install` in the terminal. After you’re done, quit Xcode and fire up Terminal.
 
+If you're on catalina or above, give the terminal program you're using 'Full Disk Access' before starting the installation.
+
 We use [iTerm2](https://www.iterm2.com/) and [Visual Studio Code](https://code.visualstudio.com/).
 
 ### Windows

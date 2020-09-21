@@ -274,8 +274,8 @@ setup_iterm() {
   if ! open -R -g -a iTerm > /dev/null; then
     warn "iTerm2 not found, skipping setup..."
   else
-    check "Fura Code Nerd font" "brew cask ls font-firacode-nerd-font"
-    successfully "brew tap homebrew/cask-fonts && brew cask install font-firacode-nerd-font"
+    check "Fura Code Nerd font" "brew cask ls font-fira-code-nerd-font"
+    successfully "brew tap homebrew/cask-fonts && brew cask install font-fira-code-nerd-font"
 
     user_ask_yn "iTerm profile: would you like a larger font size?" "y"
     if [[ "$user_ask_yn_result" == "y" ]]; then
@@ -291,7 +291,7 @@ setup_iterm() {
     info "iTerm profile: ${BOLD}generating${NORMAL}"
     plutil -convert xml1 "$source_json" -o "$source_plist"
 
-    sed -i "" "s/FuraCodeNerdFontComplete-Medium 12/FuraCodeNerdFontComplete-Medium $font_size/g" "$source_plist"
+    sed -i "" "s/FiraCodeNerdFontComplete-Retina 12/FiraCodeNerdFontComplete-Retina $font_size/g" "$source_plist"
     success "iTerm profile: generated"
 
     if [[ -f "$destination" ]] || [[ -d "$destination" ]]; then
