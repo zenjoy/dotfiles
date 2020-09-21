@@ -122,8 +122,8 @@ install_ruby() {
     successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev"
   fi
 
-  check "ruby 2.5.3" "rbenv versions | grep 2.5.3"
-    successfully "rbenv install 2.5.3; rbenv shell 2.5.3; gem install bundler"
+  check "ruby 2.5.7" "rbenv versions | grep 2.5.7"
+    successfully "rbenv install 2.5.7; rbenv shell 2.5.7; gem install bundler; gem install bundler -v '<2'"
 }
 
 install_vagrant() {
