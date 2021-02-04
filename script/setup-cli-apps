@@ -144,6 +144,7 @@ function usage() {
   printf "Options\n"
   printf "  -l --list               Show list of apps that can be installed\n"
   printf "  -s --single-app <app>   Install app <app> only (use code as reference)\n"
+  printf "  -o --only <app>         Install app <app> only (use code as reference)\n"
   printf "\n"
 }
 
@@ -287,7 +288,7 @@ while [[ "$1" == -* ]]; do
     trap finish EXIT
     exit
     ;;
-  -s|--single-app)
+  -s|--single-app|-o|--only)
     shift
     install_cli_apps "$1"
     trap finish EXIT
