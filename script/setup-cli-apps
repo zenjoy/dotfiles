@@ -80,6 +80,7 @@ cli_apps=(
   "ncdu|A handy disk usage analyzer|command -v ncdu|brew install ncdu|https://dev.yorhel.nl/ncdu"
   "noti|Show a notification at the end of a process|command -v noti|brew install noti|https://github.com/variadico/noti#readme"
   "entr|Run arbitrary commands when files change|command -v entr|brew install entr|http://eradman.com/entrproject/"
+  "wipe-modules|A little agent that removes the node_modules folder of non-active projects 🗑️|command -v wipe-modules|npm install -g wipe-modules|https://github.com/bntzio/wipe-modules"
 
   "--Information & Search"
 
