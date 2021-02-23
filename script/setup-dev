@@ -119,7 +119,7 @@ install_ruby() {
   elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     info "ruby dependencies"
     status "ruby dependencies : ${BOLD}installing${NORMAL}"
-    successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev"
+    successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm-dev"
   fi
 
   check "ruby 2.5.8" "rbenv versions | grep 2.5.8"
