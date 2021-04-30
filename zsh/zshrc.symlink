@@ -58,7 +58,6 @@ plugins=(brew
 				 gitignore
 				 git-extras
 				 git-hubflow
-				 git-remote-branch
 				 git-it-on
 				 httpie
 				 iterm2
