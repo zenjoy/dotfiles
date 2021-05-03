@@ -50,6 +50,11 @@ setup_gitconfig () {
   info "Installing .gitconfig"
   link_dotfile "$DOTFILES_ROOT/git/gitconfig.symlink"
 
+  # When on windows configure core.autocrlf
+  if [[ $(uname -r) =~ Microsoft$ ]]; then
+    git config --global core.autocrlf true
+  fi
+
   success 'Git successfully configured!'
 }
 
