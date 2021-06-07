@@ -546,7 +546,6 @@ install_mac_apps
 install_appstore_apps
 setup_iterm
 setup_vscode
-ask_alfred
 
 trap finish EXIT
 
