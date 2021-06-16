@@ -89,8 +89,8 @@ setup_dotfiles() {
 }
 
 install_1password_cli() {
-  check "1password-cli" "brew cask ls 1password-cli" "brew cask upgrade 1password-cli"
-  successfully "brew cask install 1password-cli"
+  check "1password-cli" "brew ls --cask 1password-cli" "brew upgrade --cask 1password-cli"
+  successfully "brew install --cask 1password-cli"
 }
 
 

@@ -154,8 +154,8 @@ quicklook_plugins() {
   _title_ "macOS useful quicklook plugins"
   plugins=("qlcolorcode" "qlstephen" "qlmarkdown" "quicklook-json" "webpquicklook" "suspicious-package" "quicklookase" "qlvideo")
   for plugin in "${plugins[@]}"; do
-    check "quicklook plugin ${BOLD}$plugin${NORMAL}" "brew cask ls $plugin"
-    successfully "brew cask install $plugin"
+    check "quicklook plugin ${BOLD}$plugin${NORMAL}" "brew ls --cask $plugin"
+    successfully "brew install --cask $plugin"
   done
 }
 
@@ -256,15 +256,15 @@ install_mac_apps() {
     app_description="${app_info[2]}"
 
     # get executable name from cask to check if it is already installed
-    executable=$(brew cask info $app_code | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
+    executable=$(brew info --cask $app_code | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
     # check sudo or keep it alive before spinner starts
     sudo -v
     if [[ $app_description == *"Screensaver"* ]]; then
-      check "$app_name" "brew cask ls $app_code"
+      check "$app_name" "brew ls --cask $app_code"
     else
       check "$app_name" "open -R -g -a '$executable' > /dev/null"
     fi
-    successfully "brew cask install $app_code" "perhaps it is already installed."
+    successfully "brew install --cask $app_code" "perhaps it is already installed."
   done
 }
 
@@ -274,8 +274,8 @@ setup_iterm() {
   if ! open -R -g -a iTerm > /dev/null; then
     warn "iTerm2 not found, skipping setup..."
   else
-    check "Fura Code Nerd font" "brew cask ls font-fira-code-nerd-font"
-    successfully "brew tap homebrew/cask-fonts && brew cask install font-fira-code-nerd-font"
+    check "Fura Code Nerd font" "brew ls --cask font-fira-code-nerd-font"
+    successfully "brew tap homebrew/cask-fonts && brew install --cask font-fira-code-nerd-font"
 
     user_ask_yn "iTerm profile: would you like a larger font size?" "y"
     if [[ "$user_ask_yn_result" == "y" ]]; then
@@ -456,7 +456,7 @@ install_alfred_workflows() {
 }
 
 setup_alfred_workflow() {
-  executable=$(brew cask info alfred | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
+  executable=$(brew info --cask alfred | grep '(App)' | sed -E 's/(.*).app \(App\)/\1/')
   if open -R -g -a "$executable" > /dev/null; then
     user_ask_yn "Would you like to install some very handy Alfred workflows?" "y"
     if [[ "$user_ask_yn_result" == "y" ]]; then
@@ -546,7 +546,6 @@ install_mac_apps
 install_appstore_apps
 setup_iterm
 setup_vscode
-ask_alfred
 
 trap finish EXIT
 

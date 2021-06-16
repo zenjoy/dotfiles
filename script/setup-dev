@@ -76,7 +76,7 @@ install_docker() {
     sudo -v
 
     check "docker for mac" "command -v docker"
-    successfully "brew cask install docker"
+    successfully "brew install --cask docker"
   fi
 }
 
@@ -132,13 +132,13 @@ install_vagrant() {
     sudo -v
 
     check "virtualbox" "command -v VirtualBox"
-    successfully "brew cask install virtualbox"
+    successfully "brew install --cask virtualbox"
 
     # check sudo or keep it alive before spinner starts
     sudo -v
 
     check "vagrant" "command -v vagrant"
-    successfully "brew cask install vagrant"
+    successfully "brew install --cask vagrant"
   fi
 }
 
