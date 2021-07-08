@@ -13,7 +13,6 @@
 /tmp
 log/*.log
 rerun.txt
-tags
 tmp/**/*
 ._*
 .Spotlight-V100
