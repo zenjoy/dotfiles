@@ -235,8 +235,8 @@
           "Action": 10
         },
         "0xf703-0x280000": {
-          "Text": "0x1b 0x1b 0x5b 0x43",
-          "Action": 11
+          "Text": "f",
+          "Action": 10
         },
         "0xf700-0x240000": {
           "Text": "[1;5A",
@@ -267,8 +267,8 @@
           "Action": 10
         },
         "0xf702-0x280000": {
-          "Text": "0x1b 0x1b 0x5b 0x44",
-          "Action": 11
+          "Text": "b",
+          "Action": 10
         },
         "0xf72b-0x20000": {
           "Text": "[1;2F",

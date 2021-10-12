@@ -1,3 +1,8 @@
+
+#### FIG ENV VARIABLES ####
+# Please make sure this block is at the start of this file.
+[ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
+#### END FIG ENV VARIABLES ####
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
 
@@ -45,6 +50,10 @@ PURE_PROMPT_TERRAFORM_SYMBOL="\uf9fd"
 
 # Comment following line if you do not want red dots to be displayed while waiting for completion
 COMPLETION_WAITING_DOTS="true"
+
+# Enable fig if it is installed: do this before sourcing oh-my-zsh otherwise 
+# smart history no longer works (see https://github.com/withfig/fig/issues/425)
+[ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 plugins=(brew
