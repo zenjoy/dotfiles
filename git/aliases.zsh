@@ -1,6 +1,6 @@
 # Use `hub` as our git wrapper:
 #   http://defunkt.github.com/hub/
-if [ -f /usr/local/rbenv/shims/hub ]; then
+if [ -f $HOMEBREW_PREFIX/rbenv/shims/hub ]; then
   alias git="hub"
 fi
 

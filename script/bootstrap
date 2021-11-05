@@ -24,12 +24,12 @@ else
 fi
 
 update_path() {
-  # We need /usr/local/bin to come before /usr/bin on the path, to
+  # We need $HOMEBREW_PREFIX/bin to come before /usr/bin on the path, to
   # pick up brew files we install.  To do this, we just source
   # .profile.khan, which does this for us (and the new user).
   # (This assumes you're running mac-setup.sh from the khan-dotfiles
   # directory.)
-  export PATH="/usr/local/bin:/usr/local/sbin:$DOTFILES/bin:$PATH"
+  export PATH="$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:$DOTFILES/bin:$PATH"
 }
 
 install_homebrew() {
@@ -66,7 +66,7 @@ install_homebrew() {
 
   # info "Fixing Homebrew permissions ...\n"
   # successfully "sudo chown -R $(whoami) $(brew --prefix)/*; sudo chown -R +rw $(brew --prefix)/*"
-  #successfully "sudo chgrp -R staff /usr/local/*; sudo chmod -R g+rwxXs /usr/local/*"
+  #successfully "sudo chgrp -R staff $HOMEBREW_PREFIX/*; sudo chmod -R g+rwxXs $HOMEBREW_PREFIX/*"
 
   info "updating (but not upgrading) homebrew" "done"
   successfully "brew update"

@@ -90,7 +90,7 @@ code () {
     if ! open -R -g -a 'Visual Studio Code' > /dev/null; then
       echo "Visual Studio Code is not installed."
     else
-      ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "/usr/local/bin/code"
+      sudo ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "/usr/local/bin/code"
       /usr/local/bin/code $*
     fi
   fi

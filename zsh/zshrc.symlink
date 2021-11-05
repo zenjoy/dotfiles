@@ -3,6 +3,7 @@
 # Please make sure this block is at the start of this file.
 [ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
 #### END FIG ENV VARIABLES ####
+
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
 
@@ -18,6 +19,33 @@ export LC_TIME="nl_BE.UTF-8"
 if [[ -a "$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist" ]]; then
 	echo -e "\033]50;SetProfile=Zenjoy\a"
 	tput reset
+fi
+
+# Load Homebrew, path is depending on CPU architecture
+arch_name="$(uname -m)"
+if [[ "${arch_name}" = "x86_64" ]]; then
+  if [[ "$(sysctl -in sysctl.proc_translated)" = "1" ]]; then
+    echo "Terminal Running on Rosetta 2"
+  else
+    #echo "Running on native Intel"
+  fi 
+  eval "$(/usr/local/bin/brew shellenv)"
+elif [[ "${arch_name}" = "arm64" ]]; then
+  #echo "Running on M1"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Load rbenv
+if [[ -d "$HOMEBREW_PREFIX/rbenv" ]]; then
+  export RBENV_ROOT="$HOMEBREW_PREFIX/rbenv"
+  export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+  eval "$(rbenv init -)"
+fi
+
+if [[ -d "$HOME/.rbenv" ]]; then
+  export RBENV_ROOT="$HOME/.rbenv"
+  export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+  eval "$(rbenv init -)"
 fi
 
 if [[ -d "$HOME/.zcompcache" ]]
@@ -154,17 +182,17 @@ if [[ -a ~/.localrc.late ]]; then
 fi
 
 # support asdf
-if [[ -a /usr/local/opt/asdf/asdf.sh ]]; then
-	source /usr/local/opt/asdf/asdf.sh
+if [[ -a $HOMEBREW_PREFIX/opt/asdf/asdf.sh ]]; then
+	source $HOMEBREW_PREFIX/opt/asdf/asdf.sh
 fi
 
-if [[ -a /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash ]]; then
-	source /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash
+if [[ -a $HOMEBREW_PREFIX/opt/asdf/etc/bash_completion.d/asdf.bash ]]; then
+	source $HOMEBREW_PREFIX/opt/asdf/etc/bash_completion.d/asdf.bash
 fi
 
 # support autojump
 if command -v autojump >/dev/null 2>&1; then
-	. `brew --prefix`/etc/autojump.sh
+	. $HOMEBREW_PREFIX/etc/autojump.sh
 fi
 
 # allow zeus and unicorn to fork
@@ -183,12 +211,6 @@ export YARN_ENABLED=true
 # Fix direcory autocompletion when using autosuggestions
 ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(expand-or-complete)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
-
-# Needed to run Helm Secrets
-if [[ -a /usr/local/opt/gnu-getopt/bin/getopt ]]
-then
-  export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"
-fi
 
 # Check for update of the dotfiles
 if [ "$DISABLE_AUTO_UPDATE" != "true" ]; then

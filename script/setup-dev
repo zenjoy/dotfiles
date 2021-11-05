@@ -45,6 +45,14 @@ install_homebrew() {
   check "homebrew" "command -v brew"
   if [[ "$(uname)" == "Darwin" ]]; then
     successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+    info "homebrew" "environment ready"
+
+    arch_name="$(uname -m)"
+    if [[ "${arch_name}" = "x86_64" ]]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    elif [[ "${arch_name}" = "arm64" ]]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
   elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     if [[ $proceed -ne 0 ]]; then
       status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
@@ -81,24 +89,29 @@ install_docker() {
 }
 
 install_ruby() {
+  if [ -z "$HOMEBREW_PREFIX" ];
+    echo "${BOLD}Homebrew is not installed!! (\$HOMEBREW_PREFIX is empty) Please make sure Homebrew is correctly set up before continuing...${NORMAL}"
+    exit 1
+  fi
+
   if [[ "$(uname)" == "Darwin" ]]; then
-    check "rbenv" "ls /usr/local/rbenv > /dev/null" "cd /usr/local/rbenv && git pull"
-    successfully "sudo git clone git://github.com/sstephenson/rbenv.git /usr/local/rbenv >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv; sudo chmod -R g+rwxXs /usr/local/rbenv;"
+    check "rbenv" "ls $HOMEBREW_PREFIX/rbenv > /dev/null" "cd $HOMEBREW_PREFIX/rbenv && git pull"
+    successfully "sudo git clone https://github.com/rbenv/rbenv.git $HOMEBREW_PREFIX/rbenv >> $LOGFILE 2>&1; sudo chgrp -R staff $HOMEBREW_PREFIX/rbenv; sudo chmod -R g+rwxXs $HOMEBREW_PREFIX/rbenv;"
   elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     check "rbenv" "ls ~/.rbenv > /dev/null" "cd ~/.rbenv && git pull"
-    successfully "git clone git://github.com/sstephenson/rbenv.git ~/.rbenv >> $LOGFILE 2>&1;"
+    successfully "git clone https://github.com/rbenv/rbenv.git ~/.rbenv >> $LOGFILE 2>&1;"
   fi
 
   if [[ "$(uname)" == "Darwin" ]]; then
-    check "ruby-build" "ls /usr/local/rbenv/plugins/ruby-build > /dev/null" "cd /usr/local/rbenv/plugins/ruby-build && git pull"
-    successfully "mkdir -p /usr/local/rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build >> $LOGFILE 2>&1; sudo chgrp -R staff /usr/local/rbenv/plugins/ruby-build; sudo chmod -R g+rwxs /usr/local/rbenv/plugins/ruby-build;"
+    check "ruby-build" "ls $HOMEBREW_PREFIX/rbenv/plugins/ruby-build > /dev/null" "cd $HOMEBREW_PREFIX/rbenv/plugins/ruby-build && git pull"
+    successfully "mkdir -p $HOMEBREW_PREFIX/rbenv/plugins; git clone https://github.com/sstephenson/ruby-build.git $HOMEBREW_PREFIX/rbenv/plugins/ruby-build >> $LOGFILE 2>&1; sudo chgrp -R staff $HOMEBREW_PREFIX/rbenv/plugins/ruby-build; sudo chmod -R g+rwxs $HOMEBREW_PREFIX/rbenv/plugins/ruby-build;"
   elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     check "ruby-build" "ls ~/.rbenv/plugins/ruby-build > /dev/null" "cd ~/.rbenv/plugins/ruby-build && git pull"
-    successfully "mkdir -p ~/.rbenv/plugins; git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build >> $LOGFILE 2>&1;"
+    successfully "mkdir -p ~/.rbenv/plugins; git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build >> $LOGFILE 2>&1;"
   fi
 
-  if [[ -d "/usr/local/rbenv" ]]; then
-    export RBENV_ROOT="/usr/local/rbenv"
+  if [[ -d "$HOMEBREW_PREFIX/rbenv" ]]; then
+    export RBENV_ROOT="$HOMEBREW_PREFIX/rbenv"
     export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
     eval "$(rbenv init -)"
   fi
@@ -178,7 +191,6 @@ install_ruby
 install_docker
 install_vagrant
 setup_vscode
-setup_hyper
 
 _spinner_stop
 

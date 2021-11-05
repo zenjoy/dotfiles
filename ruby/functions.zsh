@@ -1,3 +1,3 @@
 update-rbenv() {
-  pushd /usr/local/rbenv && git pull && pushd /usr/local/rbenv/plugins/ruby-build && git pull && popd && popd
+  pushd $HOMEBREW_PREFIX/rbenv && git pull && pushd $HOMEBREW_PREFIX/rbenv/plugins/ruby-build && git pull && popd && popd
 }
