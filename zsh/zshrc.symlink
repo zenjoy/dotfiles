@@ -100,8 +100,8 @@ plugins=(brew
 				 iterm2
 				 iosctl
 				 oh-my-matrix
+				 macos
 				 npm
-				 osx
 				 react-native
 				 vagrant
 				 xcode
