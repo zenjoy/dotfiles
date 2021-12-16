@@ -84,32 +84,34 @@ COMPLETION_WAITING_DOTS="true"
 [ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-plugins=(brew
-				 droplr
-				 docker
-				 docker-compose
-				 extract
-				 encode64
-				 fast-syntax-highlighting
-				 gem
-				 gitignore
-				 git-extras
-				 git-hubflow
-				 git-it-on
-				 httpie
-				 iterm2
-				 iosctl
-				 oh-my-matrix
-				 macos
-				 npm
-				 react-native
-				 vagrant
-				 xcode
-				 vault
-				 zshmarks
-				 zsh-brew-services
-				 zsh-autosuggestions
-				 zsh-completions)
+plugins=(
+  asdf
+  brew
+  droplr
+  docker
+  docker-compose
+  extract
+  encode64
+  fast-syntax-highlighting
+  gem
+  gitignore
+  git-extras
+  git-hubflow
+  git-it-on
+  httpie
+  iterm2
+  iosctl
+  oh-my-matrix
+  macos
+  npm
+  react-native
+  vagrant
+  xcode
+  vault
+  zshmarks
+  zsh-brew-services
+  zsh-autosuggestions
+  zsh-completions)
 
 # Load any cached paths upfront
 if [[ -a $ZSH/cache/zsh_plugin_paths ]]; then
