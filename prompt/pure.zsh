@@ -154,13 +154,28 @@ prompt_pure_preexec() {
 	export VIRTUAL_ENV_DISABLE_PROMPT=${VIRTUAL_ENV_DISABLE_PROMPT:-12}
 }
 
+# Change the colors if their value are different from the current ones.
+prompt_pure_set_colors() {
+	local color_temp key value
+	for key value in ${(kv)prompt_pure_colors}; do
+		zstyle -t ":prompt:pure:$key" color "$value"
+		case $? in
+			1) # The current style is different from the one from zstyle.
+				zstyle -s ":prompt:pure:$key" color color_temp
+				prompt_pure_colors[$key]=$color_temp ;;
+			2) # No style is defined.
+				prompt_pure_colors[$key]=$prompt_pure_colors_default[$key] ;;
+		esac
+	done
+}
+
 prompt_pure_preprompt_render() {
 	setopt localoptions noshwordsplit
 
 	# Set color for git branch/dirty status, change color if dirty checking has
 	# been delayed.
-	local git_color=242
-	[[ -n ${prompt_pure_git_last_dirty_check_timestamp+x} ]] && git_color=red
+	local git_color=$prompt_pure_colors[git:branch]
+	[[ -n ${prompt_pure_git_last_dirty_check_timestamp+x} ]] && git_color=$prompt_pure_colors[git:branch:cached]
 
 	# Initialize the preprompt array.
 	local -a preprompt_parts
@@ -200,7 +215,7 @@ prompt_pure_preprompt_render() {
 		trunc_prefix="%($((PURE_PROMPT_DIR_TRUNC + 1))~|$PURE_PROMPT_DIR_TRUNC_PREFIX|)"
 		prompt_pure_dir="$trunc_prefix%${PURE_PROMPT_DIR_TRUNC}~"
 	fi
-	preprompt_parts+=('in %F{blue}${prompt_pure_dir}%f')
+	preprompt_parts+=('in %F{${prompt_pure_colors[path]}}${prompt_pure_dir}%f')
 
 	# Add git branch and dirty status info.
 	if [[ -n $prompt_pure_vcs_info[branch] ]]; then
@@ -208,12 +223,12 @@ prompt_pure_preprompt_render() {
 	fi
 	# Git pull/push arrows.
 	if [[ -n $prompt_pure_git_arrows ]]; then
-		preprompt_parts+=('%F{cyan}${prompt_pure_git_arrows}%f')
+		preprompt_parts+=('%F{$prompt_pure_colors[git:arrow]}${prompt_pure_git_arrows}%f')
 	fi
 
 	# Git stash symbol.
 	if [[ -n $prompt_pure_vcs_info[stash] ]]; then
-		preprompt_parts+=('%F{cyan}${PURE_GIT_STASH_SYMBOL:-≡}%f')
+		preprompt_parts+=('%F{$prompt_pure_colors[git:stash]}${PURE_GIT_STASH_SYMBOL:-≡}%f')
 	fi
 
 	# Git stash symbol.
@@ -288,6 +303,9 @@ prompt_pure_precmd() {
 
 	# shows the full path in the title
 	prompt_pure_set_title 'expand-prompt' '%~'
+
+  # Modify the colors if some have changed
+	prompt_pure_set_colors
 
 	# preform async git dirty check and fetch
 	prompt_pure_async_tasks
@@ -992,10 +1010,10 @@ prompt_pure_state_setup() {
 
 	# Check SSH_CONNECTION and the current state.
 	local ssh_connection=${SSH_CONNECTION:-$PROMPT_PURE_SSH_CONNECTION}
-	local username
+	local username hostname
 	if [[ -z $ssh_connection ]] && (( $+commands[who] )); then
 		# When changing user on a remote system, the $SSH_CONNECTION
-		# environment variable can be lost, attempt detection via who.
+		# environment variable can be lost. Attempt detection via `who`.
 		local who_out
 		who_out=$(who -m 2>/dev/null)
 		if (( $? )); then
@@ -1008,7 +1026,7 @@ prompt_pure_state_setup() {
 		local reIPv6='(([0-9a-fA-F]+:)|:){2,}[0-9a-fA-F]+'  # Simplified, only checks partial pattern.
 		local reIPv4='([0-9]{1,3}\.){3}[0-9]+'   # Simplified, allows invalid ranges.
 		# Here we assume two non-consecutive periods represents a
-		# hostname. This matches foo.bar.baz, but not foo.bar.
+		# hostname. This matches `foo.bar.baz`, but not `foo.bar`.
 		local reHostname='([.][^. ]+){2}'
 
 		# Usually the remote address is surrounded by parenthesis, but
@@ -1025,17 +1043,32 @@ prompt_pure_state_setup() {
 		unset MATCH MBEGIN MEND
 	fi
 
-	# show username@host if logged in through SSH
-	[[ -n $ssh_connection ]] && username='%F{246}%n@%m%f'
+	hostname='%F{$prompt_pure_colors[host]}@%m%f'
+	# Show `username@host` if logged in through SSH.
+	[[ -n $ssh_connection ]] && username='%F{$prompt_pure_colors[user]}%n%f'"$hostname"
 
-	# show username@host if root, with username in white
-	[[ $UID -eq 0 ]] && username='%F{white}%n%f%F{246}@%m%f'
+	# Show `username@host` if inside a container and not in GitHub Codespaces.
+	[[ -z "${CODESPACES}" ]] && prompt_pure_is_inside_container && username='%F{$prompt_pure_colors[user]}%n%f'"$hostname"
+
+	# Show `username@host` if root, with username in default color.
+	[[ $UID -eq 0 ]] && username='%F{$prompt_pure_colors[user:root]}%n%f'"$hostname"
 
 	typeset -gA prompt_pure_state
-	prompt_pure_state=(
-		username     "$username"
-		prompt	     "${PURE_PROMPT_SYMBOL:-❯}"
+	prompt_pure_state[version]="1.19.0"
+	prompt_pure_state+=(
+		username "$username"
+		prompt	 "${PURE_PROMPT_SYMBOL:-❯}"
 	)
+}
+
+# Return true if executing inside a Docker, LXC or systemd-nspawn container.
+prompt_pure_is_inside_container() {
+	local -r cgroup_file='/proc/1/cgroup'
+	local -r nspawn_file='/run/host/container-manager'
+	[[ -r "$cgroup_file" && "$(< $cgroup_file)" = *(lxc|docker)* ]] \
+		|| [[ "$container" == "lxc" ]] \
+		|| [[ -r "$nspawn_file" ]] \
+    || [[ -f /.dockerenv ]]
 }
 
 prompt_pure_autojump_setup() {
@@ -1079,6 +1112,27 @@ prompt_pure_setup() {
 	# to be available, it was added in Zsh 5.3.
 	autoload -Uz +X add-zle-hook-widget 2>/dev/null
 
+  # Set the colors.
+	typeset -gA prompt_pure_colors_default prompt_pure_colors
+	prompt_pure_colors_default=(
+		execution_time       yellow
+		git:arrow            cyan
+		git:stash            cyan
+		git:branch           242
+		git:branch:cached    red
+		git:action           yellow
+		git:dirty            218
+		host                 242
+		path                 blue
+		prompt:error         red
+		prompt:success       green
+		prompt:continuation  242
+		user                 242
+		user:root            default
+		virtualenv           242
+	)
+	prompt_pure_colors=("${(@kv)prompt_pure_colors_default}")
+
 	add-zsh-hook precmd prompt_pure_precmd
 	add-zsh-hook preexec prompt_pure_preexec
 
@@ -1094,13 +1148,13 @@ prompt_pure_setup() {
 	fi
 
 	# if a virtualenv is activated, display it in grey
-	PROMPT='%(12V.%F{242}%12v%f .)'
+	PROMPT='%(12V.%F{$prompt_pure_colors[virtualenv]}%12v%f .)'
 
 	# prompt turns red if the previous command didn't exit with 0
-	PROMPT+='%(?.%F{green}.%F{red})${prompt_pure_state[prompt]}%f '
+	PROMPT+='%(?.%F{$prompt_pure_colors[prompt:success]}.%F{$prompt_pure_colors[prompt:error]})${prompt_pure_state[prompt]}%f '
 
 	# Indicate continuation prompt by … and use a darker color for it.
-	PROMPT2='%F{242}%_… %f%(?.%F{magenta}.%F{red})${prompt_pure_state[prompt]}%f '
+	PROMPT2='%F{$prompt_pure_colors[prompt:continuation]}%_… %f%(?.%F{$prompt_pure_colors[prompt:success]}.%F{$prompt_pure_colors[prompt:error]})${prompt_pure_state[prompt]}%f '
 
 	# Store prompt expansion symbols for in-place expansion via (%). For
 	# some reason it does not work without storing them in a variable first.
