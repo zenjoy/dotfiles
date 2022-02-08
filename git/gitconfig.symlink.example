@@ -20,6 +20,7 @@
   lg      = !git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
   ls = ls-tree -r --full-tree HEAD
   st = status
+  patch = !git --no-pager diff --no-color
 [apply]
   whitespace = nowarn
 [color]
@@ -31,7 +32,7 @@
   excludesfile = ~/.gitignore
   editor = code --wait
   ignorecase = false
-  pager = diff-so-fancy | less --tabs=4 -RFX
+  pager = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
 [commit]
   template = ~/.gitmessage
 [color "diff-highlight"]
