@@ -1,9 +1,3 @@
-# Use `hub` as our git wrapper:
-#   http://defunkt.github.com/hub/
-if [ -f $HOMEBREW_PREFIX/rbenv/shims/hub ]; then
-  alias git="hub"
-fi
-
 # The rest of my fun git aliases
 alias ungit="find . -name '.git' -exec rm -rf {} \;"
 alias gb='git branch'
