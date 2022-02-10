@@ -27,12 +27,18 @@ if [[ "${arch_name}" = "x86_64" ]]; then
   if [[ "$(sysctl -in sysctl.proc_translated)" = "1" ]]; then
     echo "Terminal Running on Rosetta 2"
   else
-    #echo "Running on native Intel"
+    # Running on native Intel
   fi 
-  eval "$(/usr/local/bin/brew shellenv)"
+  if [[ -f "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 elif [[ "${arch_name}" = "arm64" ]]; then
-  #echo "Running on M1"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  # Running on M1
+  if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+elif [[ "${arch_name}" = "aarch64" ]]; then
+  # Running on ARM-based linux, there is no Linuxbrew on ARM64
 fi
 
 # Load rbenv
