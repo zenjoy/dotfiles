@@ -24,12 +24,13 @@ fi
 # Load Homebrew, path is depending on CPU architecture
 arch_name="$(uname -m)"
 if [[ "${arch_name}" = "x86_64" ]]; then
-  if [[ "$(sysctl -in sysctl.proc_translated)" = "1" ]]; then
-    echo "Terminal Running on Rosetta 2"
-  else
-    # Running on native Intel
-  fi 
   if [[ -f "/usr/local/bin/brew" ]]; then
+    if [[ "$(sysctl -n sysctl.proc_translated)" = "1" ]]; then
+      echo "Terminal Running on Rosetta 2"
+    else
+      # Running on native Intel
+    fi 
+
     eval "$(/usr/local/bin/brew shellenv)"
   fi
 elif [[ "${arch_name}" = "arm64" ]]; then
