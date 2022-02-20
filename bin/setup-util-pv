@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+env CLI='pv' \
+	APT='pv' \
+	BREW='pv' \
+	setup-util

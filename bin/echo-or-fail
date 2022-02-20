@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+function help {
+	cat <<-EOF >/dev/stderr
+		USAGE:
+		echo 'sup' | echo-or-fail
+		# ^ returns exit code 0
+
+		: | echo-or-fail
+		# ^ returns exit code 1
+	EOF
+}
+
+function act {
+	echo "$1"
+}
+
+function noact {
+	return 96 # No message available on STREAM
+}
+
+source "$DOTFILES/sources/stdinargs.bash"

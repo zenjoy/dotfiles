@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# -L, --location      Follow redirects
+status="$(http-status --location "${1-}")"
+test "$status" -ge 200 -a "$status" -le 300

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# prepare
+dirs=(
+	"$HOME/Applications"
+	"/Applications"
+	"/Applications/Setapp"
+)
+
+# help
+if is-help-empty "$@"; then
+	cat <<-EOF >/dev/stderr
+		ABOUT:
+		Get the full path of a GUI application.
+
+		USAGE:
+		get-app [--quiet] <app path or name>
+
+		QUIRKS:
+		Searches the following paths for the application:
+		$(echo-lines -- "${dirs[@]}")
+	EOF
+	exit 22 # Invalid argument
+fi
+
+# quiet mode
+quiet='no'
+if test "$1" = "--quiet"; then
+	quiet='yes'
+	shift
+fi
+
+# ensure the name has .app appended
+name="$*"
+appname="${name%.app}.app"
+
+# iterate through a few options
+for dir in "${dirs[@]}"; do
+	path="$dir/$appname"
+	if test -d "$path"; then
+		if test "$quiet" = 'no'; then
+			echo "$path"
+		fi
+		exit 0
+	fi
+done
+
+# wasn't found
+exit 1

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://starship.rs
+# cross-shell prompt
+
+# https://starship.rs/guide/#🚀-installation
+env NAME='Starship' CLI='starship' \
+	BREW='starship' \
+	SCOOP='starship' \
+	CURL='https://starship.rs/install.sh' \
+	setup-util
+
+echo 'If you see unknown icons while using Starship, then you need to run:'
+if is-mac; then
+	echo '	brew install --cask font-fira-code-nerd-font'
+else
+	echo '	setup-linux-fonts'
+fi
+echo 'then set your terminal to use the Fira Code Nerd font, or another monospace nerd font that was installed.'

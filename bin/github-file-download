@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# options
+path="$(
+	ask --required \
+		--question='What is the repository slug and path?' \
+		--default="${1-}"
+)"
+destination="$(get-flag-value destination -- "$@")" # custom destination
+
+# prepare
+url="$(github-file "$path")"
+
+# act
+down "$url" --destination="$destination"

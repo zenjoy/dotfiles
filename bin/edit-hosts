@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+source "$DOTFILES/sources/edit.sh"
+
+sudo "$GUI_EDITOR" /etc/hosts

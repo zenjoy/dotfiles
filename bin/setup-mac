@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# =====================================
+# Prepare
+
+# check that an accident has not occured
+if ! is-mac; then
+	echo-style --error='[setup-mac] is only intended to be run on macOS systems...'
+	exit 2
+fi
+
+# Make sure CLI tools are installed
+echo-style --h2='Ensuring Apple Command Line Tool are installed...'
+while true; do
+	if ! xcode-select --install; then
+		echo-style --g2='...Apple Command Line Tool are installed.'
+		break
+	else
+		confirm --ppid=$$ -- "Press any key once the Apple Command Line Tool have been installed"
+	fi
+done
+
+# Make sure Xcode license is accepted
+if get-app --quiet 'Xcode' || get-app --quiet 'Xcode-beta'; then
+	echo-style --h2='Ensuring the Xcode license is accepted...'
+	sudo xcodebuild -license accept
+	echo-style --g2='...Xcode license accepted.'
+fi
+
+# action
+action="$(
+	choose-option \
+		--question='Do you want to install or update this system?' \
+		--filter="${1-}" -- 'install' 'update' || echo "${1:-install}"
+)" # or condition here is for bash v3, which choose-option will fail on, as bash v3 does not yet support arrays
+
+# =====================================
+# Start
+
+# log
+echo-segment --h1="${action@u} macOS"
+
+# dorothy install/update
+dorothy "$action"
+
+# mac
+setup-mac-brew "$action"                 # setup-util-devel done as part of this
+source "$DOTFILES/sources/environment.sh" # ensure the updated bash is available to what comes after
+if test "$action" = 'install'; then
+	setup-mac-apps
+fi
+
+# cross-platform
+setup-extras "$action"
+
+# cleanup
+setup-mac-clean
+
+# restore
+if test "$action" = 'install'; then
+	echo
+	echo-segment --h2="Configure macOS"
+	if confirm-bool --ppid=$$ -- "Would you like to also restore from backup?"; then
+		macos-state restore
+	fi
+	echo
+	if confirm-bool --ppid=$$ -- "Would you like to also configure macOS settings?"; then
+		macos-settings
+	fi
+	echo
+	echo-segment --g2="Configure macOS"
+fi
+
+# log
+echo-segment --g1="${action@u} macOS"

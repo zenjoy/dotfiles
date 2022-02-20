@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+command-exists snap

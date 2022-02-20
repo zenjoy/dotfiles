@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# help
+if is-help-empty "$@"; then
+	cat <<-EOF >/dev/stderr
+		ABOUT:
+		Get the group identifier for a group name.
+
+		USAGE:
+		gid <group name>
+	EOF
+	exit 22 # Invalid argument
+fi
+
+# options
+group="$1"
+
+# https://stackoverflow.com/a/10910180
+getent group "$group" | cut -d: -f3

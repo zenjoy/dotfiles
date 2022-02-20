@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+p="${1:-"$(
+	choose-option --required \
+		--question='Which path to identify users of?' \
+		-- /Volumes/*
+)"}"
+sudo lsof "$p"

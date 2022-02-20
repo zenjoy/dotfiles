@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+is-mac && test "$(uname -p)" = 'arm' -o "$(uname -m)" = 'arm64'

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# =====================================
+# Checks
+
+# check that an accident has not occured
+if ! is-linux; then
+	echo-style --notice="[$0] is only intended to be run on Linux systems, skipping." >/dev/stderr
+	exit 0
+fi
+
+# =====================================
+# Action
+
+# action
+action="$(
+	choose-option \
+		--question='Do you want to install or update this system?' \
+		--filter="${1-}" -- 'install' 'update'
+)"
+
+# log
+echo-segment --h1="${action@u} Linux"
+
+# dorothy install/update
+dorothy "$action"
+
+# system
+setup-linux-raspi
+setup-linux-recovery
+
+# package managers and utilities
+setup-util-apt
+setup-util-apk
+setup-util-yum
+if test "$action" = 'install'; then
+	env CONFIRM=yes setup-util-gnome-software || :
+	env CONFIRM=yes setup-util-snap || :
+	env CONFIRM=yes setup-util-flatpak || :
+	env CONFIRM=yes setup-util-pamac || :
+	setup-linux-fonts
+else
+	env ACTION=update setup-util-snap || :
+	env ACTION=update setup-util-flatpak || :
+	env ACTION=update setup-util-pamac || :
+fi
+
+# cross-platform
+setup-extras "$action"
+
+# cleanup
+setup-linux-clean
+
+# log
+echo-segment --g1="${action@u} Linux"

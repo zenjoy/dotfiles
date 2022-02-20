@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+function act {
+	if test -n "$1" -a -d "$1"; then
+		echo "$1"
+	fi
+}
+
+source "$DOTFILES/sources/stdinargs.bash"

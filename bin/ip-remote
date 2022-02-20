@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+fetch 'http://ipecho.net/plain'
+echo ''

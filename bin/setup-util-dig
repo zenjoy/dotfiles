@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+env CLI=dig \
+	DNF='bind-utils' \
+	APT='dnsutils' \
+	PACMAN='dnsutils' \
+	setup-util

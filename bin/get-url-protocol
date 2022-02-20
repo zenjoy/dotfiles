@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# dependencies
+env QUIET=yes setup-util-sd
+
+# act
+# shellcheck disable=SC2016
+result="$(echo "$1" | sd '^([a-z]+)://.*$' '$1')"
+if test "$result" = "$1"; then
+	exit 1
+else
+	echo "$result"
+fi

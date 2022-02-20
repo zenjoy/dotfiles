@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://stackoverflow.com/a/240181
+grep -q "\*\*" <<<"$*"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# is the array absolutely empty?
+
+# failure if any value is truthy
+# pass if all values are empty
+
+# if you are using this in conjuction with a is-array-partial,
+# or your own test -n or test -z calls,
+# then there is no need for this
+
+for arg in "$@"; do
+	if test -n "$arg"; then
+		exit 1
+	fi
+done
+
+exit 0

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# vino does not appear in the gnome sharing settings
+# gnome-remote-desktop does however
+
+if is-gnome; then
+	env NAME='vnc' \
+		PAMAC='gnome-remote-desktop' \
+		setup-util
+fi

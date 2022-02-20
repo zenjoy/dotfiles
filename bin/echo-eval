@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+function echo_eval() {
+	# remove superflous --
+	while test "$1" = '--'; do
+		shift
+	done
+
+	# echo and run
+	echo-element --open="$(echo-quote "$@" || :)"
+	ec=0 && ("$@") || ec="$?"
+	echo-element --close="$(echo-quote "$@" || :)" --status="$ec"
+	return "$ec"
+}
+
+# fire if invoked standalone
+if test "$0" = "${BASH_SOURCE[0]}"; then
+	echo_eval "$@"
+fi

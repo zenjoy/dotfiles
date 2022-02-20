@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+email="$1"
+email_hash="$(md5 -qs "$email")"
+open "https://www.gravatar.com/avatar/${email_hash}?s=2048"

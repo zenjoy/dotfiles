@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://github.com/chmln/sd
+# sed/awk alternative
+
+env CLI='sd' \
+	APK='sd' \
+	BREW='sd' \
+	CARGO='sd' \
+	CHOCO='sd-cli' \
+	DNF='sd' \
+	EMERGE='sys-apps/sd' \
+	PACMAN='sd' \
+	PKG='sd' \
+	XBPS='sd' \
+	setup-util
+
+# ^ these are all out of date compared to master, unfortunately it seems builds are broken:
+# https://github.com/chmln/sd/pull/143

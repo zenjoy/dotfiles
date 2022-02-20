@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+twitter-advertisers "${1-}" | twitter-block

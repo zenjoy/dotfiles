@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+if ("$@") >/dev/stderr; then
+	exit 1
+else
+	exit "$?"
+fi

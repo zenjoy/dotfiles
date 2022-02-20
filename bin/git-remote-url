@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+remote="$(
+	ask --required \
+		--question='Which git remote do you want the URI for?' \
+		--default="${1:-"origin"}"
+)"
+
+git remote get-url "$remote"

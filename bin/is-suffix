@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# act
+needle="${1:?"USAGE: is-suffix <NEEDLE> <HAYSTACK>"}"
+haystack="${2:?"USAGE: is-suffix <needle> <HAYSTACK>"}"
+
+# oldschool way:
+# rg -Nq "$needle"'$' <<< "$haystack"
+
+# better way:
+test "$needle" = "${haystack:${#needle}*-1}"

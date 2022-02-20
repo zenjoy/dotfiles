@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://wiki.manjaro.org/index.php/Pamac
+
+# =====================================
+# Checks
+
+# check that an accident has not occured
+if command-missing pamac; then
+	echo-style --notice="[$0] is for Linux systems with [pamac] installed, skipping." >/dev/stderr
+	exit 0
+fi
+
+# =====================================
+# Action
+
+env NAME='pamac' CLI='pamac' \
+	PACMAN='pamac-cli' \
+	setup-util
+
+pamac update --no-confirm --aur
+
+setup-util-devel
+setup-util-git
+
+pamac upgrade --no-confirm --aur

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2164
+source "$DOTFILES/sources/strict.bash"
+
+# --paths
+if test "${1-}" = '--paths'; then
+	echo '/etc/fuse.conf'
+	exit
+fi
+
+# run via setup-util, for consistent detection, quiet/vebose, force mode, optional mode, etc
+if test -z "${SETUP_UTIL-}"; then
+	env CMD="${BASH_SOURCE:-"$0"}" CLI='gocryptfs' \
+		setup-util cmd
+	exit "$?"
+fi
+
+# get the latest release
+tag="$(github-latest-release 'rfjakob/gocryptfs')"
+
+# setup a temporary directory
+tdir="$(mktemp -d)"
+
+# shallow clone the repo, quietly
+git clone --quiet --depth 1 --branch "$tag" 'https://github.com/rfjakob/gocryptfs.git' "$tdir"
+
+# enter into it
+cd "$tdir"
+
+# build from source
+chmod +x ./build.bash
+./build.bash
+# this installs a copy of the binary file to
+# "$GOPATH1/bin"
+
+# the go path is not available to sudo, so make a copy that is
+sudo mkdir -p '/usr/local/bin'
+sudo cp ./gocryptfs '/usr/local/bin/gocryptfs'
+sudo chmod +x '/usr/local/bin/gocryptfs'
+
+# cleanup
+cd "$HOME"
+rm -Rf "$tdir"

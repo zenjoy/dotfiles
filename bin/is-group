@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://stackoverflow.com/a/36131231/130638
+silent getent group "$1"

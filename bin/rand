@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# help
+if is-help "$@"; then
+	cat <<-EOF >/dev/stderr
+		ABOUT:
+		Output a random number.
+
+		USAGE:
+		rand
+	EOF
+	exit 22 # Invalid argument
+fi
+
+# act
+if test -n "$RANDOM"; then
+	echo "$RANDOM"
+else
+	env QUIET=yes setup-util-fish
+	fish -c random
+fi

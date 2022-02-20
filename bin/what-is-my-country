@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# does take into account cloudflare warp
+fetch https://whatmycountry.bevry.workers.dev

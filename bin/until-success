@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+("$@") || {
+	stderr echo "failed with $? will try again in 10 seconds..."
+	sleep 5
+	until-success "$@"
+}

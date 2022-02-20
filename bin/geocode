@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# help
+if is-help "$@"; then
+	cat <<-EOF >/dev/stderr
+		ABOUT:
+		Geocodes a location to coordinates using the Mapbox API:
+		https://docs.mapbox.com/help/getting-started/geocoding/
+
+		USAGE:
+		geocode <--location=...> <--token=...>
+	EOF
+	exit 22 # Invalid argument
+fi
+
+# options
+token="$(
+	ask --required \
+		--question='What is your Mapbox Access Token?' \
+		--flag=token -- "$@"
+)"
+location="$(
+	ask --required \
+		--question='What is the location to geocode?' \
+		--flag=location -- "$@"
+)"
+
+# act
+fetch "https://api.mapbox.com/geocoding/v5/mapbox.places/$location.json?access_token=$token"

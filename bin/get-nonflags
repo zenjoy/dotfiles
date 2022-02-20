@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+for arg in "$@"; do
+	if [[ "$arg" != -* ]]; then
+		echo "$arg"
+	fi
+done

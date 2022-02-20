@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2164,SC1091,SC1090
+source "$DOTFILES/sources/strict.bash"
+source "$DOTFILES/sources/nullglob.bash"
+source "$(which echo-collapse)"
+
+# =====================================
+# Checks
+
+# check that an accident has not occured
+if ! is-linux; then
+	echo-style --notice="[$0] is only intended to be run on Linux systems, skipping." >/dev/stderr
+	exit 0
+fi
+
+# =====================================
+# Action
+
+# log
+echo-segment --h1='Install Fonts'
+
+# Prepare
+fontsDirectory="$HOME/.fonts"
+fontsTempDirectory="$fontsDirectory/tmp"
+mkdir -p "$fontsDirectory" "$fontsTempDirectory"
+cd "$fontsTempDirectory"
+
+# Monoid
+echo-segment --h2='Monoid'
+down-zip https://cdn.rawgit.com/larsenwork/monoid/2db2d289f4e61010dd3f44e09918d9bb32fb96fd/Monoid.zip
+mv ./*.ttf "$fontsDirectory"
+echo-segment --g2='Monoid'
+
+# Source Code Pro
+# http://askubuntu.com/a/193073/22776
+# https://github.com/adobe-fonts/source-code-pro
+echo-segment --h2='Source Code Pro'
+github-release-file-download 'adobe-fonts/source-code-pro' --filter='OTF'
+github-release-file-download 'adobe-fonts/source-code-pro' --filter='TTF'
+mv ./*.otf "$fontsDirectory"
+mv ./*.ttf "$fontsDirectory"
+echo-segment --g2='Source Code Pro'
+
+# Monaco
+# https://github.com/showcases/fonts
+# https://github.com/todylu/monaco.ttf
+echo-segment --h2='Monaco'
+down https://github.com/todylu/monaco.ttf/raw/master/monaco.ttf
+mv monaco.ttf "$fontsDirectory"
+echo-segment --g2='Monaco'
+
+# Nerd Fonts
+# https://www.nerdfonts.com/font-downloads
+# https://github.com/ryanoasis/nerd-fonts/releases/tag/v2.1.0
+echo-segment --h2='Nerd Fonts: FiraCode, RobotoMono'
+github-release-file-download 'ryanoasis/nerd-fonts' --filter='FiraCode'
+github-release-file-download 'ryanoasis/nerd-fonts' --filter='RobotoMono'
+mv ./*.otf "$fontsDirectory"
+mv ./*.ttf "$fontsDirectory"
+echo-segment --g2='Nerd Fonts: FiraCode, RobotoMono'
+
+# Refresh
+echo-segment --h2='Refresh Fonts Cache'
+fc-cache -f -v
+cd "$HOME"
+rm -Rf "$fontsTempDirectory"
+echo-segment --g2='Refresh Fonts Cache'
+
+# done
+echo-segment --g1='Install Fonts'

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+source "$DOTFILES/sources/nullglob.bash"
+source "$DOTFILES/sources/globstar.bash"
+
+# perform the act
+if test -n "${1-}"; then
+	cd "$1" || exit 1
+fi
+rm -Rfv ./**/{node_modules,pnp,package-lock.json,yarn.lock,.pnp.js,.log}

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+while read -r snapshot; do
+	sudo tmutil deletelocalsnapshots "$snapshot"
+done < <(tmutil listlocalsnapshotdates | grep '-')

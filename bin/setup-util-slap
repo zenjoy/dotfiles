@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://github.com/slap-editor/slap
+
+env CLI='slap' \
+	NPM='slap' \
+	setup-util

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+sdk=$(is-dir "$HOME/Library/Android/sdk/tools/emulator")
+if test -d "$sdk"; then
+  device=$($HOME/Library/Android/sdk/tools/emulator -list-avds | head -1)
+  $HOME/Library/Android/sdk/tools/emulator -avd "$device"
+else 
+  app=$(get-app "Android Studio.app")
+  if test -d "$app/sdk/tools/emulator"; then
+    device=$($app/sdk/tools/emulator -list-avds | head -1)
+    "$app/sdk/tools/emulator" -avd "$device"
+  else
+    echo "Android Studio is not installed"
+  fi
+fi

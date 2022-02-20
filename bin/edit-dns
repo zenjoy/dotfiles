@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/edit.sh"
+source "$DOTFILES/sources/strict.bash"
+# we can assume [HOMEBREW_PREFIX] have already been provided
+
+# this would work, but it is automatically generated from system preferences
+# edit /etc/resolv.conf
+
+if get-app --quiet 'ProtonVPN.app'; then
+	echo 'ProtonVPN enforces its own DNS'
+elif command-exists dnscrypt-proxy; then
+	echo 'Editing DNS configuration of dnscrypt-proxy'
+	edit "${HOMEBREW_PREFIX:-"/usr/local"}/etc/dnscrypt-proxy.toml"
+else
+	echo 'DNS editing only supported for dnscrypt-proxy'
+fi

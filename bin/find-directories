@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+find "${1:-.}" -type d

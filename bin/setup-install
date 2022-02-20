@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# pre-requisites
+is-internet-working
+
+# carry on
+if is-mac; then
+	setup-mac install
+elif is-linux; then
+	setup-linux install
+fi

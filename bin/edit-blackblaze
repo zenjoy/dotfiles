@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+source "$DOTFILES/sources/edit.sh"
+
+edit /Library/Backblaze.bzpkg/bzdata/bzexcluderules_editable.xml
+
+open "https://help.backblaze.com/hc/en-us/articles/220973007-Advanced-Topic-Setting-Custom-Exclusions-via-XML"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+i="$1"
+test "$((i % 2))" -eq 0

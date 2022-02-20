@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+source "$DOTFILES/sources/arrays.bash"
+requires_array_support 'mapfile' 'empty'
+
+# prepare
+mapfile -t opts < <(echo-before-separator "$@")
+mapfile -t args < <(echo-after-separator "$@")
+
+# ask with label
+mapfile -t values < <(echo-paths-and-basenames "${args[@]}")
+choose-option "${opts[@]}" --label -- "${values[@]}"

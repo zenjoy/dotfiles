@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# workaround nvm trying to compile from source old builds on apple silicon
+# https://github.com/nvm-sh/nvm/issues/2596
+
+if is-apple-silicon; then
+	arch -x86_64 /bin/bash -c "source $DOTFILES/script/nvm.sh; nvm $*"
+else
+	source "$DOTFILES/sources/nvm.sh"
+	nvm "$@"
+fi

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+#   -u, --user     print only the effective user ID
+silent id --user "$1"

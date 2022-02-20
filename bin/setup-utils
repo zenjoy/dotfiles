@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# =====================================
+# Arguments
+
+# local
+utils=()
+reconfigure='no'
+
+# help
+function help() {
+	cat <<-EOF >/dev/stderr
+		USAGE:
+		setup-utils
+		# ^ install the [SETUP_UTILS] listed in your [setup.bash] configuration file
+
+		setup-utils -- <...util>
+		# ^ install the specified utilities
+
+		setup-utils --configure
+		# ^ prompt for which utilities you wish to setup, and update [SETUP_UTILS] accordingly
+	EOF
+	if test "$#" -ne 0; then
+		echo-style $'\n' --error="ERROR:" $'\n' --red="$(echo-lines -- "$@")" >/dev/stderr
+	fi
+	return 22 # Invalid argument
+}
+
+# process
+while test "$#" -ne 0; do
+	item="$1"
+	shift
+	case "$item" in
+	'help' | '--help' | '-h') help ;;
+	'--configure') reconfigure='yes' ;;
+	'--')
+		utils+=("$@")
+		shift $#
+		break
+		;;
+	'--'*) help "An unrecognised flag was provided: $item" ;;
+	*) help "An unrecognised argument was provided: $item" ;;
+	esac
+done
+
+# =====================================
+# Configuration
+
+# if args, don't use config
+if test "${#utils[@]}" -eq 0; then
+	# no args, so use configuration
+	source "$DOTFILES/sources/config.bash"
+
+	# setup.bash provides:
+	SETUP_UTILS=()
+	load_dotfiles_config 'setup.bash'
+
+	# if empty, or --configure is specified, then prompt the user which ones
+	if test "${#SETUP_UTILS[@]}" -eq 0 -o "$reconfigure" = 'yes'; then
+		source "$DOTFILES/sources/nullglob.bash"
+		options=()
+		for file in "$DOTFILES/bin/setup-util-"*; do
+			basename="$(basename "$file")"
+			name="${basename:11}"
+			options+=("$name")
+		done
+		mapfile -t utils < <(
+			choose-option --multi \
+				--question="Which utilities to install?" \
+				-- "${options[@]}"
+		)
+
+		# save
+		update_dotfiles_user_config 'setup.bash' -- \
+			--field='SETUP_UTILS' --array="$(echo-lines -- "${utils[@]}")"
+	else
+		utils=("${SETUP_UTILS[@]}")
+	fi
+fi
+
+# =====================================
+# Action
+
+echo-segment --h1="Setup ${#utils[@]} utilities"
+for item in "${utils[@]}"; do
+	if test -n "$item"; then
+		cmd="setup-util-${item}"
+		if command-exists "$cmd"; then
+			"$cmd"
+		else
+			# can't use -EOF, as we want to print spacing
+			{
+				echo-style --e1="Unable to install [$item], as [$cmd] doesn't exist." $'\n' \
+					$'\n' \
+					--red="You can create the missing command by running:" $'\n' \
+					$'\n' \
+					--dim="    touch $DOTFILES/user/$cmd" $'\n' \
+					--dim="    edit $DOTFILES/user/$cmd" $'\n' \
+					--dim="    open https://github.com/bevry/dorothy/discussions/73" $'\n' \
+					$'\n' \
+					--red="Once the command is created, re-run your prior command."
+				exit 1
+			} >/dev/stderr
+		fi
+	fi
+done
+echo-segment --g1="Setup ${#utils[@]} utilities"

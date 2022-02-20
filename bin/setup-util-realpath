@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+env CLI=realpath \
+	BREW='coreutils' \
+	setup-util

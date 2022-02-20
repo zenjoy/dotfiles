@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# inputs
+path="$(
+	ask --required \
+		--question="Enter the path to test if it is a macOS alias file." \
+		--default="${1-}"
+)"
+
+# act
+silent-stderr osascript <<-EOF
+	tell application "Finder"
+		set theItem to (POSIX file "$path") as alias
+		if the kind of theItem is "alias" then
+			get the posix path of ((theItem) as text)
+		end if
+	end tell
+EOF

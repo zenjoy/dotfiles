@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# dependencies
+source "$DOTFILES/sources/ripgrep.bash"
+env QUIET=yes setup-util-sd
+env QUIET=yes setup-util-netstat
+
+# act
+if command-exists ip; then
+	# shellcheck disable=SC2016
+	ip route show dev eth0 | rg -o 'via (.+?) ' --replace '$1' | echo-first
+elif command-exists netstat; then
+	# shellcheck disable=SC2016
+	netstat -nr | rg ' UG.+?(en0|eth0)' | sd '(0.0.0.0|default) +(.+?) .+' '$2' | echo-first
+else
+	stderr echo 'install [ip] or [netstat] and try again'
+	exit 1
+fi

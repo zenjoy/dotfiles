@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# fs-extension .dorothy/a.b.c => c
+echo "${1##*.}"

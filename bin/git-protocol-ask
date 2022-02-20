@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# =====================================
+# Configuration
+
+source "$DOTFILES/sources/config.bash"
+
+# git.bash provides:
+GIT_PROTOCOL=''
+load_dotfiles_config 'git.bash'
+
+# options
+preference="${1:-"$GIT_PROTOCOL"}"
+
+# =====================================
+# Action
+
+if test "$preference" = 'https'; then
+	# skip checks if https
+	echo 'https'
+	exit 0
+fi
+
+choices=()
+if ssh-helper test; then
+	choices+=('ssh')
+fi
+choices+=('https')
+
+choose-option \
+	--question='Which git protocol do you wish to use?' \
+	--filter="$preference" -- "${choices[@]}"

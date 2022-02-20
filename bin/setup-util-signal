@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# https://signal.org/
+# https://www.makeuseof.com/install-signal-desktop-linux/
+
+env NAME='Signal.org' \
+	APT_KEY='https://updates.signal.org/desktop/apt/keys.asc' \
+	APT_REPO='deb [arch={ARCH} signed-by={KEY}] https://updates.signal.org/desktop/apt xenial main' \
+	APT='signal-desktop' \
+	CASK='signal' \
+	FLATPAK='org.signal.Signal' \
+	PACMAN='signal-desktop' \
+	YAY='signal-desktop' \
+	setup-util

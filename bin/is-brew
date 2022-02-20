@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# as $DOTFILES/bin/brew exists, we need to do a version check instead
+is-mac && silent brew --version

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# help
+if is-help-empty "$@"; then
+	cat <<-EOF >/dev/stderr
+		ABOUT:
+		Open the specified GUI application.
+		Used [get-app] to determine the application path to open.
+
+		USAGE:
+		open-app <app path or name> [... anything to forward to the app]
+	EOF
+	exit 22 # Invalid argument
+fi
+
+# act
+app="$(get-app "$1")"
+if test -n "$app"; then
+	open -a "$app" "${@:2}"
+else
+	stderr echo "couldn't find app: $1"
+	exit 1
+fi

@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Flush your DNS cache on macOS
+
+sudo killall -HUP mDNSResponder

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# thanks to http://unix.stackexchange.com/a/358209/50703 for the help on this one
+source "$DOTFILES/sources/strict.bash"
+
+# dependencies
+env QUIET=yes setup-util-screen
+
+# help
+if is-help-empty "$@"; then
+	cat <<-EOF >/dev/stderr
+		ABOUT:
+		Run and show multiple commands at the same time.
+
+		USAGE:
+		together <...comands>
+	EOF
+	exit 22 # Invalid argument
+fi
+
+# prepare
+id="$(rand)"
+config="$(mktemp)"
+
+echo "screen $1" >>"$config"
+for arg in "${@:2}"; do
+	{
+		echo 'split'
+		echo 'focus'
+		echo "screen $arg"
+	} >>"$config"
+done
+
+screen -AS "$id" -c "$config"

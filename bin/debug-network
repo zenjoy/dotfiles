@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+domain='api.nordvpn.com'
+server='9.9.9.9'
+invalid='192.0.2.1'
+
+if type apk; then
+	apk update && apk add curl bind-tools
+elif type apt; then
+	apt update && apt install -y curl dnsutils whois
+elif type pacman; then
+	pacman -Syu && pacman -Sy curl dnsutils
+elif type zypper; then
+	zypper update && zypper install curl dnsutils
+fi
+
+maybe_sudo() {
+	("$@") || (sudo "$@")
+}
+
+printf "\nDATE:\n"
+date
+
+printf "\nRESOLVE:\n"
+systemd-resolve --status
+
+printf "\nDNS LISTENERS:\n"
+maybe_sudo ss -lp 'sport = :domain'
+
+printf "\nLISTENERS:\n"
+maybe_sudo netstat -tulpn | grep LISTEN
+
+printf "\nDNS:\n"
+maybe_sudo resolvectl dns
+
+printf "\nRESOLV.conf\n"
+cat /etc/resolv.conf
+
+printf "\nROUTE\n"
+maybe_sudo route -n
+
+printf "\nDIG:\n"
+dig "$domain"
+
+printf "\nTRACE:\n"
+dig +trace "$domain"
+
+printf "\nDIG @%s:\n" "$invalid"
+dig @"$invalid" "$domain"
+
+printf "\nDIG @%s:\n" "$server"
+dig @"$server" hostname.bind chaos txt
+dig @"$server" id.server chaos txt
+
+printf "\nHOST:\n"
+host -va "$domain"
+
+printf "\nNSLOOKUP:\n"
+nslookup -debug "$domain"
+
+printf "\nCURL:\n"
+curl "$domain"
+
+printf "\nPING:\n"
+ping -c 5 "$domain"
+
+printf "\nWHOIS:\n"
+whois "$domain"
+
+# maybe_sudo apt install traceroute
+# inetutils-traceroute is worse
+
+# printf "\nTRACEROUTE:\n"
+# traceroute -p 53 "$server"
+
+# printf "\nTRACEROUTE -r:\n"
+# traceroute -r -p 53 "$server"

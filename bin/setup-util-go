@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+env CLI=go \
+	SNAP='go' \
+	SNAP_CLASSIC='yes' \
+	BREW='go' \
+	setup-util

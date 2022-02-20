@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# shellcheck disable=SC2010
+ls -la | grep ^l

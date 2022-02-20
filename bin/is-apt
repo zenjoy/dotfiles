@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# for some reason, apt exists on macos at /usr/bin/apt
+
+command-exists apt-get

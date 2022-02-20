@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+source "$DOTFILES/sources/strict.bash"
+
+# =====================================
+# Checks
+
+# check that an accident has not occured
+if ! is-raspi; then
+	echo-style --notice="[$0] is only intended to be run on Raspberry Pi systems, skipping." >/dev/stderr
+	exit 0
+fi
+
+# =====================================
+# Action
+
+# log
+echo-segment --h1='Raspberry Pi Essentials'
+
+# ensure raspi firmware is up to date
+# otherwise newer operating system releases can cause issues
+
+# install necessary packages
+if is-apt; then
+	env NAME='Raspberry Pi Firmware' APT='rpi-eeprom' setup-util apt
+	env NAME='Raspberry Pi Configurator' APT='raspi-config' setup-util apt
+
+	# https://bugs.launchpad.net/ubuntu/+source/linux-raspi/+bug/1946368/comments/48
+	env NAME='Raspberry Pi Kernel' APT='linux-raspi' setup-util apt
+
+	# Various kernel modules have been moved from the linux-modules-raspi package in order to reduce the initramfs size. This results in several applications (most notably Docker, bug 1947601 1) failing due to missing kernel modules. To work around this: sudo apt install linux-modules-extra-rapsi
+	# https://discourse.ubuntu.com/t/impish-indri-release-notes/21951
+	# ^ the docs are wrong `linux-modules-raspi` doesn't exist, only `linux-modules-extra-raspi` exists
+	env \
+		NAME='Ubuntu 21.10 Raspberry Pi Modules' \
+		APT='linux-modules-extra-raspi' \
+		setup-util apt || :
+fi
+
+# ensure autoupdates on restart
+sudo systemctl unmask rpi-eeprom-update
+
+# prompt an update on next restart
+if sudo rpi-eeprom-update -a | grep reboot; then
+	echo 'An eeprom update is pending for your Raspberry Pi, to continue further you must reboot your machine.'
+	exit 1
+fi
+
+echo-segment --g1='Raspberry Pi Essentials'
