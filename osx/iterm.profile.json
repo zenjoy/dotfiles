@@ -80,15 +80,15 @@
         "Alpha Component": 1,
         "Green Component": 0.92725068330764771
       },
-      "Working Directory": "/Users/peter",
-      "Blinking Cursor": false,
+      "Working Directory": "$HOME",
+      "Blinking Cursor": true,
       "Disable Window Resizing": true,
       "Sync Title": false,
       "Prompt Before Closing 2": false,
       "BM Growl": true,
       "Command": "",
       "Description": "Default",
-      "Dynamic Profile Filename": "/Users/peter/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist",
+      "Dynamic Profile Filename": "$HOME/Library/Application Support/iTerm2/DynamicProfiles/zenjoy.profile.plist",
       "Mouse Reporting": true,
       "Screen": -1,
       "Selection Color": {
@@ -302,7 +302,8 @@
       "Window Type": 13,
       "Blink Allowed": false,
       "Background Image Location": "",
-      "Blur": false,
+      "Blur": true,
+      "Blur Radius": 6,
       "Badge Color": {
         "Red Component": 1,
         "Color Space": "Calibrated",
@@ -341,7 +342,7 @@
         "Alpha Component": 1,
         "Green Component": 0.89585232734680176
       },
-      "Transparency": 0,
+      "Transparency": 0.05,
       "Ansi 1 Color": {
         "Red Component": 0.98747438192367554,
         "Color Space": "Calibrated",
