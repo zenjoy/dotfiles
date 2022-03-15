@@ -1,8 +1,8 @@
-
-#### FIG ENV VARIABLES ####
-# Please make sure this block is at the start of this file.
-[ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
-#### END FIG ENV VARIABLES ####
+# Fig pre block. Keep at the top of this file.
+if command -v fig >/dev/null 2>&1; then
+  export PATH="${PATH}:${HOME}/.local/bin"
+  eval "$(fig init zsh pre)"
+fi
 
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
@@ -66,6 +66,11 @@ then
 	export ZSH_DISABLE_COMPFIX="true"
 fi
 
+# macOS 12.3 deprecates python 2.7 and removed the command
+if [[ -d "$HOMEBREW_PREFIX/opt/python@3.9/libexec/bin" ]]; then
+  export PATH="$HOMEBREW_PREFIX/opt/python@3.9/libexec/bin:$PATH"
+fi
+
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
@@ -88,7 +93,6 @@ COMPLETION_WAITING_DOTS="true"
 
 # Enable fig if it is installed: do this before sourcing oh-my-zsh otherwise 
 # smart history no longer works (see https://github.com/withfig/fig/issues/425)
-[ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 plugins=(
@@ -236,3 +240,8 @@ fi
 
 # Setup our prompt
 prompt_pure_setup
+
+# Fig post block. Keep at the bottom of this file.
+if command -v fig >/dev/null 2>&1; then
+  eval "$(fig init zsh post)"
+fi
