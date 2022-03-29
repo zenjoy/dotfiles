@@ -111,6 +111,8 @@ if [ -x "$(command -v kubectl)" ]; then
   }
 
   function kubectl() {
+    export PURE_PROMPT_KUBECONTEXT_SHOW=true
+
     if ! type __start_kubectl >/dev/null 2>&1; then
       lazy_load_kubectl
 
@@ -121,6 +123,8 @@ if [ -x "$(command -v kubectl)" ]; then
   }
 
   function k() {
+    export PURE_PROMPT_KUBECONTEXT_SHOW=true
+    
     if ! type __start_kubectl >/dev/null 2>&1; then
       lazy_load_kubectl
 
