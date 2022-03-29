@@ -10,3 +10,4 @@ bin/op
 .vagrant
 .spinner/
 /*.log
+osx/iterm.profile.plist
