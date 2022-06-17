@@ -1,8 +1,5 @@
 # Fig pre block. Keep at the top of this file.
-if command -v fig >/dev/null 2>&1; then
-  export PATH="${PATH}:${HOME}/.local/bin"
-  eval "$(fig init zsh pre)"
-fi
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
 
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
@@ -238,10 +235,12 @@ if [[ -a $HOME/.yarn/bin ]]; then
 	export PATH="$HOME/.yarn/bin:$PATH"
 fi
 
+if command -v direnv >/dev/null 2>&1; then
+	eval "$(direnv hook zsh)"
+fi
+
 # Setup our prompt
 prompt_pure_setup
 
 # Fig post block. Keep at the bottom of this file.
-if command -v fig >/dev/null 2>&1; then
-  eval "$(fig init zsh post)"
-fi
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
