@@ -92,7 +92,7 @@ install_zshplugins () {
 
   for plugin in "${plugins[@]}"
   do
-    source="git@github.com:${plugin}.git"
+    source="https://github.com/${plugin}.git"
     directory=${plugin#*/}
     for gsub in "${rename[@]}"
     do
