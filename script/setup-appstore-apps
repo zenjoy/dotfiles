@@ -145,17 +145,17 @@ install_appstore_apps() {
 }
 
 
-_title_ "Prerequisites"
+# _title_ "Prerequisites"
 
-install_mas_cli
-check_apple_id
+# install_mas_cli
+# check_apple_id
 
-_title_ "App Selection"
+# _title_ "App Selection"
 
-install_appstore_apps
+# install_appstore_apps
 
-trap finish EXIT
+# trap finish EXIT
 
 if [[ $bootstrapping -ne 1 ]]; then
-  _title_ "Done... Happy Coding!"
+  _title_ "This script is no longer maintained... Sorry!"
 fi
