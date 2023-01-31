@@ -89,7 +89,7 @@ install_docker() {
 }
 
 install_ruby() {
-  if [ -z "$HOMEBREW_PREFIX" ];
+  if [ -z "$HOMEBREW_PREFIX" ]; then
     echo "${BOLD}Homebrew is not installed!! (\$HOMEBREW_PREFIX is empty) Please make sure Homebrew is correctly set up before continuing...${NORMAL}"
     exit 1
   fi
