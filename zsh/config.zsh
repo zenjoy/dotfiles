@@ -6,8 +6,8 @@ fpath=($DOTFILES/functions $fpath)
 autoload -U $DOTFILES/functions/*(:t)
 
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=50000
+SAVEHIST=50000
 
 setopt no_bg_nice               # don't nice background tasks
 setopt no_hup                   # no hup signal at shell exit
