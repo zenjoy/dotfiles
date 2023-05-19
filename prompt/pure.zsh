@@ -37,6 +37,11 @@ PURE_PROMPT_KUBECONTEXT_COLOR="${PURE_PROMPT_KUBECONTEXT_COLOR="208"}"
 PURE_PROMPT_KUBECONTEXT_NAMESPACE_SHOW="${PURE_PROMPT_KUBECONTEXT_NAMESPACE_SHOW=true}"
 PURE_PROMPT_KUBECONTEXT_COLOR_GROUPS=(${PURE_PROMPT_KUBECONTEXT_COLOR_GROUPS=})
 
+PURE_PROMPT_TALCONTEXT_SHOW="${PURE_PROMPT_TALCONTEXT_SHOW=true}"
+PURE_PROMPT_TALCONTEXT_SYMBOL="${PURE_PROMPT_TALCONTEXT_SYMBOL="\uf473 "}"
+PURE_PROMPT_TALCONTEXT_COLOR="${PURE_PROMPT_TALCONTEXT_COLOR="220"}"
+PURE_PROMPT_TALCONTEXT_COLOR_GROUPS=(${PURE_PROMPT_TALCONTEXT_COLOR_GROUPS=})
+
 PURE_PROMPT_TERRAFORM_SHOW="${PURE_PROMPT_TERRAFORM_SHOW=true}"
 PURE_PROMPT_TERRAFORM_SYMBOL="${PURE_PROMPT_TERRAFORM_SYMBOL="\uf9fd"}"
 PURE_PROMPT_TERRAFORM_COLOR="${PURE_PROMPT_TERRAFORM_COLOR="105"}"
@@ -235,6 +240,9 @@ prompt_pure_preprompt_render() {
 	local -a other_preprompt_info
 	if [[ -n $prompt_pure_other_info[kubectl] ]]; then
 		other_preprompt_info+=('${prompt_pure_other_info[kubectl]}')
+	fi
+  if [[ -n $prompt_pure_other_info[talosctl] ]]; then
+		other_preprompt_info+=('${prompt_pure_other_info[talosctl]}')
 	fi
 	if [[ -n $prompt_pure_other_info[terraform] ]]; then
 		other_preprompt_info+=('${prompt_pure_other_info[terraform]}')
@@ -439,6 +447,30 @@ prompt_pure_async_kubecontext() {
   [[ -z "$section_color" ]] && section_color=$PURE_PROMPT_KUBECONTEXT_COLOR
 
   print -- "%F{${section_color}}${PURE_PROMPT_KUBECONTEXT_SYMBOL}${kube_context}"
+}
+
+prompt_pure_async_taloscontext() {
+  prompt_pure_exists talosctl || return
+
+  local talos_context=$(talosctl config info | grep context | cut -d':' -f2 | xargs 2>/dev/null)
+  [[ -z $talos_context ]] && return
+
+  local len=${#PURE_PROMPT_TALCONTEXT_COLOR_GROUPS[@]}
+  local it_to=$((len / 2))
+  local 'section_color' 'i'
+  for ((i = 1; i <= $it_to; i++)); do
+    local idx=$(((i - 1) * 2))
+    local color="${PURE_PROMPT_TALCONTEXT_COLOR_GROUPS[$idx + 1]}"
+    local pattern="${PURE_PROMPT_TALCONTEXT_COLOR_GROUPS[$idx + 2]}"
+    if [[ "$kube_context" =~ "$pattern" ]]; then
+      section_color=$color
+      break
+    fi
+  done
+
+  [[ -z "$section_color" ]] && section_color=$PURE_PROMPT_TALCONTEXT_COLOR
+
+  print -- "%F{${section_color}}${PURE_PROMPT_TALCONTEXT_SYMBOL}${talos_context}"
 }
 
 prompt_pure_async_terraform() {
@@ -752,6 +784,7 @@ prompt_pure_async_tasks() {
 	async_job "prompt_pure" prompt_pure_async_vcs_info
 	async_job "prompt_pure" prompt_pure_async_battery_info
 	async_job "prompt_pure" prompt_pure_async_kubecontext
+	async_job "prompt_pure" prompt_pure_async_taloscontext
 	async_job "prompt_pure" prompt_pure_async_terraform
 	async_job "prompt_pure" prompt_pure_async_ruby
 	async_job "prompt_pure" prompt_pure_async_node
@@ -834,13 +867,17 @@ prompt_pure_async_callback() {
 				prompt_pure_async_tasks
 			fi
 			;;
-		prompt_pure_async_kubecontext|prompt_pure_async_terraform|prompt_pure_async_ruby|prompt_pure_async_node|prompt_pure_async_golang|prompt_pure_async_docker_compose)
+		prompt_pure_async_kubecontext|prompt_pure_async_taloscontext|prompt_pure_async_terraform|prompt_pure_async_ruby|prompt_pure_async_node|prompt_pure_async_golang|prompt_pure_async_docker_compose)
 			local -A info variable
 			typeset -gA prompt_pure_other_info
 
 			case $job in
 				prompt_pure_async_kubecontext)
 					variable="kubectl"
+					show_variable=$PURE_PROMPT_KUBECONTEXT_SHOW
+					;;
+        prompt_pure_async_taloscontext)
+					variable="talosctl"
 					show_variable=$PURE_PROMPT_KUBECONTEXT_SHOW
 					;;
 				prompt_pure_async_terraform)
