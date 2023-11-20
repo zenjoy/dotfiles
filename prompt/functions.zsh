@@ -1,5 +1,20 @@
 function show-kubecontext () {
-  export PURE_PROMPT_KUBECONTEXT_SHOW=true
+  if [[ "$TERM_PROGRAM" = "WarpTerminal" ]]; then
+    if (( ${+POWERLEVEL9K_KUBECONTEXT_SHOW_ON_COMMAND} )); then
+      unset POWERLEVEL9K_KUBECONTEXT_SHOW_ON_COMMAND
+    else
+      POWERLEVEL9K_KUBECONTEXT_SHOW_ON_COMMAND='kubectl|helm|kubens|kubectx|oc|istioctl|kogito|k9s|helmfile|flux|fluxctl|stern|kubeseal|skaffold|kubent|kubecolor|cmctl|sparkctl'
+    fi
+    p10k reload
+    if zle; then
+      zle push-input
+      zle accept-line
+      zle -N kube-toggle
+      bindkey '^]' kube-toggle 
+    fi
+  else
+    export PURE_PROMPT_KUBECONTEXT_SHOW=true
+  fi
 }
 
 function hide-kubecontext () {

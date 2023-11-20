@@ -7,7 +7,7 @@ localtunnel () {
 
   if [[ -z "${LOCALTUNNEL_AUTH_TOKEN}" ]]; then
     echo "Fetching the authentication token from 1Password.\n"
-    eval $(op signin zenjoy) && eval $(eval echo $(op get item 'Localtunnel Secrets' | jq ".details.sections[] | select(.fields != null) | .fields | map(\"export \(.t)='\(.v)'\")  | join(\" && \")")) 
+    eval $(op signin --account https://zenjoy.1password.com) && eval $(eval echo $(op item get 'Localtunnel Secrets' --format json | jq '[.fields[] | select(.value != null)] | map("echo \"Export \(.label) environment variable\" && export \(.label)=\(.value)")  | join(" && ")'))
     echo ""
   fi
 
