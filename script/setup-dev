@@ -89,7 +89,7 @@ install_docker() {
 }
 
 install_ruby() {
-  if [ -z "$HOMEBREW_PREFIX" ];
+  if [[ -z "$HOMEBREW_PREFIX" ]]; then
     echo "${BOLD}Homebrew is not installed!! (\$HOMEBREW_PREFIX is empty) Please make sure Homebrew is correctly set up before continuing...${NORMAL}"
     exit 1
   fi
@@ -135,8 +135,8 @@ install_ruby() {
     successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm-dev"
   fi
 
-  check "ruby 2.6.7" "rbenv versions | grep 2.6.7"
-    successfully "rbenv install 2.6.7; rbenv shell 2.6.7; gem install bundler; gem install bundler -v '<2'"
+  check "ruby 3.0.6" "rbenv versions | grep 3.0.6"
+    successfully "rbenv install 3.0.6; rbenv shell 3.0.6; gem install bundler; gem install bundler -v '<2'"
 }
 
 install_vagrant() {
