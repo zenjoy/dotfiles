@@ -242,11 +242,11 @@ fi
 # Setup our prompt
 prompt_pure_setup
 
-# # Fig post block. Keep at the bottom of this file.
-#
+# Enable GPG signing
+export GPG_TTY=$(tty)
+
+# Enable shell history in iex
+export ERL_AFLAGS="-kernel shell_history enabled"
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
-
-# Enable GPG signing
-export GPG_TTY=$(tty)
