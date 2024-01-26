@@ -223,7 +223,6 @@ export GIT_UNTRACKED="?"
 export GIT_STASHED="$"
 export GIT_UNPULLED="⇣"
 export GIT_UNPUSHED="⇡"
-export YARN_ENABLED=true
 
 # Fix direcory autocompletion when using autosuggestions
 ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(expand-or-complete)
