@@ -122,7 +122,6 @@ plugins=(
   react-native
   vagrant
   xcode
-  vault
   zshmarks
   zsh-brew-services
   zsh-autosuggestions
