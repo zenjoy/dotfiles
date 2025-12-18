@@ -98,39 +98,64 @@ if [ -x "$(command -v kubectl)" ]; then
   alias kdno='kubectl describe node'
   alias kdelno='kubectl delete node'
 
-  function lazy_load_kubectl() {
-    __KUBECTL_COMPLETION_FILE="${ZSH_CACHE_DIR}/kubectl_completion"
+  # Only define lazy-load wrappers in interactive shells
+  # This allows Claude Code and other non-interactive tools to use kubectl directly
+  if [[ $- == *i* ]]; then
+    function lazy_load_kubectl() {
+      __KUBECTL_COMPLETION_FILE="${ZSH_CACHE_DIR:-$HOME/.oh-my-zsh/cache}/kubectl_completion"
 
-    if [[ ! -f $__KUBECTL_COMPLETION_FILE ]]; then
-        kubectl completion zsh >! $__KUBECTL_COMPLETION_FILE
-    fi
+      if [[ ! -f $__KUBECTL_COMPLETION_FILE ]]; then
+          kubectl completion zsh >! $__KUBECTL_COMPLETION_FILE
+      fi
 
-    [[ -f $__KUBECTL_COMPLETION_FILE ]] && source $__KUBECTL_COMPLETION_FILE
+      [[ -f $__KUBECTL_COMPLETION_FILE ]] && source $__KUBECTL_COMPLETION_FILE 2>/dev/null
 
-    unset __KUBECTL_COMPLETION_FILE
-  }
+      # Register completion manually after sourcing
+      compdef _kubectl kubectl 2>/dev/null
+      compdef _kubectl k 2>/dev/null
+      compdef _kubectl kubecolor 2>/dev/null
 
-  function kubectl() {
-    export PURE_PROMPT_KUBECONTEXT_SHOW=true
+      unset __KUBECTL_COMPLETION_FILE
+      return 0
+    }
 
-    if ! type __start_kubectl >/dev/null 2>&1; then
-      lazy_load_kubectl
+    function kubectl() {
+      export PURE_PROMPT_KUBECONTEXT_SHOW=true
 
-      compdef k='kubectl'
-    fi
+      if ! type __start_kubectl >/dev/null 2>&1; then
+        lazy_load_kubectl
+      fi
 
-    command kubectl "$@"
-  }
+      command kubectl "$@"
+    }
 
-  function k() {
-    export PURE_PROMPT_KUBECONTEXT_SHOW=true
-    
-    if ! type __start_kubectl >/dev/null 2>&1; then
-      lazy_load_kubectl
+    # k() - uses kubecolor if available, otherwise kubectl
+    function k() {
+      export PURE_PROMPT_KUBECONTEXT_SHOW=true
 
-      compdef k='kubectl'
-    fi
+      if ! type __start_kubectl >/dev/null 2>&1; then
+        lazy_load_kubectl
+      fi
 
-    command kubectl "$@"
-  }
+      if command -v kubecolor >/dev/null 2>&1; then
+        kubecolor --force-colors "$@"
+      else
+        command kubectl "$@"
+      fi
+    }
+
+    # Completion wrapper that triggers lazy load on first <tab>
+    # Must be defined AFTER functions to not get overwritten
+    function _kubectl_lazy() {
+      if ! type _kubectl >/dev/null 2>&1; then
+        lazy_load_kubectl
+      fi
+      # Override command name so _kubectl works for k/kubecolor aliases
+      words[1]=kubectl
+      _kubectl "$@"
+    }
+    compdef _kubectl_lazy kubectl
+    compdef _kubectl_lazy k
+    compdef _kubectl_lazy kubecolor
+  fi
 fi
