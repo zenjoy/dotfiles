@@ -33,7 +33,7 @@ if [[ "${arch_name}" = "x86_64" ]]; then
       echo "Terminal Running on Rosetta 2"
     else
       # Running on native Intel
-    fi 
+    fi
 
     eval "$(/usr/local/bin/brew shellenv)"
   fi
@@ -95,7 +95,7 @@ PURE_PROMPT_TERRAFORM_SYMBOL="\uf9fd"
 # Comment following line if you do not want red dots to be displayed while waiting for completion
 COMPLETION_WAITING_DOTS="true"
 
-# Enable fig if it is installed: do this before sourcing oh-my-zsh otherwise 
+# Enable fig if it is installed: do this before sourcing oh-my-zsh otherwise
 # smart history no longer works (see https://github.com/withfig/fig/issues/425)
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
@@ -146,6 +146,9 @@ source $ZSH/oh-my-zsh.sh
 
 # your project folder that we can `c [tab]` to
 export PROJECTS=~/Development
+
+# load keychain helpers early so .localrc can use them
+source $DOTFILES/system/keys.zsh
 
 # use .localrc for SUPER SECRET CRAP that you don't
 # want in your public, versioned repo.
