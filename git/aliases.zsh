@@ -11,7 +11,7 @@ function gg() {
 alias gco='git checkout'
 alias gd='git diff'
 alias gdm='git diff master'
-alias gl='git smart-log'
+alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias gnp="git-notpushed"
 alias gp='git push'
 alias gpr='git open-pr'
@@ -19,8 +19,10 @@ alias gam='git commit --amend -C HEAD'
 alias gst='git status'
 alias gt='git status'
 alias g='git status --short'
-alias gup='git smart-pull'
+alias gsp='git smart-pull'
 alias gm='smart-merge'
 alias eg='code .git/config'
 alias glog="git log --graph --pretty=format:'%Cred%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
 alias ghv="gh repo view --web"
+alias ghvb="gh repo view --web --branch \$(git branch --show-current)"
+alias v="gh repo view --web --branch \$(git branch --show-current)"

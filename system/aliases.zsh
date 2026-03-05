@@ -99,3 +99,13 @@ done
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
+
+# Securely prompt for sensitive env var (no echo, no history)
+askenv() {
+  local varname="${1:?Usage: askenv VARNAME}"
+  local value
+  read -s "value?Enter $varname: "
+  echo  # newline after hidden input
+  export "$varname=$value"
+  echo "✓ $varname set"
+}
