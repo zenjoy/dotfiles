@@ -47,17 +47,17 @@ elif [[ "${arch_name}" = "aarch64" ]]; then
 fi
 
 # Load rbenv
-if [[ -d "$HOMEBREW_PREFIX/rbenv" ]]; then
-  export RBENV_ROOT="$HOMEBREW_PREFIX/rbenv"
-  export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
-  eval "$(rbenv init -)"
-fi
+# if [[ -d "$HOMEBREW_PREFIX/rbenv" ]]; then
+#   export RBENV_ROOT="$HOMEBREW_PREFIX/rbenv"
+#   export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+#   eval "$(rbenv init -)"
+# fi
 
-if [[ -d "$HOME/.rbenv" ]]; then
-  export RBENV_ROOT="$HOME/.rbenv"
-  export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
-  eval "$(rbenv init -)"
-fi
+# if [[ -d "$HOME/.rbenv" ]]; then
+#   export RBENV_ROOT="$HOME/.rbenv"
+#   export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+#   eval "$(rbenv init -)"
+# fi
 
 if [[ -d "$HOME/.zcompcache" ]]
 then
@@ -100,15 +100,15 @@ COMPLETION_WAITING_DOTS="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 plugins=(
-  asdf
+  # asdf
   brew
-  droplr
+  # droplr
   docker
   docker-compose
   extract
   encode64
   fast-syntax-highlighting
-  gem
+  # gem
   gitignore
   git-extras
   git-hubflow
@@ -200,18 +200,9 @@ if [[ -a ~/.localrc.late ]]; then
 	source ~/.localrc.late
 fi
 
-# support asdf
-if [[ -a $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh ]]; then
-	source $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
-fi
-
-if [[ -a $HOMEBREW_PREFIX/opt/asdf/etc/bash_completion.d/asdf.bash ]]; then
-	source $HOMEBREW_PREFIX/opt/asdf/etc/bash_completion.d/asdf.bash
-fi
-
 # support autojump
-if command -v autojump >/dev/null 2>&1; then
-	. $HOMEBREW_PREFIX/etc/autojump.sh
+if command -v zoxide >/dev/null 2>&1; then
+	eval "$(zoxide init zsh --cmd j)"
 fi
 
 # allow zeus and unicorn to fork
@@ -247,15 +238,7 @@ if command -v direnv >/dev/null 2>&1; then
 	eval "$(direnv hook zsh)"
 fi
 
-# Setup our prompt
-if [[ "$TERM_PROGRAM" = "WarpTerminal" ]] && [[ -e ~/.powerlevel10k ]]; then
-	source ~/.powerlevel10k/powerlevel10k.zsh-theme
-else
-	prompt_pure_setup
-fi
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+eval "$(starship init zsh)"
 
 # Enable GPG signing
 export GPG_TTY=$(tty)
@@ -265,3 +248,22 @@ export ERL_AFLAGS="-kernel shell_history enabled"
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+
+eval "$(wtp shell-init zsh)"
+alias vc="echo 'entering vibe coding zone' | tte print && ${AGENT:-claude} ."
+alias vce="echo 'entering vibe coding zone' | tte print && ${EDITOR:-ci} ."
+
+eval "$(mise activate zsh)"
+
+cx() { open -a "Codex" "${1:-.}"; }
+c() { open -a "Zed" "${1:-.}"; }
+compdef _files c
+compdef _files cx
+
+# pnpm
+export PNPM_HOME="/Users/peter/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
