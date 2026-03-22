@@ -102,7 +102,9 @@ if [ -x "$(command -v kubectl)" ]; then
   # This allows Claude Code and other non-interactive tools to use kubectl directly
   if [[ $- == *i* ]]; then
     function lazy_load_kubectl() {
-      __KUBECTL_COMPLETION_FILE="${ZSH_CACHE_DIR:-$HOME/.oh-my-zsh/cache}/kubectl_completion"
+      local cache_dir="${ZSH_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh}"
+      mkdir -p "$cache_dir"
+      __KUBECTL_COMPLETION_FILE="$cache_dir/kubectl_completion"
 
       if [[ ! -f $__KUBECTL_COMPLETION_FILE ]]; then
           kubectl completion zsh >! $__KUBECTL_COMPLETION_FILE

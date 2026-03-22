@@ -1,2 +1,13 @@
-#add each topic folder to fpath so that they can add functions and completion scripts
-for topic_folder ($DOTFILES/*) if [ -d $topic_folder ]; then  fpath=($topic_folder $fpath); fi;
+typeset -U fpath
+
+fpath=(
+  $DOTFILES/functions
+  $fpath
+)
+
+if [[ -n "${HOMEBREW_PREFIX-}" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
+  fpath=(
+    "$HOMEBREW_PREFIX/share/zsh/site-functions"
+    $fpath
+  )
+fi

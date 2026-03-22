@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+real_mcporter="/opt/homebrew/bin/mcporter"
+if [[ ! -x "$real_mcporter" ]]; then
+  echo "mcporter not found at $real_mcporter" >&2
+  exit 1
+fi
+
+load_keychain_secret() {
+  local name="$1"
+  if [[ -n "${!name-}" ]]; then
+    return 0
+  fi
+
+  local value
+  value="$(security find-generic-password -a "${USER:-$(id -un)}" -s "$name" -w 2>/dev/null || true)"
+  if [[ -n "$value" ]]; then
+    export "$name=$value"
+  fi
+}
+
+for secret_name in \
+  HOMEBREW_GITHUB_API_TOKEN \
+  PERPLEXITY_API_KEY \
+  FIRECRAWL_API_KEY \
+  EXA_API_KEY \
+  BUGSNAG_API_KEY \
+  MISTRAL_API_KEY \
+  CODECOV_API_TOKEN
+do
+  load_keychain_secret "$secret_name"
+done
+
+exec "$real_mcporter" "$@"

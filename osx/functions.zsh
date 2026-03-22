@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-if [[ "`uname -s`" != "Darwin" ]]; then
+if [[ "${OSTYPE-}" != darwin* ]]; then
   return
 fi
 
