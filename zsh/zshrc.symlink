@@ -242,7 +242,7 @@ alias vc="echo 'entering vibe coding zone' | tte print && ${AGENT:-claude} ."
 alias vce="echo 'entering vibe coding zone' | tte print && ${EDITOR:-ci} ."
 
 if command -v mise >/dev/null 2>&1; then
-  cache_eval_init mise "mise activate zsh --shims"
+  eval "$(mise activate zsh)"
 fi
 
 if command -v zsh-patina >/dev/null 2>&1; then
