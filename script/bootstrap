@@ -13,6 +13,8 @@ LOGFILE=/tmp/dotfiles-setup
 echo "Running in $0 ${BASH_VERSION}" >> $LOGFILE
 
 . $DOTFILES_ROOT/script/shared-functions
+. $DOTFILES_ROOT/script/dotfiles-env.sh
+dotfiles_init_env
 
 # ensure we capture unexpected exits
 trap exit_warning EXIT
@@ -72,15 +74,15 @@ install_homebrew() {
   successfully "brew update"
 }
 
-install_command_line_essentials() {
-  # A command-line fuzzy finder (https://github.com/junegunn/fzf)
-  check "command-line fuzzy finder" "command -v fzf"
-  successfully "brew install fzf"
-
-  if ! ls "$HOME/.oh-my-zsh/cache/zsh_plugin_paths" > /dev/null 2>&1 || grep -q "$HOME/.oh-my-zsh/cache/zsh_plugin_paths" "FZF_BASE" > /dev/null 2>&1; then
-    tput el
-    printf "\r"
-    echo "FZF_BASE=\"$(brew --prefix fzf)\"" >> $HOME/.oh-my-zsh/cache/zsh_plugin_paths
+load_homebrew_environment() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -x /usr/local/bin/brew ]]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    fi
+  elif command -v brew >/dev/null 2>&1; then
+    eval "$(brew shellenv)"
   fi
 }
 
@@ -135,12 +137,12 @@ ask_sudo_password
 notice_left "\nFeel free to follow the details by running:"
 notice_left "${BOLD} tail -f $LOGFILE ${NORMAL}in another terminal"
 
-setup_dotfiles
-setup_locale
-
 _title_ 'essential tools'
 install_homebrew
-install_command_line_essentials
+load_homebrew_environment
+
+setup_dotfiles
+setup_locale
 
 if [[ "$(uname)" == "Darwin" ]]; then
   install_1password_cli
@@ -154,6 +156,8 @@ setup_development
 
 _title_ 'Other convenient cli tools'
 setup_cli_tools
+
+"$DOTFILES_ROOT/bin/dotfiles-doctor"
 
 _title_ '.dotfiles ready & installed!'
 

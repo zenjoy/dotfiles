@@ -53,9 +53,17 @@ cd ~/.dotfiles
 
 This will symlink the appropriate files in `.dotfiles` to your home directory.
 Everything is configured and tweaked within `~/.dotfiles`.
+The shell setup is self-managed; it no longer depends on a separate framework checkout.
 
 The only file you'll want to change or create is `~/.localrc`, where you can put
 personal changes, preferences or secrets.
+
+If you want to ignore reminders for optional tools you do not use, add them to
+`~/.localrc`, for example:
+
+```sh
+export DOTFILES_IGNORE_DEPS="direnv mise"
+```
 
 ## Setup Scripts
 
@@ -66,12 +74,13 @@ Run following commands from anywhere to install:
 
 - **update-dotfiles**: update your local copy of this repository
 - **update-all**: update your local copy of this repository AND check if everything is nicely installed
-- **setup-dotfiles**: ensure the minimal setup is done to properly work with these dotfile
+- **setup-dotfiles**: install the symlinks, managed shell plugin, and curated shell tool stack used by this repo
 - **setup-osx**: setup macOS sane defaults and multiple useful apps
 - **setup-dev**: setup all requirements to get started for (web|mobile|backend|k8s) development
 - **setup-cli-apps**: install several useful, convenient or just fun command line tools
 - **setup-git**: setup git and related utilities
 - **setup-vscode**: setup Visual Studio Code, most useful extensions and several nice themes
+- **dotfiles-doctor**: check required and recommended dependencies and print install hints
 
 ## Tips
 

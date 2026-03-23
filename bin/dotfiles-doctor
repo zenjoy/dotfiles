@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+
+exec "$DOTFILES/script/dotfiles-doctor" "$@"

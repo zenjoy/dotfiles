@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+. "$DOTFILES/script/dotfiles-env.sh"
+. "$DOTFILES/script/dotfiles-shell-stack.sh"
+dotfiles_init_env
+
+quiet=0
+
+for arg in "$@"; do
+  case "$arg" in
+    --refresh-status)
+      ;;
+    --quiet)
+      quiet=1
+      ;;
+    --help|-h)
+      cat <<'EOF'
+Usage: dotfiles-doctor [--refresh-status] [--quiet]
+
+Checks the tracked dotfiles dependencies, writes the cached dependency status
+file used by shell startup reminders, and prints a summary unless --quiet is set.
+EOF
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $arg" >&2
+      exit 1
+      ;;
+  esac
+done
+
+join_by_space() {
+  local item result=""
+
+  for item in "$@"; do
+    [[ -n "$item" ]] || continue
+    if [[ -n "$result" ]]; then
+      result="$result "
+    fi
+    result="$result$item"
+  done
+
+  printf '%s\n' "$result"
+}
+
+dependency_manifest() {
+  local platform
+
+  platform="$(uname -s)"
+
+  cat <<'EOF'
+zsh|required|system||command -v zsh >/dev/null 2>&1|Install zsh and rerun setup-dotfiles.
+git|required|system||command -v git >/dev/null 2>&1|Install git and rerun setup-dotfiles.
+curl|required|system||command -v curl >/dev/null 2>&1|Install curl and rerun setup-dotfiles.
+EOF
+
+  if [[ "$platform" == "Darwin" ]]; then
+    cat <<'EOF'
+homebrew|required|system||command -v brew >/dev/null 2>&1|Install Homebrew from https://brew.sh and rerun setup-dotfiles.
+EOF
+  fi
+
+  dotfiles_shell_stack_manifest
+}
+
+declare -a missing_required=()
+declare -a missing_recommended=()
+declare -a missing_required_details=()
+declare -a missing_recommended_details=()
+
+while IFS='|' read -r dependency_id dependency_tier dependency_type dependency_ref dependency_check dependency_hint; do
+  [[ -n "$dependency_id" ]] || continue
+
+  if eval "$dependency_check"; then
+    continue
+  fi
+
+  if [[ "$dependency_tier" == "required" ]]; then
+    missing_required+=("$dependency_id")
+    missing_required_details+=("$dependency_id|$dependency_hint")
+  else
+    missing_recommended+=("$dependency_id")
+    missing_recommended_details+=("$dependency_id|$dependency_hint")
+  fi
+done < <(dependency_manifest)
+
+dotfiles_write_dependency_status \
+  "$(join_by_space "${missing_required[@]}")" \
+  "$(join_by_space "${missing_recommended[@]}")"
+
+if (( quiet )); then
+  exit 0
+fi
+
+if (( ${#missing_required[@]} == 0 && ${#missing_recommended[@]} == 0 )); then
+  printf '\nAll tracked dotfiles dependencies look good.\n'
+  exit 0
+fi
+
+if (( ${#missing_required[@]} > 0 )); then
+  dependency_detail=""
+  dependency_id=""
+  dependency_hint=""
+  echo "Missing required dependencies:"
+  for dependency_detail in "${missing_required_details[@]}"; do
+    IFS='|' read -r dependency_id dependency_hint <<< "$dependency_detail"
+    printf '  - %s: %s\n' "$dependency_id" "$dependency_hint"
+  done
+fi
+
+if (( ${#missing_recommended[@]} > 0 )); then
+  dependency_detail=""
+  dependency_id=""
+  dependency_hint=""
+  echo "Missing recommended dependencies:"
+  for dependency_detail in "${missing_recommended_details[@]}"; do
+    IFS='|' read -r dependency_id dependency_hint <<< "$dependency_detail"
+    printf '  - %s: %s\n' "$dependency_id" "$dependency_hint"
+  done
+fi

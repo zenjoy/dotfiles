@@ -8,6 +8,9 @@ DOTFILES_ROOT="$HOME/.dotfiles"
 LOGFILE=/tmp/dotfiles-setup
 
 . $DOTFILES_ROOT/script/shared-functions
+. $DOTFILES_ROOT/script/dotfiles-env.sh
+. $DOTFILES_ROOT/script/dotfiles-shell-stack.sh
+dotfiles_init_env
 
 # ensure we capture unexpected exits
 trap exit_warning EXIT
@@ -32,19 +35,6 @@ install_zsh() {
     elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
       successfully "sudo apt-get update && sudo apt-get -y install zsh"
     fi
-  fi
-
-  check "oh-my-zsh" "ls ~/.oh-my-zsh" "cd ~/.oh-my-zsh && git pull"
-  if [[ $proceed -ne 0 ]]; then
-    info_no_spinner "oh-my-zsh : ${BOLD}installing${NORMAL} (please provide password when asked)\n\n"
-    sudo -v
-    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -o /tmp/omz.sh >> $LOGFILE 2>&1;
-    sed -i''  '/echo/d' /tmp/omz.sh
-    sed -i''  '/env zsh/d' /tmp/omz.sh
-    sh /tmp/omz.sh | tee $LOGFILE;
-    rm -rf /tmp/omz.sh
-    echo ''
-    success "oh-my-zsh : ${BOLD}installed${NORMAL}"
   fi
 }
 
@@ -73,45 +63,50 @@ install_dotfiles () {
   fi
 }
 
-install_zshplugins () {
-  _title_ 'Installing ZSH plugins'
+install_managed_plugin() {
+  local plugin_repo="$1"
+  local source target directory
 
-  declare -a plugins=("jocelynmallon/zshmarks"
-                      "iam4x/zsh-iterm-touchbar"
-                      "zsh-users/zsh-autosuggestions"
-                      "amstrad/oh-my-matrix"
-                      "vasyharan/zsh-brew-services"
-                      "zsh-users/zsh-completions"
-                      "g-plane/zsh-yarn-autocompletions"
-                      "djui/alias-tips"
-                      "obayer/iosctl"
-                      "zdharma-continuum/fast-syntax-highlighting"
-                      "peterhurford/git-it-on.zsh")
+  source="https://github.com/${plugin_repo}.git"
+  directory="${plugin_repo#*/}"
+  target="$DOTFILES_PLUGIN_DIR/${directory}"
 
-  declare -a rename=("git-it-on.zsh/git-it-on")
+  if [[ -d "$target/.git" ]]; then
+    info "Updating plugin ${source} in ${target/$HOME/'~'}}"
+    git -C "$target" pull --ff-only &> /dev/null
+    success "plugin ${BOLD}`basename "$target"`$NORMAL : updated"
+  else
+    info "Cloning plugin ${source} into ${target/$HOME/'~'}}"
+    git clone "$source" "$target" &> /dev/null
+    success "plugin ${BOLD}`basename "$target"`$NORMAL : installed"
+  fi
+}
 
-  for plugin in "${plugins[@]}"
+install_shell_stack() {
+  local dependency_id dependency_tier dependency_type dependency_ref dependency_check dependency_hint
+
+  _title_ 'Installing shell dependencies'
+  mkdir -p "$DOTFILES_PLUGIN_DIR"
+
+  while IFS='|' read -r dependency_id dependency_tier dependency_type dependency_ref dependency_check dependency_hint
   do
-    source="https://github.com/${plugin}.git"
-    directory=${plugin#*/}
-    for gsub in "${rename[@]}"
-    do
-      IFS='/' read -ra replacements <<< "$gsub"
-      pattern="${replacements[0]}"
-      result="${replacements[1]}"
-      directory=${directory/$pattern/$result}
-    done
-    target=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}
+    [[ -n "$dependency_id" ]] || continue
 
-    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${directory}" ]
-    then
-      info "Cloning plugin ${source} into ${target/$HOME/'~'}}"
-      eval "git clone ${source} ${target}" &> /dev/null
-      success "pluging ${BOLD}`basename $target`${NORMAL} : installed"
-    else
-      success "skipping plugin ${BOLD}`basename $target`${NORMAL}: already installed"
-    fi
-  done
+    case "$dependency_type" in
+      plugin)
+        install_managed_plugin "$dependency_ref"
+        ;;
+      brew)
+        if ! command -v brew >/dev/null 2>&1; then
+          warn "$dependency_id : ${BOLD}skipped${NORMAL}, Homebrew is not available yet"
+          continue
+        fi
+
+        check "$dependency_id" "$dependency_check"
+        successfully "brew install $dependency_ref"
+        ;;
+    esac
+  done < <(dotfiles_shell_stack_manifest)
 }
 
 check_os () {
@@ -124,11 +119,12 @@ check_os () {
 
 install_zsh
 install_dotfiles
-install_zshplugins
+install_shell_stack
 check_os
 
 trap finish EXIT
 
 if [[ $bootstrapping -ne 1 ]]; then
+  "$DOTFILES_ROOT/bin/dotfiles-doctor"
   _title_ "Done... Enjoy!"
 fi

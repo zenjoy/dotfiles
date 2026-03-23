@@ -23,7 +23,7 @@ if [[ -z "$epoch_target" ]]; then
 fi
 
 # Cancel upgrade if the current user doesn't have write permissions for the
-# oh-my-zsh directory.
+# dotfiles directory.
 [[ -w "$DOTFILES" ]] || return 0
 
 # Cancel upgrade if git is unavailable on the system
