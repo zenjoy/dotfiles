@@ -165,6 +165,10 @@ ZSH_AUTOSUGGEST_USE_ASYNC=1
 autosuggestions_plugin="$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 if [[ -r "$autosuggestions_plugin" ]]; then
   source "$autosuggestions_plugin"
+  bindkey              '^I' menu-select
+  bindkey "$terminfo[kcbt]" menu-select
+  bindkey -M menuselect              '^I'         menu-complete
+  bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 fi
 
 unfunction source_dotfiles_file
