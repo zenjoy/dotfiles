@@ -3,6 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REAL_HOME="${HOME}"
 
 fail() {
   echo "FAIL: $*" >&2
@@ -36,6 +37,11 @@ setup_temp_home() {
   export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
   export DISABLE_AUTO_UPDATE="true"
   unset HOMEBREW_PREFIX
+  unset DOTFILES_DATA_DIR
+  unset DOTFILES_STATE_DIR
+  unset DOTFILES_PLUGIN_DIR
+  unset DOTFILES_DEPENDENCY_STATUS_FILE
+  unset DOTFILES_DEPENDENCY_REMINDER_FILE
   ln -s "$ROOT" "$HOME/.dotfiles"
 }
 
@@ -74,9 +80,34 @@ test_only_active_plugin_is_managed() {
   output="$(sed -n '/dotfiles_shell_stack_manifest()/,/^}/p' "$ROOT/script/dotfiles-shell-stack.sh")"
 
   assert_contains "$output" "zsh-users/zsh-autosuggestions"
-  assert_contains "$output" "zsh-autocomplete"
+  assert_contains "$output" "marlonrichert/zsh-autocomplete"
+  assert_not_contains "$output" "zsh-autocomplete|recommended|brew|zsh-autocomplete"
   assert_not_contains "$output" "zshmarks"
   assert_not_contains "$output" "fast-syntax-highlighting"
+}
+
+test_zsh_autocomplete_uses_managed_plugin_path_only() {
+  setup_temp_home
+  trap cleanup_temp_home RETURN
+
+  local plugin_dir
+  plugin_dir="$XDG_DATA_HOME/zenjoy-dotfiles/zsh/plugins"
+
+  mkdir -p "$plugin_dir/zsh-autocomplete"
+  touch "$plugin_dir/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+
+  local output
+  output="$(ZDOTDIR="$HOME" zsh -fc '
+    set -e
+    export DOTFILES="'"$ROOT"'"
+    source "$DOTFILES/script/dotfiles-env.sh"
+    source "$DOTFILES/script/dotfiles-shell-stack.sh"
+    dotfiles_init_env
+    dotfiles_zsh_autocomplete_plugin_path
+  ' 2>&1)"
+
+  assert_contains "$output" "$plugin_dir/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+  assert_not_contains "$output" "/opt/homebrew/share/zsh-autocomplete"
 }
 
 test_hyper_setup_is_removed() {
@@ -85,6 +116,26 @@ test_hyper_setup_is_removed() {
   output="$(cd "$ROOT" && grep -REn "setup-hyper|Hyper Terminal|hyper\\.js\\.symlink" script/setup-dev bin script system 2>/dev/null || true)"
 
   [[ -z "$output" ]] || fail "expected Hyper setup references to be removed: $output"
+}
+
+test_eval_cache_refreshes_when_command_changes() {
+  setup_temp_home
+  trap cleanup_temp_home RETURN
+
+  local output
+  output="$(ZDOTDIR="$HOME" zsh -fc '
+    set -e
+    export DOTFILES="'"$ROOT"'"
+    export ZSH_EVAL_CACHE_DIR="'"$HOME/.cache/test-eval-cache"'"
+    mkdir -p "$ZSH_EVAL_CACHE_DIR"
+    print "echo old" > "$ZSH_EVAL_CACHE_DIR/demo.zsh"
+    source "$DOTFILES/system/eval-cache.zsh"
+    cache_eval_init demo "printf '\''echo new\\n'\''"
+    cat "$ZSH_EVAL_CACHE_DIR/demo.zsh"
+  ' 2>&1)"
+
+  assert_contains "$output" "new"
+  assert_not_contains "$output" "old"
 }
 
 test_zsh_startup_uses_ignore_list_and_skips_missing_init_commands() {
@@ -115,9 +166,38 @@ EOF
   assert_not_contains "$output" "command not found: wtp"
 }
 
+test_zsh_tab_prefers_autosuggestion_accept_before_autocomplete_cycle() {
+  setup_temp_home
+  trap cleanup_temp_home RETURN
+
+  mkdir -p "$XDG_DATA_HOME/zenjoy-dotfiles/zsh/plugins"
+  ln -s "$REAL_HOME/.local/share/zenjoy-dotfiles/zsh/plugins/zsh-autosuggestions" \
+    "$XDG_DATA_HOME/zenjoy-dotfiles/zsh/plugins/zsh-autosuggestions"
+  ln -s "$REAL_HOME/.local/share/zenjoy-dotfiles/zsh/plugins/zsh-autocomplete" \
+    "$XDG_DATA_HOME/zenjoy-dotfiles/zsh/plugins/zsh-autocomplete"
+
+  cat > "$HOME/.zshrc" <<EOF
+source "$ROOT/zsh/zshrc.symlink"
+EOF
+
+  local output
+  output="$(ZDOTDIR="$HOME" zsh -ic '
+    bindkey "^I"
+    bindkey "$terminfo[kcbt]"
+    zle -la | grep -x dotfiles-tab-accept-autosuggestion-or-menu-complete
+  ' 2>&1)"
+
+  assert_contains "$output" "\"^I\" dotfiles-tab-accept-autosuggestion-or-menu-complete"
+  assert_contains "$output" "\"^[[Z\" reverse-menu-complete"
+  assert_contains "$output" "dotfiles-tab-accept-autosuggestion-or-menu-complete"
+}
+
 test_doctor_writes_status_file
 test_only_active_plugin_is_managed
+test_zsh_autocomplete_uses_managed_plugin_path_only
 test_hyper_setup_is_removed
+test_eval_cache_refreshes_when_command_changes
 test_zsh_startup_uses_ignore_list_and_skips_missing_init_commands
+test_zsh_tab_prefers_autosuggestion_accept_before_autocomplete_cycle
 
 echo "PASS: dotfiles dependency audit"

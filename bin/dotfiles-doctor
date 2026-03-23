@@ -2,4 +2,4 @@
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 
-exec "$DOTFILES/script/dotfiles-doctor" "$@"
+exec env DOTFILES="$DOTFILES" "$DOTFILES/script/dotfiles-doctor" "$@"

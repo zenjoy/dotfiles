@@ -74,7 +74,7 @@ Run following commands from anywhere to install:
 
 - **update-dotfiles**: update your local copy of this repository
 - **update-all**: update your local copy of this repository AND check if everything is nicely installed
-- **setup-dotfiles**: install the symlinks, managed shell plugin, and curated shell tool stack used by this repo
+- **setup-dotfiles**: install the symlinks, managed shell plugins, and curated shell tool stack used by this repo
 - **setup-osx**: setup macOS sane defaults and multiple useful apps
 - **setup-dev**: setup all requirements to get started for (web|mobile|backend|k8s) development
 - **setup-cli-apps**: install several useful, convenient or just fun command line tools

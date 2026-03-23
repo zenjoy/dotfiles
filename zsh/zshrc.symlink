@@ -137,7 +137,13 @@ source_dotfiles_file zsh/completion.zsh
 
 autocomplete_plugin="$(dotfiles_zsh_autocomplete_plugin_path 2>/dev/null)"
 if [[ -r "$autocomplete_plugin" ]]; then
+  zstyle ':autocomplete:history-search-backward:*' list-lines "$HISTSIZE"
+  zstyle ':autocomplete:*' add-semicolon no
   source "$autocomplete_plugin"
+  bindkey              '^I' menu-select
+  bindkey "$terminfo[kcbt]" menu-select
+  bindkey -M menuselect              '^I'         menu-complete
+  bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 fi
 
 defer_plugin="$DOTFILES/system/zsh-defer.plugin.zsh"
@@ -170,21 +176,18 @@ for file in $repo_topic_files; do
   source_dotfiles_file "$file"
 done
 
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE="20"
-ZSH_AUTOSUGGEST_USE_ASYNC=1
+# ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE="20"
+# ZSH_AUTOSUGGEST_USE_ASYNC=1
 autosuggestions_plugin="$DOTFILES_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
 if [[ -r "$autosuggestions_plugin" ]]; then
   source "$autosuggestions_plugin"
-  bindkey              '^I' menu-select
-  bindkey "$terminfo[kcbt]" menu-select
-  bindkey -M menuselect              '^I'         menu-complete
-  bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
+  bindkey '^I' autosuggest-accept
 fi
 
 if command -v atuin >/dev/null 2>&1 && (( ${+functions[zsh-defer]} )); then
-  zsh-defer -c 'cache_eval_init atuin "atuin init zsh"' 
+  zsh-defer -c 'cache_eval_init atuin "atuin init zsh --disable-up-arrow"'
 elif command -v atuin >/dev/null 2>&1; then
-  cache_eval_init atuin "atuin init zsh"
+  cache_eval_init atuin "atuin init zsh --disable-up-arrow"
 fi
 
 unfunction source_dotfiles_file
