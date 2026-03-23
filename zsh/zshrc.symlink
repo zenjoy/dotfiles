@@ -171,6 +171,10 @@ if [[ -r "$autosuggestions_plugin" ]]; then
   bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 fi
 
+if command -v atuin >/dev/null 2>&1; then
+  cache_eval_init atuin "atuin init zsh --disable-up-arrow"
+fi
+
 unfunction source_dotfiles_file
 unset autocomplete_plugin
 unset autosuggestions_plugin
