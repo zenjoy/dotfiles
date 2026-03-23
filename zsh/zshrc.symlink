@@ -172,7 +172,7 @@ if [[ -r "$autosuggestions_plugin" ]]; then
 fi
 
 if command -v atuin >/dev/null 2>&1; then
-  cache_eval_init atuin "atuin init zsh --disable-up-arrow"
+  cache_eval_init atuin "atuin init zsh"
 fi
 
 unfunction source_dotfiles_file
