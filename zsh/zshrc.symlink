@@ -137,7 +137,7 @@ source_dotfiles_file zsh/completion.zsh
 
 autocomplete_plugin="$(dotfiles_zsh_autocomplete_plugin_path 2>/dev/null)"
 if [[ -r "$autocomplete_plugin" ]]; then
-  zstyle ':autocomplete:history-search-backward:*' list-lines "$HISTSIZE"
+  zstyle -e ':autocomplete:*:*' list-lines 'reply=( $(( LINES / 3 )) )'
   zstyle ':autocomplete:*' add-semicolon no
   source "$autocomplete_plugin"
   bindkey              '^I' menu-select
@@ -181,13 +181,12 @@ done
 autosuggestions_plugin="$DOTFILES_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
 if [[ -r "$autosuggestions_plugin" ]]; then
   source "$autosuggestions_plugin"
-  bindkey '^I' autosuggest-accept
 fi
 
 if command -v atuin >/dev/null 2>&1 && (( ${+functions[zsh-defer]} )); then
-  zsh-defer -c 'cache_eval_init atuin "atuin init zsh --disable-up-arrow"'
+  zsh-defer -c 'cache_eval_init atuin "atuin init zsh"'
 elif command -v atuin >/dev/null 2>&1; then
-  cache_eval_init atuin "atuin init zsh --disable-up-arrow"
+  cache_eval_init atuin "atuin init zsh"
 fi
 
 unfunction source_dotfiles_file
