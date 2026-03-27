@@ -309,6 +309,7 @@ if command -v mise >/dev/null 2>&1; then
 fi
 
 if command -v zsh-patina >/dev/null 2>&1; then
+  zsh-patina start 2>/dev/null
   eval "$(zsh-patina activate)"
 fi
 
