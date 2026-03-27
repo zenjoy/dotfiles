@@ -309,7 +309,14 @@ if command -v mise >/dev/null 2>&1; then
 fi
 
 if command -v zsh-patina >/dev/null 2>&1; then
-  zsh-patina start 2>/dev/null
+  if ! zsh-patina status &>/dev/null; then
+    command rm -f "$HOME/.local/share/zsh-patina/daemon.sock" 2>/dev/null
+    zsh-patina start &>/dev/null
+    local _i=0
+    while [[ ! -S "$HOME/.local/share/zsh-patina/daemon.sock" ]] && (( _i++ < 20 )); do
+      sleep 0.05
+    done
+  fi
   eval "$(zsh-patina activate)"
 fi
 
