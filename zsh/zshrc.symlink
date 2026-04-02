@@ -204,7 +204,10 @@ if [[ -a ~/.localrc.late ]]; then
 	source ~/.localrc.late
 fi
 
-# support autojump
+# support zoxide (autojump replacement)
+# Default _ZO_MAXAGE is 10000; with a large directory history the total score
+# exceeds that quickly, causing aggressive pruning of infrequently visited dirs.
+export _ZO_MAXAGE=100000
 if command -v zoxide >/dev/null 2>&1; then
 	eval "$(zoxide init zsh --cmd j)"
 fi
