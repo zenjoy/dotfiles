@@ -13,8 +13,6 @@ setopt no_bg_nice               # don't nice background tasks
 setopt no_hup                   # no hup signal at shell exit
 setopt no_beep                  # no annoying beep when a completion is ambiguous
 setopt no_list_beep             # beeping is only turned off for ambiguous completions
-setopt local_options            # allow functions to have local options
-setopt local_traps              # allow functions to have local traps
 setopt share_history            # share history between sessions ???
 setopt extended_history         # add timestamps to history
 setopt prompt_subst             # parameter expansion, command substitution and arithmetic expansion are performed in prompts
@@ -47,6 +45,10 @@ unsetopt correct                # do not try to spelling correct commands
 unsetopt rm_star_silent         # ask for confirmation for `rm *' or `rm path/*'
 unsetopt bg_nice                # no lower prio for background jobs
 unsetopt hist_beep              # no bell on error in history
+
+# Treat only alphanumerics and underscores as word characters so that
+# Ctrl-W stops at /, =, -, etc. (oh-my-zsh used to set this for us).
+WORDCHARS='_'
 
 zle -N newtab
 

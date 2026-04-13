@@ -156,6 +156,7 @@ repo_topic_files=(
   system/sdkman.zsh
   system/functions.zsh
   system/aliases.zsh
+  docker/aliases.zsh
   git/aliases.zsh
   git/completion.zsh
   ruby/aliases.zsh
@@ -183,10 +184,85 @@ if [[ -r "$autosuggestions_plugin" ]]; then
   source "$autosuggestions_plugin"
 fi
 
+# Inline history cycling on arrow keys with prefix search and cursor at end.
+# Pure zsh implementation — doesn't rely on $LASTWIDGET (broken by
+# zsh-autosuggestions wrapping) or C built-in state (broken by wrapping).
+# Tracks search state via buffer comparison instead.
+typeset -g  __dotfiles_hist_prefix=""
+typeset -g  __dotfiles_hist_buffer=""
+typeset -gi __dotfiles_hist_pos=0
+
+_dotfiles_up_line_or_beginning_search() {
+  emulate -L zsh
+  if [[ $LBUFFER == *$'\n'* ]]; then
+    zle .up-line-or-history
+    return
+  fi
+  # New search if user changed the buffer or first use
+  if [[ $BUFFER != "$__dotfiles_hist_buffer" ]] || (( __dotfiles_hist_pos == 0 )); then
+    __dotfiles_hist_prefix=$BUFFER
+    __dotfiles_hist_pos=$HISTNO
+  fi
+  local -i idx=$__dotfiles_hist_pos
+  while (( --idx >= 1 )); do
+    if [[ ${history[$idx]} == "${__dotfiles_hist_prefix}"* ]]; then
+      __dotfiles_hist_pos=$idx
+      BUFFER=${history[$idx]}
+      __dotfiles_hist_buffer=$BUFFER
+      CURSOR=$#BUFFER
+      unset POSTDISPLAY
+      region_highlight=()
+      (( ${+functions[_zsh_highlight]} )) && _zsh_highlight
+      return
+    fi
+  done
+  zle beep
+}
+zle -N _dotfiles_up_line_or_beginning_search
+
+_dotfiles_down_line_or_beginning_search() {
+  emulate -L zsh
+  if [[ $RBUFFER == *$'\n'* ]]; then
+    zle .down-line-or-history
+    return
+  fi
+  if [[ $BUFFER != "$__dotfiles_hist_buffer" ]] || (( __dotfiles_hist_pos == 0 )); then
+    __dotfiles_hist_prefix=$BUFFER
+    __dotfiles_hist_pos=$HISTNO
+  fi
+  local -i idx=$__dotfiles_hist_pos
+  while (( ++idx <= HISTNO )); do
+    if [[ ${history[$idx]} == "${__dotfiles_hist_prefix}"* ]]; then
+      __dotfiles_hist_pos=$idx
+      BUFFER=${history[$idx]}
+      __dotfiles_hist_buffer=$BUFFER
+      CURSOR=$#BUFFER
+      unset POSTDISPLAY
+      region_highlight=()
+      (( ${+functions[_zsh_highlight]} )) && _zsh_highlight
+      return
+    fi
+  done
+  # Past newest match — restore original input
+  BUFFER=$__dotfiles_hist_prefix
+  __dotfiles_hist_buffer=$BUFFER
+  __dotfiles_hist_pos=$HISTNO
+  CURSOR=$#BUFFER
+  unset POSTDISPLAY
+  region_highlight=()
+  (( ${+functions[_zsh_highlight]} )) && _zsh_highlight
+}
+zle -N _dotfiles_down_line_or_beginning_search
+
+bindkey "^[[A" _dotfiles_up_line_or_beginning_search
+bindkey "^[OA" _dotfiles_up_line_or_beginning_search
+bindkey "^[[B" _dotfiles_down_line_or_beginning_search
+bindkey "^[OB" _dotfiles_down_line_or_beginning_search
+
 if command -v atuin >/dev/null 2>&1 && (( ${+functions[zsh-defer]} )); then
-  zsh-defer -c 'cache_eval_init atuin "atuin init zsh"'
+  zsh-defer -c 'cache_eval_init atuin "atuin init zsh --disable-up-arrow"'
 elif command -v atuin >/dev/null 2>&1; then
-  cache_eval_init atuin "atuin init zsh"
+  cache_eval_init atuin "atuin init zsh --disable-up-arrow"
 fi
 
 unfunction source_dotfiles_file
@@ -312,14 +388,6 @@ if command -v mise >/dev/null 2>&1; then
 fi
 
 if command -v zsh-patina >/dev/null 2>&1; then
-  if ! zsh-patina status &>/dev/null; then
-    command rm -f "$HOME/.local/share/zsh-patina/daemon.sock" 2>/dev/null
-    zsh-patina start &>/dev/null
-    local _i=0
-    while [[ ! -S "$HOME/.local/share/zsh-patina/daemon.sock" ]] && (( _i++ < 20 )); do
-      sleep 0.05
-    done
-  fi
   eval "$(zsh-patina activate)"
 fi
 

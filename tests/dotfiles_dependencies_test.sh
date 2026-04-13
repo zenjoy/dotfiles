@@ -192,6 +192,66 @@ EOF
   assert_contains "$output" "dotfiles-tab-accept-autosuggestion-or-menu-complete"
 }
 
+test_docker_compose_aliases_prefer_v2_and_fall_back_to_v1() {
+  setup_temp_home
+  trap cleanup_temp_home RETURN
+
+  mkdir -p "$HOME/bin"
+  export PATH="$HOME/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+  cat > "$HOME/.zshrc" <<EOF
+source "$ROOT/zsh/zshrc.symlink"
+EOF
+
+  cat > "$HOME/bin/docker" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1-}" == "compose" && "${2-}" == "version" ]]; then
+  exit 0
+fi
+
+if [[ "${1-}" == "compose" ]]; then
+  shift
+  printf 'docker compose:%s\n' "$*"
+  exit 0
+fi
+
+printf 'docker:%s\n' "$*"
+EOF
+  chmod +x "$HOME/bin/docker"
+
+  local output
+  output="$(ZDOTDIR="$HOME" zsh -ic '
+    alias dco
+    alias dcrestart
+    dco ps
+    dcrestart api
+  ' 2>&1)"
+
+  assert_contains "$output" "dco=_dotfiles_docker_compose"
+  assert_contains "$output" "dcrestart='_dotfiles_docker_compose restart'"
+  assert_contains "$output" "docker compose:ps"
+  assert_contains "$output" "docker compose:restart api"
+
+  rm -f "$HOME/bin/docker"
+
+  cat > "$HOME/bin/docker-compose" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'docker-compose:%s\n' "$*"
+EOF
+  chmod +x "$HOME/bin/docker-compose"
+
+  output="$(ZDOTDIR="$HOME" zsh -ic '
+    dco logs
+    dcrestart web
+  ' 2>&1)"
+
+  assert_contains "$output" "docker-compose:logs"
+  assert_contains "$output" "docker-compose:restart web"
+}
+
 test_doctor_writes_status_file
 test_only_active_plugin_is_managed
 test_zsh_autocomplete_uses_managed_plugin_path_only
@@ -199,5 +259,6 @@ test_hyper_setup_is_removed
 test_eval_cache_refreshes_when_command_changes
 test_zsh_startup_uses_ignore_list_and_skips_missing_init_commands
 test_zsh_tab_prefers_autosuggestion_accept_before_autocomplete_cycle
+test_docker_compose_aliases_prefer_v2_and_fall_back_to_v1
 
 echo "PASS: dotfiles dependency audit"
