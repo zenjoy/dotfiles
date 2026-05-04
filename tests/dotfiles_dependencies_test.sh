@@ -81,9 +81,9 @@ test_only_active_plugin_is_managed() {
 
   assert_contains "$output" "zsh-users/zsh-autosuggestions"
   assert_contains "$output" "marlonrichert/zsh-autocomplete"
+  assert_contains "$output" "zdharma-continuum/fast-syntax-highlighting"
   assert_not_contains "$output" "zsh-autocomplete|recommended|brew|zsh-autocomplete"
   assert_not_contains "$output" "zshmarks"
-  assert_not_contains "$output" "fast-syntax-highlighting"
 }
 
 test_zsh_autocomplete_uses_managed_plugin_path_only() {

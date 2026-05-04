@@ -146,6 +146,13 @@ if [[ -r "$autocomplete_plugin" ]]; then
   bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 fi
 
+# Ensure compdef is defined in case zsh-autocomplete isn't installed —
+# topic plugins (k8s, …) and the compdef calls below depend on it.
+if (( ! ${+functions[compdef]} )); then
+  autoload -Uz compinit
+  compinit -d "$ZSH_CACHE_DIR/.zcompdump"
+fi
+
 defer_plugin="$DOTFILES/system/zsh-defer.plugin.zsh"
 if [[ -r "$defer_plugin" ]]; then
   source "$defer_plugin"
@@ -182,6 +189,21 @@ done
 autosuggestions_plugin="$DOTFILES_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
 if [[ -r "$autosuggestions_plugin" ]]; then
   source "$autosuggestions_plugin"
+fi
+
+syntax_highlighting_plugin="$DOTFILES_PLUGIN_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+if [[ -r "$syntax_highlighting_plugin" ]]; then
+  # zsh-autocomplete declares these widgets but registers them via async init,
+  # so they're empty in ${widgets} when fsh loads. Pre-stub them as user widgets
+  # so fsh binds silently; autocomplete's async init overwrites the stubs.
+  _dotfiles_fsh_widget_stub() { :; }
+  () {
+    local w
+    for w in menu-search recent-paths; do
+      [[ -z ${widgets[$w]-} ]] && zle -N $w _dotfiles_fsh_widget_stub
+    done
+  }
+  source "$syntax_highlighting_plugin"
 fi
 
 # Inline history cycling on arrow keys with prefix search and cursor at end.
@@ -268,6 +290,7 @@ fi
 unfunction source_dotfiles_file
 unset autocomplete_plugin
 unset autosuggestions_plugin
+unset syntax_highlighting_plugin
 unset defer_plugin
 unset repo_topic_files
 
