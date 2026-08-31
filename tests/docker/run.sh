@@ -33,11 +33,13 @@ arch_base_image() {
 
 build() {
   local flavor="$1"
-  local -a build_args=()
+  # Seeded, never empty: expanding an empty array under `set -u` is an unbound
+  # variable error on bash 3.2, which is what /bin/bash still is on macOS.
+  local -a build_args=(--progress=plain)
   [[ -n "$PLATFORM" ]] && build_args+=(--platform="$PLATFORM")
   [[ "$flavor" == "arch" ]] && build_args+=(--build-arg "ARCH_BASE_IMAGE=$(arch_base_image)")
   echo "==> Verifying bootstrap on $flavor ${PLATFORM:+($PLATFORM)}"
-  docker build --progress=plain "${build_args[@]}" \
+  docker build "${build_args[@]}" \
     -f "$ROOT/tests/docker/Dockerfile.$flavor" \
     -t "dotfiles-test-$flavor" "$ROOT"
   echo "==> $flavor OK"

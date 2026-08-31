@@ -25,7 +25,9 @@ RUN bash -lc 'set -e; \
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
   brew --version; \
   test -L "$HOME/.zshrc"; \
-  "$HOME/.dotfiles/script/dotfiles-doctor" || true; \
+  doctor_out="$("$HOME/.dotfiles/script/dotfiles-doctor" 2>&1 || true)"; \
+  echo "$doctor_out"; \
+  echo "$doctor_out" | grep -q "look good"; \
   out="$(zsh -i -c "echo shell-ok" 2>&1)"; \
   echo "$out"; \
   echo "$out" | grep -q shell-ok; \
