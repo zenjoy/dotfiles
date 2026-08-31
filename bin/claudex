@@ -1,0 +1,589 @@
+#!/usr/bin/env bash
+# claudex — Claude Code harness with GPT models via local CLIProxyAPI (on demand)
+#
+# Mirrors Theo's setup (https://x.com/theo/status/2076114415368482854):
+#   Claude Code UI/tools + GPT model through CLIProxyAPI
+#
+# Unlike a permanent settings.json proxy config, this only points Claude at the
+# proxy for this process, so plain `claude` still uses Anthropic normally.
+#
+# Isolation: sessions write under CLAUDEX_HOME (default ~/.claudex) via
+# CLAUDE_CONFIG_DIR, so OpenUsage / ccusage scanning ~/.claude do not price
+# GPT token logs as Claude "Extra Usage".
+#
+# Usage:
+#   claudex                  # start/ensure proxy, open Claude Code with gpt-5.6-sol
+#   claudex --continue       # pass-through args to claude
+#   claudex --model gpt-5.5  # override main model for this run
+#   claudex --subagent-model gpt-5.6-luna
+#   CLAUDEX_MODEL=gpt-5.5 CLAUDEX_SUBAGENT_MODEL=gpt-5.6-terra claudex
+#   claudex --proxy-status   # is cliproxyapi up?
+#   claudex --proxy-start    # start cliproxyapi only
+#   claudex --proxy-stop     # stop a cliproxyapi we can find on the configured port
+#   claudex --quarantine-gpt-logs   # move past GPT jsonl out of ~/.claude/projects
+#
+# Env (optional):
+#   CLAUDEX_MODEL           main model (default: gpt-5.6-sol)
+#   CLAUDEX_SUBAGENT_MODEL  subagent model (default: gpt-5.6-terra)
+#   CLAUDEX_PORT            proxy port (default: read from config, else 8317)
+#   CLAUDEX_HOST            proxy host (default: 127.0.0.1)
+#   CLAUDEX_API_KEY         proxy API key (default: first api-keys entry in config)
+#   CLAUDEX_CONFIG          cliproxyapi config path
+#   CLAUDEX_HOME            isolated Claude config dir (default: ~/.claudex)
+#   CLAUDEX_NO_ISOLATE      if set, write into default ~/.claude (pollutes stats)
+#   CLAUDEX_NO_START        if set, fail when proxy is down instead of auto-starting
+#   CLAUDEX_BIN             path to cliproxyapi binary
+
+set -euo pipefail
+
+CLAUDEX_CONFIG="${CLAUDEX_CONFIG:-/opt/homebrew/etc/cliproxyapi.conf}"
+CLAUDEX_BIN="${CLAUDEX_BIN:-$(command -v cliproxyapi 2>/dev/null || true)}"
+CLAUDEX_BIN="${CLAUDEX_BIN:-/opt/homebrew/bin/cliproxyapi}"
+CLAUDEX_HOST="${CLAUDEX_HOST:-127.0.0.1}"
+CLAUDEX_MODEL="${CLAUDEX_MODEL:-gpt-5.6-sol}"
+CLAUDEX_SUBAGENT_MODEL="${CLAUDEX_SUBAGENT_MODEL:-gpt-5.6-terra}"
+CLAUDEX_HOME="${CLAUDEX_HOME:-${HOME}/.claudex}"
+MAIN_CLAUDE_HOME="${HOME}/.claude"
+LOG_DIR="${HOME}/.cli-proxy-api/logs"
+LOG_FILE="${LOG_DIR}/claudex-server.log"
+PID_FILE="${HOME}/.cli-proxy-api/claudex-server.pid"
+
+die() {
+  printf 'claudex: %s\n' "$*" >&2
+  exit 1
+}
+
+config_port() {
+  if [[ -f "$CLAUDEX_CONFIG" ]]; then
+    # Match a top-level `port: N` (ignore nested / commented lines loosely)
+    local p
+    p="$(awk '
+      /^[[:space:]]*#/ { next }
+      /^port:[[:space:]]*[0-9]+/ {
+        sub(/^port:[[:space:]]*/, "")
+        print $1
+        exit
+      }
+    ' "$CLAUDEX_CONFIG" 2>/dev/null || true)"
+    if [[ -n "${p:-}" ]]; then
+      printf '%s' "$p"
+      return
+    fi
+  fi
+  printf '8317'
+}
+
+config_api_key() {
+  if [[ -n "${CLAUDEX_API_KEY:-}" ]]; then
+    printf '%s' "$CLAUDEX_API_KEY"
+    return
+  fi
+  if [[ ! -f "$CLAUDEX_CONFIG" ]]; then
+    return 1
+  fi
+  # First quoted api-keys entry under api-keys:
+  awk '
+    BEGIN { in_keys=0 }
+    /^[[:space:]]*#/ { next }
+    /^api-keys:[[:space:]]*$/ { in_keys=1; next }
+    in_keys && /^[^[:space:]#-]/ { exit }
+    in_keys && /-/ {
+      if (match($0, /"[^"]+"/)) {
+        print substr($0, RSTART+1, RLENGTH-2)
+        exit
+      }
+      if (match($0, /'\''[^'\'']+'\''/)) {
+        print substr($0, RSTART+1, RLENGTH-2)
+        exit
+      }
+    }
+  ' "$CLAUDEX_CONFIG"
+}
+
+CLAUDEX_PORT="${CLAUDEX_PORT:-$(config_port)}"
+BASE_URL="http://${CLAUDEX_HOST}:${CLAUDEX_PORT}"
+
+proxy_listening() {
+  # Prefer a real HTTP response over a bare TCP probe
+  local key
+  key="$(config_api_key 2>/dev/null || true)"
+  if [[ -n "$key" ]]; then
+    curl -sf -m 1 \
+      -H "Authorization: Bearer ${key}" \
+      "${BASE_URL}/v1/models" >/dev/null 2>&1
+    return $?
+  fi
+  # Fallback: anything answering on the port
+  curl -sf -m 1 "${BASE_URL}/" >/dev/null 2>&1 || \
+    nc -z "$CLAUDEX_HOST" "$CLAUDEX_PORT" >/dev/null 2>&1
+}
+
+proxy_pids_on_port() {
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP:"$CLAUDEX_PORT" -sTCP:LISTEN -t 2>/dev/null || true
+  fi
+}
+
+start_proxy() {
+  if [[ ! -x "$CLAUDEX_BIN" ]]; then
+    die "cliproxyapi not found at ${CLAUDEX_BIN} (brew install cliproxyapi)"
+  fi
+  mkdir -p "$LOG_DIR"
+  printf 'claudex: starting cliproxyapi on %s …\n' "$BASE_URL" >&2
+  # Detach fully so Claude sessions don't hold the proxy as a child
+  nohup "$CLAUDEX_BIN" -config "$CLAUDEX_CONFIG" >>"$LOG_FILE" 2>&1 &
+  local pid=$!
+  printf '%s\n' "$pid" >"$PID_FILE"
+  disown "$pid" 2>/dev/null || true
+
+  local attempt
+  for attempt in $(seq 1 40); do
+    if proxy_listening; then
+      printf 'claudex: cliproxyapi ready (pid %s)\n' "$pid" >&2
+      return 0
+    fi
+    # Process died early
+    if ! kill -0 "$pid" 2>/dev/null; then
+      die "cliproxyapi exited during startup — see ${LOG_FILE}"
+    fi
+    sleep 0.25
+  done
+  die "cliproxyapi did not become ready on ${BASE_URL} after ${attempt:-0} attempts — see ${LOG_FILE}"
+}
+
+ensure_proxy() {
+  if proxy_listening; then
+    return 0
+  fi
+  if [[ -n "${CLAUDEX_NO_START:-}" ]]; then
+    die "cliproxyapi is not running on ${BASE_URL} (set CLAUDEX_NO_START= to allow auto-start, or run: claudex --proxy-start)"
+  fi
+  start_proxy
+}
+
+stop_proxy() {
+  local pids
+  pids="$(proxy_pids_on_port)"
+  if [[ -z "$pids" ]]; then
+    # Fallback to pid file
+    if [[ -f "$PID_FILE" ]]; then
+      pids="$(cat "$PID_FILE" 2>/dev/null || true)"
+    fi
+  fi
+  if [[ -z "${pids//[$'\n']/}" ]]; then
+    printf 'claudex: no cliproxyapi listener on port %s\n' "$CLAUDEX_PORT" >&2
+    return 0
+  fi
+  # shellcheck disable=SC2086
+  printf 'claudex: stopping cliproxyapi (pid %s)\n' "$(echo $pids | tr '\n' ' ')" >&2
+  # shellcheck disable=SC2086
+  kill $pids 2>/dev/null || true
+  sleep 0.3
+  # shellcheck disable=SC2086
+  kill -9 $pids 2>/dev/null || true
+  rm -f "$PID_FILE"
+  printf 'claudex: stopped\n' >&2
+}
+
+proxy_status() {
+  if proxy_listening; then
+    local pids
+    pids="$(proxy_pids_on_port | tr '\n' ' ')"
+    printf 'cliproxyapi: up  %s  (pid %s)\n' "$BASE_URL" "${pids:-?}"
+    return 0
+  fi
+  printf 'cliproxyapi: down  %s\n' "$BASE_URL"
+  return 1
+}
+
+# Shared read-only-ish dirs from main Claude home (plugins/skills/etc.).
+# Never link projects / history / sessions — those are the stats pollution surface.
+SHARED_LINKS=(
+  plugins
+  skills
+  agents
+  commands
+  hooks
+  ccline
+  CLAUDE.md
+)
+
+ensure_isolated_home() {
+  if [[ -n "${CLAUDEX_NO_ISOLATE:-}" ]]; then
+    return 0
+  fi
+
+  mkdir -p "$CLAUDEX_HOME"
+
+  # Seed + repair settings: copy from main once, always keep statusLine + ccline
+  # working. Claude Code skips StatusLine when workspace trust is missing
+  # ("Skipping StatusLine command execution - workspace trust not accepted").
+  if command -v python3 >/dev/null 2>&1; then
+    python3 - \
+      "${MAIN_CLAUDE_HOME}/settings.json" \
+      "${CLAUDEX_HOME}/settings.json" \
+      "${HOME}/.claude.json" \
+      "${CLAUDEX_HOME}/.claude.json" \
+      "${MAIN_CLAUDE_HOME}/ccline/ccline" \
+      "${CLAUDEX_MODEL}" <<'PY'
+import json, os, sys
+from pathlib import Path
+
+main_settings, iso_settings, main_state, iso_state, ccline_bin, default_model = sys.argv[1:7]
+
+def load(path):
+    p = Path(path)
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text())
+    except Exception:
+        return {}
+
+def save(path, data, mode=0o600):
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(data, indent=2) + "\n")
+    try:
+        os.chmod(p, mode)
+    except OSError:
+        pass
+
+# --- settings.json ---
+settings = load(iso_settings)
+if not settings and Path(main_settings).exists():
+    settings = load(main_settings)
+
+env = settings.get("env") if isinstance(settings.get("env"), dict) else {}
+for k in (
+    "ANTHROPIC_BASE_URL",
+    "ANTHROPIC_AUTH_TOKEN",
+    "ANTHROPIC_API_KEY",
+    "ANTHROPIC_API_KEY_HELPER",
+):
+    env.pop(k, None)
+settings["env"] = env
+# Prefer GPT default when opened via claudex; main ~/.claude keeps Fable.
+if not settings.get("model") or str(settings.get("model", "")).startswith("claude-"):
+    # Only force model on first seed / when still pointing at Anthropic defaults
+    if not Path(iso_settings).exists():
+        settings["model"] = default_model
+
+# Absolute path: ~ expansion is fine, but absolute is more reliable under isolation.
+ccline = Path(ccline_bin).expanduser()
+if ccline.is_file():
+    settings["statusLine"] = {
+        "type": "command",
+        "command": str(ccline.resolve()),
+        "padding": int((settings.get("statusLine") or {}).get("padding") or 0),
+    }
+elif "statusLine" not in settings and Path(main_settings).exists():
+    main = load(main_settings)
+    if main.get("statusLine"):
+        settings["statusLine"] = main["statusLine"]
+
+save(iso_settings, settings)
+
+# --- .claude.json trust sync ---
+# StatusLine is suppressed until hasTrustDialogAccepted is true for the cwd.
+main = load(main_state)
+iso = load(iso_state)
+if not iso:
+    # Fresh isolated state: start from a slim copy of main (no need for full blob)
+    iso = {
+        "hasCompletedOnboarding": main.get("hasCompletedOnboarding", True),
+        "lastOnboardingVersion": main.get("lastOnboardingVersion"),
+        "userID": main.get("userID"),
+        "projects": {},
+    }
+
+# Top-level flags that affect first-run UX
+for key in (
+    "hasCompletedOnboarding",
+    "lastOnboardingVersion",
+    "userID",
+    "installMethod",
+):
+    if key in main and key not in iso:
+        iso[key] = main[key]
+if not iso.get("hasCompletedOnboarding"):
+    iso["hasCompletedOnboarding"] = True
+
+main_projects = main.get("projects") if isinstance(main.get("projects"), dict) else {}
+iso_projects = iso.get("projects") if isinstance(iso.get("projects"), dict) else {}
+trust_keys = (
+    "hasTrustDialogAccepted",
+    "hasClaudeMdExternalIncludesApproved",
+    "hasClaudeMdExternalIncludesWarningShown",
+)
+for path, pdata in main_projects.items():
+    if not isinstance(pdata, dict):
+        continue
+    dest = iso_projects.get(path)
+    if not isinstance(dest, dict):
+        dest = {}
+    changed = False
+    for k in trust_keys:
+        if pdata.get(k) and not dest.get(k):
+            dest[k] = pdata[k]
+            changed = True
+    # Minimal stub so Claude recognizes the project as trusted
+    if pdata.get("hasTrustDialogAccepted") and not dest.get("hasTrustDialogAccepted"):
+        dest["hasTrustDialogAccepted"] = True
+        changed = True
+    if dest.get("hasTrustDialogAccepted") or changed:
+        iso_projects[path] = dest
+
+iso["projects"] = iso_projects
+save(iso_state, iso)
+PY
+  elif [[ ! -f "${CLAUDEX_HOME}/settings.json" && -f "${MAIN_CLAUDE_HOME}/settings.json" ]]; then
+    cp "${MAIN_CLAUDE_HOME}/settings.json" "${CLAUDEX_HOME}/settings.json"
+  fi
+
+  local name
+  for name in "${SHARED_LINKS[@]}"; do
+    if [[ -e "${MAIN_CLAUDE_HOME}/${name}" && ! -e "${CLAUDEX_HOME}/${name}" ]]; then
+      ln -s "${MAIN_CLAUDE_HOME}/${name}" "${CLAUDEX_HOME}/${name}"
+    fi
+  done
+
+  # Fresh local state dirs (do not share with main Claude)
+  mkdir -p \
+    "${CLAUDEX_HOME}/projects" \
+    "${CLAUDEX_HOME}/sessions" \
+    "${CLAUDEX_HOME}/file-history" \
+    "${CLAUDEX_HOME}/session-env" \
+    "${CLAUDEX_HOME}/shell-snapshots" \
+    "${CLAUDEX_HOME}/telemetry" \
+    "${CLAUDEX_HOME}/cache"
+}
+
+# Move JSONL sessions under ~/.claude that only used GPT/proxy models into
+# CLAUDEX_HOME so OpenUsage/ccusage stop counting them as Claude spend.
+quarantine_gpt_logs() {
+  local src_root="${MAIN_CLAUDE_HOME}/projects"
+  local dst_root="${CLAUDEX_HOME}/projects"
+  local dry=0
+  if [[ "${1:-}" == "--dry-run" ]]; then
+    dry=1
+  fi
+
+  [[ -d "$src_root" ]] || die "no ${src_root}"
+  mkdir -p "$dst_root"
+  ensure_isolated_home
+
+  if ! command -v python3 >/dev/null 2>&1; then
+    die "python3 required for --quarantine-gpt-logs"
+  fi
+
+  CLAUDEX_HOME="$CLAUDEX_HOME" MAIN_CLAUDE_HOME="$MAIN_CLAUDE_HOME" DRY="$dry" python3 - <<'PY'
+import json, os, shutil
+from pathlib import Path
+
+src_root = Path(os.environ["MAIN_CLAUDE_HOME"]) / "projects"
+dst_root = Path(os.environ["CLAUDEX_HOME"]) / "projects"
+dry = os.environ.get("DRY") == "1"
+
+# Models that clearly belong to Codex/proxy (not Anthropic)
+def is_proxy_model(name: str) -> bool:
+    n = (name or "").lower()
+    if not n:
+        return False
+    if n.startswith("gpt-") or n.startswith("o1") or n.startswith("o3") or n.startswith("o4"):
+        return True
+    if "codex" in n or n.endswith("-sol") or n.endswith("-terra") or n.endswith("-luna"):
+        return True
+    if n.startswith("gemini") or n.startswith("grok"):
+        return True
+    return False
+
+# Ignore placeholders that Claude Code injects and that are not real spend
+def is_noise_model(name: str) -> bool:
+    n = (name or "").lower().strip("<>")
+    return n in {"synthetic", "unknown", "none", ""}
+
+def models_in(path: Path) -> set[str]:
+    found = set()
+    try:
+        with path.open() as f:
+            for line in f:
+                if '"model"' not in line:
+                    continue
+                try:
+                    o = json.loads(line)
+                except Exception:
+                    continue
+                msg = o.get("message")
+                if isinstance(msg, dict) and msg.get("model"):
+                    found.add(str(msg["model"]))
+                if o.get("model"):
+                    found.add(str(o["model"]))
+    except OSError:
+        pass
+    return found
+
+moved = 0
+skipped_mixed = 0
+skipped_claude = 0
+bytes_moved = 0
+
+for path in src_root.rglob("*.jsonl"):
+    models = models_in(path)
+    if not models:
+        continue
+    real = {m for m in models if not is_noise_model(m)}
+    proxy = {m for m in real if is_proxy_model(m)}
+    anthropic = real - proxy
+    # Only quarantine pure-proxy transcripts. Mixed sessions stay put
+    # (safer than splitting mid-conversation logs).
+    if not proxy:
+        skipped_claude += 1
+        continue
+    if anthropic:
+        skipped_mixed += 1
+        print(f"skip mixed: {path.relative_to(src_root)}  models={sorted(real)}")
+        continue
+
+    rel = path.relative_to(src_root)
+    dest = dst_root / rel
+    print(f"{'would move' if dry else 'move'}: {rel}  models={sorted(proxy)}")
+    if not dry:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if dest.exists():
+            # Keep both if destination already has a session id clash
+            dest = dest.with_name(dest.stem + ".from-claude" + dest.suffix)
+        shutil.move(str(path), str(dest))
+        # Drop empty parent dirs lightly
+        try:
+            path.parent.rmdir()
+        except OSError:
+            pass
+    moved += 1
+    try:
+        bytes_moved += path.stat().st_size if dry else dest.stat().st_size
+    except OSError:
+        pass
+
+print(
+    f"\nsummary: moved={moved} mixed_skipped={skipped_mixed} "
+    f"claude_only_seen≈{skipped_claude} dry_run={dry}"
+)
+print(f"OpenUsage/ccusage will stop pricing those GPT sessions as Claude Extra Usage.")
+print(f"Isolated home: {os.environ['CLAUDEX_HOME']}")
+PY
+}
+
+run_claude() {
+  local key model subagent_model
+  key="$(config_api_key)" || die "no API key: set CLAUDEX_API_KEY or add api-keys in ${CLAUDEX_CONFIG}"
+  [[ -n "$key" ]] || die "empty API key from ${CLAUDEX_CONFIG}"
+
+  ensure_proxy
+  ensure_isolated_home
+
+  model="$CLAUDEX_MODEL"
+  subagent_model="$CLAUDEX_SUBAGENT_MODEL"
+
+  # Allow: claudex --model NAME --subagent-model NAME … (rest → claude)
+  local -a args=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --model)
+        [[ $# -ge 2 ]] || die "--model requires a value"
+        model="$2"
+        shift 2
+        ;;
+      --model=*)
+        model="${1#--model=}"
+        shift
+        ;;
+      --subagent-model)
+        [[ $# -ge 2 ]] || die "--subagent-model requires a value"
+        subagent_model="$2"
+        shift 2
+        ;;
+      --subagent-model=*)
+        subagent_model="${1#--subagent-model=}"
+        shift
+        ;;
+      *)
+        args+=("$1")
+        shift
+        ;;
+    esac
+  done
+
+  # Env only for this process — does not alter plain `claude` or settings.json.
+  # CLAUDE_CONFIG_DIR keeps GPT session JSONL out of ~/.claude (OpenUsage/ccusage).
+  # Main model = Sol (default); subagents = Terra (cheaper/faster for fan-out).
+  local -a env_args=(
+    ANTHROPIC_BASE_URL="$BASE_URL"
+    ANTHROPIC_AUTH_TOKEN="$key"
+    ANTHROPIC_API_KEY="$key"
+    CLAUDE_CODE_SUBAGENT_MODEL="$subagent_model"
+    CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1
+    CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY=3
+    ENABLE_TOOL_SEARCH=false
+  )
+  if [[ -z "${CLAUDEX_NO_ISOLATE:-}" ]]; then
+    env_args+=(CLAUDE_CONFIG_DIR="$CLAUDEX_HOME")
+  fi
+
+  exec env \
+    "${env_args[@]}" \
+    claude --model "$model" "${args[@]+"${args[@]}"}"
+}
+
+usage() {
+  cat <<'EOF'
+claudex — Claude Code + GPT via local CLIProxyAPI
+
+  claudex [claude-args...]     ensure proxy, launch Claude Code with GPT model
+  claudex --model NAME …       main model (default: gpt-5.6-sol)
+  claudex --subagent-model NAME
+                               subagent model (default: gpt-5.6-terra)
+  claudex --proxy-status       print whether cliproxyapi is listening
+  claudex --proxy-start        start cliproxyapi if needed
+  claudex --proxy-stop         stop cliproxyapi on the configured port
+  claudex --quarantine-gpt-logs [--dry-run]
+                               move pure-GPT session JSONL out of ~/.claude
+                               into ~/.claudex (fixes polluted OpenUsage totals)
+  claudex -h|--help            this help
+
+Defaults: main=gpt-5.6-sol, subagents=gpt-5.6-terra (CLAUDE_CODE_SUBAGENT_MODEL).
+Proxy is started on demand when missing (unless CLAUDEX_NO_START is set).
+Session logs write to CLAUDEX_HOME (~/.claudex) so OpenUsage/ccusage Claude
+stats stay clean. Regular `claude` is untouched.
+EOF
+}
+
+main() {
+  case "${1:-}" in
+    -h|--help)
+      usage
+      ;;
+    --proxy-status)
+      proxy_status
+      ;;
+    --proxy-start)
+      if proxy_listening; then
+        printf 'claudex: already running on %s\n' "$BASE_URL" >&2
+        exit 0
+      fi
+      start_proxy
+      ;;
+    --proxy-stop)
+      stop_proxy
+      ;;
+    --quarantine-gpt-logs)
+      shift
+      quarantine_gpt_logs "${1:-}"
+      ;;
+    *)
+      run_claude "$@"
+      ;;
+  esac
+}
+
+main "$@"
