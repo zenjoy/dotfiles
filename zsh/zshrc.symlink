@@ -54,21 +54,8 @@ set_homebrew_env() {
   fi
 }
 
-arch_name="$(uname -m)"
-if [[ "${arch_name}" = "x86_64" ]]; then
-  if [[ -f "/usr/local/bin/brew" ]]; then
-    if [[ "$(sysctl -n -q sysctl.proc_translated)" = "1" ]]; then
-      echo "Terminal Running on Rosetta 2"
-    fi
-
-    set_homebrew_env "/usr/local" "/usr/local/Homebrew"
-  fi
-elif [[ "${arch_name}" = "arm64" ]]; then
-  if [[ -f "/opt/homebrew/bin/brew" ]]; then
-    set_homebrew_env "/opt/homebrew" "/opt/homebrew"
-  fi
-elif [[ "${arch_name}" = "aarch64" ]]; then
-  # Running on ARM-based linux, there is no Linuxbrew on ARM64
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
+  set_homebrew_env "/opt/homebrew" "/opt/homebrew"
 fi
 
 # Load rbenv
@@ -374,9 +361,6 @@ export GPG_TTY=$(tty)
 # Enable shell history in iex
 export ERL_AFLAGS="-kernel shell_history enabled"
 
-# Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
-
 if command -v wtp >/dev/null 2>&1; then
   cache_eval_init wtp "wtp shell-init zsh"
 fi
@@ -395,7 +379,7 @@ dotfiles_maybe_remind_missing_deps
 unfunction dotfiles_maybe_remind_missing_deps
 
 cx() { open -a "Codex" "${1:-.}"; }
-c() { open -a "Zed" "${1:-.}"; }
+c() { open -a "Cursor" "${1:-.}"; }
 compdef _files c
 compdef _files cx
 
