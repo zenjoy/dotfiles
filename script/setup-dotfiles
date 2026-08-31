@@ -42,6 +42,43 @@ install_zsh() {
   fi
 }
 
+set_default_shell() {
+  local zsh_path="" candidate current_shell login_user
+
+  # macOS ships with zsh as the default shell already.
+  is_macos && return 0
+  command -v zsh >/dev/null 2>&1 || return 0
+
+  # Prefer the distro's zsh over a Homebrew one for the login shell — a brew
+  # upgrade or relink must never be able to lock us out of logging in.
+  for candidate in /usr/bin/zsh /bin/zsh; do
+    if [[ -x "$candidate" ]]; then
+      zsh_path="$candidate"
+      break
+    fi
+  done
+  [[ -n "$zsh_path" ]] || zsh_path="$(command -v zsh)"
+
+  login_user="$(id -un)"
+  current_shell="$(getent passwd "$login_user" | cut -d: -f7)"
+  if [[ "$current_shell" == "$zsh_path" ]]; then
+    success "zsh is already the default shell"
+    return 0
+  fi
+
+  user_ask_yn "Make zsh your default shell?" "y"
+  if [[ "$user_ask_yn_result" != "y" ]]; then
+    success "Ok, keeping $current_shell as your default shell."
+    return 0
+  fi
+
+  info "default shell" "set to zsh (takes effect after you log out and back in)"
+  if ! grep -qx "$zsh_path" /etc/shells 2>/dev/null; then
+    echo "$zsh_path" | sudo tee -a /etc/shells >/dev/null
+  fi
+  successfully "sudo chsh -s '$zsh_path' '$login_user'"
+}
+
 install_dotfiles () {
   _title_ 'Installing dotfiles:'
 
@@ -124,6 +161,7 @@ check_os () {
 }
 
 install_zsh
+set_default_shell
 install_dotfiles
 install_shell_stack
 check_os
