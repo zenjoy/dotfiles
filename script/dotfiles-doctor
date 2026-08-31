@@ -47,21 +47,12 @@ join_by_space() {
 }
 
 dependency_manifest() {
-  local platform
-
-  platform="$(uname -s)"
-
   cat <<'EOF'
 zsh|required|system||command -v zsh >/dev/null 2>&1|Install zsh and rerun setup-dotfiles.
 git|required|system||command -v git >/dev/null 2>&1|Install git and rerun setup-dotfiles.
 curl|required|system||command -v curl >/dev/null 2>&1|Install curl and rerun setup-dotfiles.
+homebrew|required|system||command -v brew >/dev/null 2>&1|Install Homebrew from https://brew.sh (works on macOS and Linux) and rerun setup-dotfiles.
 EOF
-
-  if [[ "$platform" == "Darwin" ]]; then
-    cat <<'EOF'
-homebrew|required|system||command -v brew >/dev/null 2>&1|Install Homebrew from https://brew.sh and rerun setup-dotfiles.
-EOF
-  fi
 
   dotfiles_shell_stack_manifest
 }
