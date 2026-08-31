@@ -92,7 +92,9 @@ install_shell_stack() {
   _title_ 'Installing shell dependencies'
   mkdir -p "$DOTFILES_PLUGIN_DIR"
 
-  while IFS='|' read -r dependency_id dependency_tier dependency_type dependency_ref dependency_check dependency_hint
+  # Read the manifest on fd 3, not stdin: git/brew run as children of this loop
+  # and would otherwise read the manifest away, silently truncating the stack.
+  while IFS='|' read -r -u 3 dependency_id dependency_tier dependency_type dependency_ref dependency_check dependency_hint
   do
     [[ -n "$dependency_id" ]] || continue
 
@@ -110,7 +112,7 @@ install_shell_stack() {
         successfully "brew install $dependency_ref"
         ;;
     esac
-  done < <(dotfiles_shell_stack_manifest)
+  done 3< <(dotfiles_shell_stack_manifest)
 }
 
 check_os () {
