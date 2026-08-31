@@ -36,9 +36,15 @@
 
 set -euo pipefail
 
-CLAUDEX_CONFIG="${CLAUDEX_CONFIG:-/opt/homebrew/etc/cliproxyapi.conf}"
+brew_prefix=""
+for p in /opt/homebrew /usr/local /home/linuxbrew/.linuxbrew "$HOME/.linuxbrew"; do
+  [ -x "$p/bin/brew" ] && { brew_prefix="$p"; break; }
+done
+brew_prefix="${brew_prefix:-/opt/homebrew}"
+
+CLAUDEX_CONFIG="${CLAUDEX_CONFIG:-${brew_prefix}/etc/cliproxyapi.conf}"
 CLAUDEX_BIN="${CLAUDEX_BIN:-$(command -v cliproxyapi 2>/dev/null || true)}"
-CLAUDEX_BIN="${CLAUDEX_BIN:-/opt/homebrew/bin/cliproxyapi}"
+CLAUDEX_BIN="${CLAUDEX_BIN:-${brew_prefix}/bin/cliproxyapi}"
 CLAUDEX_HOST="${CLAUDEX_HOST:-127.0.0.1}"
 CLAUDEX_MODEL="${CLAUDEX_MODEL:-gpt-5.6-sol}"
 CLAUDEX_SUBAGENT_MODEL="${CLAUDEX_SUBAGENT_MODEL:-gpt-5.6-terra}"
