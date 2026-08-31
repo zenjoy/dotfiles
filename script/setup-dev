@@ -53,16 +53,10 @@ install_homebrew() {
     elif [[ "${arch_name}" = "arm64" ]]; then
       eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
-  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
+  elif is_linux; then
     if [[ $proceed -ne 0 ]]; then
-      status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
-      successfully "sudo apt-get update && sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;
-      info "homebrew"
-      status "homebrew : ${BOLD}installing${NORMAL}"
-      successfully 'echo | sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
-      info "homebrew" "environment ready"
-      status "homebrew : ${BOLD}environment setup${NORMAL}"
-      successfully 'test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv);test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.localrc;sudo mkdir -p /home/linuxbrew/.linuxbrew/var/homebrew/linked;sudo chown -R $(whoami) /home/linuxbrew/.linuxbrew/var/homebrew/linked'
+      install_homebrew_linux || exit 1
+      eval "$("$(dotfiles_detect_brew_prefix)/bin/brew" shellenv)"
     fi
   fi
 }
@@ -129,10 +123,17 @@ install_ruby() {
     successfully "brew install libyaml"
     check "ruby dependencies - libffi" "brew ls --versions libffi"
     successfully "brew install libffi"
-  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
+  elif is_linux; then
     info "ruby dependencies"
     status "ruby dependencies : ${BOLD}installing${NORMAL}"
-    successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm-dev"
+    case "$(linux_pkg_manager)" in
+      apt)
+        successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm-dev"
+        ;;
+      pacman)
+        successfully "sudo pacman -Sy --noconfirm --needed autoconf bison openssl libyaml readline zlib ncurses libffi gdbm"
+        ;;
+    esac
   fi
 
   check "ruby 3.0.6" "rbenv versions | grep 3.0.6"

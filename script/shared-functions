@@ -535,6 +535,31 @@ machine_type() {
   fi
 }
 
+# Install Homebrew on Linux via the official installer.
+# Prerequisites come from the native package manager (apt or pacman).
+install_homebrew_linux() {
+  local pkg
+  if ! pkg="$(linux_pkg_manager)"; then
+    fail "homebrew : unsupported Linux distro — need a Debian/Ubuntu (apt) or Arch (pacman) based system"
+    return 1
+  fi
+
+  info "homebrew"
+  status "homebrew : ${BOLD}installing prerequisites (${pkg})${NORMAL}"
+  case "$pkg" in
+    apt)
+      successfully "sudo apt-get update && sudo apt-get -y install build-essential procps curl file git"
+      ;;
+    pacman)
+      successfully "sudo pacman -Sy --noconfirm --needed base-devel procps-ng curl file git"
+      ;;
+  esac
+
+  info "homebrew"
+  status "homebrew : ${BOLD}installing${NORMAL}"
+  successfully 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+}
+
 # If we exit unexpectedly, log this warning.
 # Scripts should call "trap exit_warning EXIT" near the top to enable,
 # then "trap finish EXIT" just before exiting on success.

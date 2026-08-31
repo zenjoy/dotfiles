@@ -38,16 +38,10 @@ install_homebrew() {
   check "homebrew" "command -v brew"
   if [[ "$(uname)" == "Darwin" ]]; then
     successfully 'echo | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-  elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
+  elif is_linux; then
     if [[ $proceed -ne 0 ]]; then
-      status "homebrew : ${BOLD}installing dependencies...${NORMAL}"
-      successfully "sudo apt-get update && sudo apt-get -y install build-essential curl file git ruby" >> $LOGFILE 2>&1;
-      info "homebrew"
-      status "homebrew : ${BOLD}installing${NORMAL}"
-      successfully 'echo | sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
-      info "homebrew" "environment ready"
-      status "homebrew : ${BOLD}environment setup${NORMAL}"
-      successfully 'test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv);test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile;echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.localrc;sudo mkdir -p /home/linuxbrew/.linuxbrew/var/homebrew/linked;sudo chown -R $(whoami) /home/linuxbrew/.linuxbrew/var/homebrew/linked'
+      install_homebrew_linux || exit 1
+      load_homebrew_environment
     fi
   fi
 
@@ -75,14 +69,9 @@ install_homebrew() {
 }
 
 load_homebrew_environment() {
-  if [[ "$(uname)" == "Darwin" ]]; then
-    if [[ -x /opt/homebrew/bin/brew ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -x /usr/local/bin/brew ]]; then
-      eval "$(/usr/local/bin/brew shellenv)"
-    fi
-  elif command -v brew >/dev/null 2>&1; then
-    eval "$(brew shellenv)"
+  local prefix
+  if prefix="$(dotfiles_detect_brew_prefix)"; then
+    eval "$("$prefix/bin/brew" shellenv)"
   fi
 }
 
@@ -127,8 +116,8 @@ setup_cli_tools() {
 }
 
 setup_locale() {
-  if [[ "`uname -s`" != "Darwin" ]]; then
-    sudo locale-gen "nl_BE.UTF-8"
+  if is_linux && command -v locale-gen >/dev/null 2>&1; then
+    sudo locale-gen "nl_BE.UTF-8" >> $LOGFILE 2>&1 || true
   fi
 }
 
