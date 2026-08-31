@@ -318,7 +318,7 @@ unset repo_topic_files
 
 DISABLE_UPDATE_PROMPT=true
 
-export CC=/usr/bin/gcc
+[[ "$OSTYPE" == darwin* ]] && export CC=/usr/bin/gcc
 
 # Put local stuff that you want at the end of everything in here
 if [[ -a ~/.localrc.late ]]; then
@@ -436,13 +436,28 @@ fi
 dotfiles_maybe_remind_missing_deps
 unfunction dotfiles_maybe_remind_missing_deps
 
-cx() { open -a "Codex" "${1:-.}"; }
-c() { open -a "Cursor" "${1:-.}"; }
+if [[ "$OSTYPE" == darwin* ]]; then
+  cx() { open -a "Codex" "${1:-.}"; }
+  c() { open -a "Cursor" "${1:-.}"; }
+else
+  cx() {
+    command -v codex >/dev/null 2>&1 || { echo "codex is not installed" >&2; return 1 }
+    codex "${1:-.}"
+  }
+  c() {
+    command -v cursor >/dev/null 2>&1 || { echo "cursor is not installed" >&2; return 1 }
+    cursor "${1:-.}"
+  }
+fi
 compdef _files c
 compdef _files cx
 
 # pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
+if [[ "$OSTYPE" == darwin* ]]; then
+  export PNPM_HOME="$HOME/Library/pnpm"
+else
+  export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+fi
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
