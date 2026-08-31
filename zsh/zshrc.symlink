@@ -365,6 +365,12 @@ if command -v direnv >/dev/null 2>&1; then
 	cache_eval_init direnv "direnv hook zsh"
 fi
 
+# Per-machine prompt override: a local starship config wins over the shared
+# one from the dotfiles, unless STARSHIP_CONFIG was already set (e.g. .localrc).
+if [[ -z "${STARSHIP_CONFIG-}" && -f "$HOME/.config/starship.local.toml" ]]; then
+  export STARSHIP_CONFIG="$HOME/.config/starship.local.toml"
+fi
+
 if command -v starship >/dev/null 2>&1; then
   cache_eval_init starship "starship init zsh"
 fi
