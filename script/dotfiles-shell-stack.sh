@@ -19,6 +19,7 @@ dotfiles_has_zsh_autocomplete() {
 dotfiles_shell_stack_manifest() {
   cat <<'EOF'
 zsh-autosuggestions|required|plugin|zsh-users/zsh-autosuggestions|[[ -r "$DOTFILES_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]|Install Homebrew if needed, then run setup-dotfiles to install the curated shell stack.
+fast-syntax-highlighting|required|plugin|zdharma-continuum/fast-syntax-highlighting|[[ -r "$DOTFILES_PLUGIN_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh" ]]|Run setup-dotfiles to install the curated shell stack.
 zsh-autocomplete|recommended|plugin|marlonrichert/zsh-autocomplete|dotfiles_has_zsh_autocomplete|Run setup-dotfiles to install the curated shell stack.
 fzf|recommended|brew|fzf|command -v fzf >/dev/null 2>&1|Install Homebrew if needed, then run setup-dotfiles to install the curated shell stack.
 direnv|recommended|brew|direnv|command -v direnv >/dev/null 2>&1|Install Homebrew if needed, then run setup-dotfiles to install the curated shell stack.
