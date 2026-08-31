@@ -13,9 +13,34 @@ If you're on catalina or above, give the terminal program you're using 'Full Dis
 
 We use [iTerm2](https://www.iterm2.com/) and [Visual Studio Code](https://code.visualstudio.com/).
 
+### Linux
+
+Supported distros: Ubuntu/Debian and Arch (including Omarchy), both verified in Docker.
+
+Prerequisites: `curl`, `git`, and sudo access. Everything else is installed by the bootstrap.
+
+Install with the same one-liner as macOS:
+
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/zenjoy/dotfiles/master/install.sh)"
+```
+
+On Linux the setup defaults to a lean core: shell config and CLI tools via Homebrew. GUI apps and macOS-only entries (setup-osx, VS Code extensions tied to macOS, etc.) are skipped automatically.
+
+For an unattended install of that lean core, skip the dev and CLI-apps prompts:
+
+```
+DOTFILES_ASSUME_YES=1 DOTFILES_SETUP_DEV=n DOTFILES_SETUP_CLI=n \
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/zenjoy/dotfiles/master/install.sh)"
+```
+
+`setup-dev` stays interactive even with `DOTFILES_ASSUME_YES` set: its ssh key and git identity prompts aren't covered by that flag. Run `script/setup-dev` afterwards in a terminal if you want dev tooling.
+
 ### Windows
 
 **TL;DR**: Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (WSL) + [Ubuntu](https://www.microsoft.com/store/productId/9NBLGGH4MSV6) + [Visual Studio Code](https://code.visualstudio.com/)
+
+WSL2 is detected automatically and supported the same way as native Linux.
 
 The steps to get started on Windows are following:
 
