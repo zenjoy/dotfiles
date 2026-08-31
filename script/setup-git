@@ -51,7 +51,7 @@ setup_gitconfig () {
   link_dotfile "$DOTFILES_ROOT/git/gitconfig.symlink"
 
   # When on windows configure core.autocrlf
-  if [[ $(uname -r) =~ Microsoft$ ]]; then
+  if is_wsl; then
     git config --global core.autocrlf true
   fi
 
@@ -145,7 +145,7 @@ ssh_auth_loop() {
     case $ssh_option in
       o|O)
         success "opening GitHub's webpage to register your key!"
-        if [[ $(uname -r) =~ Microsoft$ ]]; then
+        if is_wsl; then
           explorer.exe $service_url
         else
           open $service_url

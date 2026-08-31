@@ -527,10 +527,10 @@ machine_type() {
   if [[ "`uname -s`" == "Darwin" ]]; then
     echo "macOS"
   else
-    if [[ $(uname -r) =~ Microsoft$ ]]; then
+    if is_wsl; then
       echo "Ubuntu on Windows"
     else
-      echo "your machine"
+      echo "your Linux machine"
     fi
   fi
 }

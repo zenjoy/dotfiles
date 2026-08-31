@@ -30,10 +30,14 @@ install_zsh() {
   _title_ 'Checking ZSH environment:'
   check "zsh" "command -v zsh"
   if [[ $proceed -ne 0 ]]; then
-    if [[ "$(uname)" == "Darwin" ]]; then
+    if is_macos; then
       successfully "brew install zsh"
-    elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
-      successfully "sudo apt-get update && sudo apt-get -y install zsh"
+    elif is_linux; then
+      case "$(linux_pkg_manager)" in
+        apt) successfully "sudo apt-get update && sudo apt-get -y install zsh" ;;
+        pacman) successfully "sudo pacman -Sy --noconfirm --needed zsh" ;;
+        *) fail "zsh : unsupported distro, install zsh manually" ;;
+      esac
     fi
   fi
 }
@@ -111,7 +115,7 @@ install_shell_stack() {
 
 check_os () {
   # the ubuntu subsystem on windows works a bit different
-  if [[ $(uname -r) =~ Microsoft$ ]]; then
+  if is_wsl; then
     touch "$DOTFILES_ROOT/.multiuser"
     export ZSH_DISABLE_COMPFIX="true"
   fi
