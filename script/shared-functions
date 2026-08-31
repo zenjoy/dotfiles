@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 export DOTFILES=$HOME/.dotfiles
+. "$DOTFILES/script/dotfiles-platform.sh"
 
 # ensure we capture unexpected exits
 trap exit_warning EXIT
