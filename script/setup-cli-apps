@@ -37,7 +37,7 @@ cli_apps=(
   "pageres|capture screenshots of websites|command -v pageres|npm install -g pageres-cli|https://github.com/sindresorhus/pageres-cli#pageres-cli--"
   "capture-website|capture screenshots of websites|command -v capture-website|npm install -g capture-website-cli|https://github.com/sindresorhus/capture-website-cli#usage"
   "imgp|multi-core batch image resizer and rotator|command -v imgp|pip3 install pillow|https://github.com/jarun/imgp#imgp"
-  "imageoptim-cli|CLI for ImageOptim, ImageAlpha and JPEGmini|command -v imageoptim|npm install -g imageoptim-cli|https://imageoptim.com/command-line.html"
+  "imageoptim-cli|CLI for ImageOptim, ImageAlpha and JPEGmini|command -v imageoptim|npm install -g imageoptim-cli|https://imageoptim.com/command-line.html|macos"
   "pastel|Generate, analyze, convert and manipulate colors|command -v pastel|brew install pastel|https://github.com/sharkdp/pastel"
 
   "--Mobile Development"
@@ -72,7 +72,7 @@ cli_apps=(
   "gfi|google font installer|command -v gfi|npm install -g google-font-installer|https://github.com/lordgiotto/google-font-installer#readme"
   "fuck|autocorrects error in previous command|command -v fuck|brew install thefuck|https://github.com/nvbn/thefuck#readme"
   "undollar|undollar strips the dollar sign from copy/pasted commands|command -v $|npm install -g undollar|github.com/ImFeelingDucky/undollar#readme"
-  "kill-tabs|kill all Chrome tabs to improve performance|command -v kill-tabs|npm install -g kill-tabs|https://github.com/sindresorhus/kill-tabs#readme"
+  "kill-tabs|kill all Chrome tabs to improve performance|command -v kill-tabs|npm install -g kill-tabs|https://github.com/sindresorhus/kill-tabs#readme|macos"
   "autojump|cd command that learns where you went|command -v autojump|brew install autojump|https://github.com/wting/autojump#readme"
   "ffsend|Fully featured Firefox Send client|command -v ffsend|brew install ffsend|https://github.com/timvisee/ffsend#readme"
   "csvkit|Utilities for converting to and working with CSV|command -v in2csv|brew install csvkit|http://csvkit.rtfd.org/"
@@ -98,26 +98,26 @@ cli_apps=(
 
   "--OSX Management / Helpers"
 
-  "m-cli|swiss army knife for macOS|command -v m|brew install m-cli|https://github.com/rgcr/m-cli#readme"
-  "mas-cli|command line interface for the Mac App Store|command -v mas|brew install mas|https://github.com/mas-cli/mas#readme"
-  "brightness|manage screen brightness|command -v brightness|npm install -g brightness-cli|https://github.com/kevva/brightness-cli#usage"
-  "volume|manage volume|command -v volume|npm install -g gillstrom/vol-cli|https://github.com/gillstrom/vol-cli#usage"
-  "battery-level|get battery level|command -v battery-level|npm install -g battery-level-cli|https://github.com/gillstrom/battery-level-cli#readme"
-  "screensaver|start screensaver|command -v screensaver|npm install -g screensaver|https://github.com/gillstrom/screensaver#readme"
+  "m-cli|swiss army knife for macOS|command -v m|brew install m-cli|https://github.com/rgcr/m-cli#readme|macos"
+  "mas-cli|command line interface for the Mac App Store|command -v mas|brew install mas|https://github.com/mas-cli/mas#readme|macos"
+  "brightness|manage screen brightness|command -v brightness|npm install -g brightness-cli|https://github.com/kevva/brightness-cli#usage|macos"
+  "volume|manage volume|command -v volume|npm install -g gillstrom/vol-cli|https://github.com/gillstrom/vol-cli#usage|macos"
+  "battery-level|get battery level|command -v battery-level|npm install -g battery-level-cli|https://github.com/gillstrom/battery-level-cli#readme|macos"
+  "screensaver|start screensaver|command -v screensaver|npm install -g screensaver|https://github.com/gillstrom/screensaver#readme|macos"
   "organize|auto organize files based on file type|command -v organize|npm install -g organize-cli|https://github.com/ManrajGrover/organize-cli#readme"
   "rename|utility for renaming files|command -v rename|npm install -g rename-cli|https://github.com/jhotmann/node-rename-cli#readme"
-  "trash|move files and folders to the trash|command -v trash|npm install -g trash-cli|https://github.com/sindresorhus/trash-cli#readme"
-  "empty-trash|empty the trash|command -v empty-trash|npm install -g empty-trash-cli|https://github.com/sindresorhus/empty-trash-cli#readme"
+  "trash|move files and folders to the trash|command -v trash|npm install -g trash-cli|https://github.com/sindresorhus/trash-cli#readme|macos"
+  "empty-trash|empty the trash|command -v empty-trash|npm install -g empty-trash-cli|https://github.com/sindresorhus/empty-trash-cli#readme|macos"
   "public-ip|get your public ip address|command -v public-ip|npm install -g public-ip-cli|https://github.com/sindresorhus/public-ip-cli#readme"
-  "wallpaper|get or set your wallpaper|command -v wallpaper|npm install -g wallpaper-cli|https://github.com/sindresorhus/wallpaper-cli#readme"
+  "wallpaper|get or set your wallpaper|command -v wallpaper|npm install -g wallpaper-cli|https://github.com/sindresorhus/wallpaper-cli#readme|macos"
 
   "--Entertainment"
 
-  "term-img|display images in iTerm|command -v term-img|npm install -g term-img-cli|https://github.com/sindresorhus/term-img-cli#readme"
+  "term-img|display images in iTerm|command -v term-img|npm install -g term-img-cli|https://github.com/sindresorhus/term-img-cli#readme|macos"
   "splash|beautiful wallpapers from unsplash|command -v splash|npm install -g splash-cli|https://splash-cli.app/"
   "mplayer|command line music player|command -v mplayer|brew install mplayer|https://mplayerhq.hu"
   "youtube-dl|youtube downloader|command -v youtube-dl|brew install youtube-dl|https://ytdl-org.github.io/youtube-dl/index.html"
-  "open-pip-cli|play movies in macos native picture-in-picture|command -v open-pip|npm install -g open-pip-cli|https://github.com/albinekb/open-pip-cli#readme"
+  "open-pip-cli|play movies in macos native picture-in-picture|command -v open-pip|npm install -g open-pip-cli|https://github.com/albinekb/open-pip-cli#readme|macos"
   "mapscii|google maps in your terminal|command -v mapscii|npm install -g mapscii|https://github.com/rastapasta/mapscii#readme"
   "asciinema|record and share what happens in terminal|command -v asciinema|pip3 install asciinema|https://asciinema.org/"
   "tetris|well... play tetris in the terminal|command -v tetris|brew install vitetris|https://www.victornils.net/tetris/"
@@ -137,6 +137,16 @@ cli_apps=(
   "artii|asci art titles|command -v artii|gem install artii|https://github.com/miketierney/artii#readme"
 )
 
+
+# $1 = platform field of a table entry ("", "macos", or "linux")
+app_matches_platform() {
+  case "$1" in
+    "") return 0 ;;
+    macos) is_macos ;;
+    linux) is_linux ;;
+    *) return 1 ;;
+  esac
+}
 
 function usage() {
   printf "This script installs various interesting command line apps.\n\n"
@@ -181,6 +191,8 @@ choose_cli_apps_loop() {
         app_name="${app_info[0]}"
         app_description="${app_info[1]}"
         if [[ $app_name != --* ]]; then
+          app_platform="${app_info[5]:-}"
+          app_matches_platform "$app_platform" || continue
           chosen_apps=("${chosen_apps[@]}" "${app}")
         fi
       done
@@ -192,6 +204,8 @@ choose_cli_apps_loop() {
         app_name="${app_info[0]}"
         app_description="${app_info[1]}"
         if [[ $app_name != --* ]]; then
+          app_platform="${app_info[5]:-}"
+          app_matches_platform "$app_platform" || continue
           user_ask_yn "Would you like to install ${BOLD}${app_name}${NORMAL} ${DIM}(${app_description})${NORMAL}?" "y"
           if [[ "$user_ask_yn_result" == "y" ]]; then
             chosen_apps=("${chosen_apps[@]}" "${app}")
@@ -220,6 +234,8 @@ show_possible_apps() {
       app_name="${app_name#*--}"
       printf "\n${BOLD}${YELLOW}%s${NORMAL}:\n\n" "${app_name}"
     else
+      app_platform="${app_info[5]:-}"
+      app_matches_platform "$app_platform" || continue
       printf " - \e]8;;%s\e\\${BOLD}%s\e]8;;\e\\${NORMAL} ${DIM}(%s)${NORMAL}\n" "${app_link}" "${app_name}" "${app_description}"
     fi
   done
@@ -268,6 +284,8 @@ install_cli_apps() {
     app_description="${app_info[1]}"
     app_check="${app_info[2]}"
     app_installer="${app_info[3]}"
+    app_platform="${app_info[5]:-}"
+    app_matches_platform "$app_platform" || continue
 
     check "$app_name" "$app_check"
     successfully "$app_installer" "perhaps it is already installed."
