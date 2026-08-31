@@ -144,6 +144,14 @@ if [[ -r "$autocomplete_plugin" ]]; then
   zstyle -e ':autocomplete:*:*' list-lines 'reply=( $(( LINES / 3 )) )'
   zstyle ':autocomplete:*' add-semicolon no
   source "$autocomplete_plugin"
+  # zsh-autocomplete calls these optional user hooks without guarding against
+  # them being undefined, which prints "command not found: _autocomplete__…"
+  # on Tab. Provide the do-nothing defaults its own test suite uses; a plugin
+  # or user definition that already exists wins.
+  (( ${+functions[_autocomplete__should_insert_unambiguous]} )) ||
+    _autocomplete__should_insert_unambiguous() { false }
+  (( ${+functions[_autocomplete__unambiguous]} )) ||
+    _autocomplete__unambiguous() { : }
   bindkey              '^I' menu-select
   bindkey "$terminfo[kcbt]" menu-select
   bindkey -M menuselect              '^I'         menu-complete
