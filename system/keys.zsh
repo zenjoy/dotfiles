@@ -1,3 +1,10 @@
+if [[ "$OSTYPE" != darwin* ]]; then
+  alias pubkey="cat ~/.ssh/id_rsa.pub"
+  keychain-set() { echo "keychain-set is macOS-only (uses the macOS Keychain)" >&2; return 1 }
+  keychain-get() { echo "keychain-get is macOS-only (uses the macOS Keychain)" >&2; return 1 }
+  return
+fi
+
 # Pipe my public key to my clipboard.
 alias pubkey="more ~/.ssh/id_rsa.pub | pbcopy | echo '=> Public key copied to pasteboard.'"
 
