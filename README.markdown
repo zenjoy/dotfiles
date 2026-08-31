@@ -65,6 +65,40 @@ If you want to ignore reminders for optional tools you do not use, add them to
 export DOTFILES_IGNORE_DEPS="direnv mise"
 ```
 
+### mcporter secrets
+
+The `mcporter` wrapper can load environment variables from macOS Keychain only
+when `mcporter` runs. Keep the personal list of variables outside this repo in
+`~/.config/mcporter/keychain-env`:
+
+```sh
+PERPLEXITY_API_KEY
+FIRECRAWL_API_KEY=custom-keychain-service-name
+```
+
+Use `ENV_VAR` when the Keychain item service name matches the environment
+variable. Use `ENV_VAR=KEYCHAIN_SERVICE` when it differs. Store values with
+`keychain-set ENV_VAR` or `security add-generic-password`.
+
+`keychain-set` also accepts one secret piped from 1Password. Normal invocation
+still prompts interactively:
+
+```sh
+op read -n 'op://VAULT/FrontApp MCP/clientid' |
+  keychain-set FRONT_MCP_CLIENT_ID
+op read -n 'op://VAULT/FrontApp MCP/client_secret' |
+  keychain-set FRONT_MCP_CLIENT_SECRET
+```
+
+Agents can inspect the wrapper without printing secret values:
+
+```sh
+mcporter --dotfiles-keychain-status
+```
+
+When `mcporter` fails and no local keychain env file exists, the wrapper prints
+this status command as the next diagnostic step.
+
 ## Setup Scripts
 
 There are multiple setup scripts, that can be run multiple times to check if you are running the latest version

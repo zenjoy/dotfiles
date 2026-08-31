@@ -1,35 +1,152 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-real_mcporter="/opt/homebrew/bin/mcporter"
+trim_whitespace() {
+  local value="$1"
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+  printf '%s' "$value"
+}
+
+keychain_value_for() {
+  local service_name="$1"
+
+  if ! command -v security >/dev/null 2>&1; then
+    return 1
+  fi
+
+  security find-generic-password -a "${USER:-$(id -un)}" -s "$service_name" -w 2>/dev/null
+}
+
+parse_keychain_entry() {
+  local line="$1"
+  local env_name service_name
+
+  line="${line%%#*}"
+  line="$(trim_whitespace "$line")"
+  [[ -n "$line" ]] || return 1
+
+  env_name="$line"
+  service_name="$line"
+  if [[ "$line" == *"="* ]]; then
+    env_name="${line%%=*}"
+    service_name="${line#*=}"
+  fi
+
+  env_name="$(trim_whitespace "$env_name")"
+  service_name="$(trim_whitespace "$service_name")"
+  [[ -n "$env_name" && -n "$service_name" ]] || return 1
+
+  printf '%s\t%s\n' "$env_name" "$service_name"
+}
+
+load_keychain_secret() {
+  local env_name="$1"
+  local service_name="${2:-$env_name}"
+
+  if [[ ! "$env_name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+    echo "Skipping invalid mcporter keychain env name: $env_name" >&2
+    return 0
+  fi
+
+  if [[ -n "${!env_name-}" ]]; then
+    return 0
+  fi
+
+  local value
+  value="$(keychain_value_for "$service_name" || true)"
+  if [[ -n "$value" ]]; then
+    export "$env_name=$value"
+  fi
+}
+
+load_keychain_secrets_file() {
+  local file="$1"
+  [[ -r "$file" ]] || return 0
+
+  local line parsed env_name service_name
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    parsed="$(parse_keychain_entry "$line")" || continue
+    env_name="${parsed%%$'\t'*}"
+    service_name="${parsed#*$'\t'}"
+
+    load_keychain_secret "$env_name" "$service_name"
+  done < "$file"
+}
+
+print_keychain_status() {
+  local file="$1"
+  local line parsed env_name service_name value count
+  count=0
+
+  printf 'mcporter keychain env file: %s\n' "$file"
+
+  if [[ ! -r "$file" ]]; then
+    printf 'status: missing\n'
+    printf 'Create this file with one environment variable name per line.\n'
+    printf 'Use ENV_VAR=KEYCHAIN_SERVICE when the Keychain service name differs.\n'
+    printf "Run 'mcporter --dotfiles-keychain-status' after creating it to verify what can be loaded.\n"
+    return 0
+  fi
+
+  printf 'status: configured\n'
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    parsed="$(parse_keychain_entry "$line")" || continue
+    env_name="${parsed%%$'\t'*}"
+    service_name="${parsed#*$'\t'}"
+    count=$((count + 1))
+
+    if [[ ! "$env_name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+      printf '%s: invalid env name\n' "$env_name"
+    elif [[ -n "${!env_name-}" ]]; then
+      printf '%s: set in environment\n' "$env_name"
+    elif value="$(keychain_value_for "$service_name" || true)" && [[ -n "$value" ]]; then
+      printf '%s: available in Keychain\n' "$env_name"
+    else
+      printf '%s: missing from Keychain\n' "$env_name"
+    fi
+  done < "$file"
+
+  if [[ "$count" -eq 0 ]]; then
+    printf 'status: no entries\n'
+  fi
+}
+
+print_failure_keychain_hint() {
+  local file="$1"
+
+  if [[ ! -r "$file" ]]; then
+    echo "mcporter keychain config not found: $file" >&2
+    echo "If this MCP server needs secrets from macOS Keychain, create that file with one env var name per line." >&2
+  else
+    echo "mcporter keychain config used: $file" >&2
+  fi
+  echo "Run 'mcporter --dotfiles-keychain-status' for details." >&2
+}
+
+default_keychain_env_file="${XDG_CONFIG_HOME:-$HOME/.config}/mcporter/keychain-env"
+keychain_env_file="${MCPORTER_KEYCHAIN_ENV_FILE:-$default_keychain_env_file}"
+
+if [[ "${1-}" == "--dotfiles-keychain-status" ]]; then
+  print_keychain_status "$keychain_env_file"
+  exit 0
+fi
+
+real_mcporter="${MCPORTER_BIN:-/opt/homebrew/bin/mcporter}"
 if [[ ! -x "$real_mcporter" ]]; then
   echo "mcporter not found at $real_mcporter" >&2
   exit 1
 fi
 
-load_keychain_secret() {
-  local name="$1"
-  if [[ -n "${!name-}" ]]; then
-    return 0
-  fi
+load_keychain_secrets_file "$keychain_env_file"
 
-  local value
-  value="$(security find-generic-password -a "${USER:-$(id -un)}" -s "$name" -w 2>/dev/null || true)"
-  if [[ -n "$value" ]]; then
-    export "$name=$value"
-  fi
-}
+set +e
+"$real_mcporter" "$@"
+status=$?
+set -e
 
-for secret_name in \
-  HOMEBREW_GITHUB_API_TOKEN \
-  PERPLEXITY_API_KEY \
-  FIRECRAWL_API_KEY \
-  EXA_API_KEY \
-  BUGSNAG_API_KEY \
-  MISTRAL_API_KEY \
-  CODECOV_API_TOKEN
-do
-  load_keychain_secret "$secret_name"
-done
+if [[ "$status" -ne 0 && "${MCPORTER_KEYCHAIN_HINTS:-1}" != "0" ]]; then
+  print_failure_keychain_hint "$keychain_env_file"
+fi
 
-exec "$real_mcporter" "$@"
+exit "$status"

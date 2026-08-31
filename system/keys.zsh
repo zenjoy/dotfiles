@@ -8,7 +8,43 @@ function keychain-set() {
     echo "Usage: keychain-set <KEY_NAME>"
     return 1
   fi
-  security add-generic-password -U -a "$USER" -s "$1" -w
+
+  local key_name="$1"
+  if [[ "$key_name" != [[:alpha:]_]* || "$key_name" == *[^[:alnum:]_] ]]; then
+    echo "keychain-set: KEY_NAME must contain only letters, digits, and underscores" >&2
+    return 1
+  fi
+
+  if [[ -t 0 ]]; then
+    security add-generic-password -U -a "$USER" -s "$key_name" -w
+    return $?
+  fi
+
+  local secret encoded remainder
+  IFS= read -r secret || :
+  if [[ -z "$secret" ]]; then
+    echo "keychain-set: piped input must contain one non-empty line" >&2
+    return 1
+  fi
+  if IFS= read -r remainder; then
+    echo "keychain-set: piped input must contain one line" >&2
+    return 1
+  fi
+
+  encoded="$(printf '%s' "$secret" | xxd -p -c 0)" || {
+    echo "keychain-set: failed to encode piped input" >&2
+    return 1
+  }
+  if [[ -z "$encoded" ]]; then
+    echo "keychain-set: failed to encode piped input" >&2
+    return 1
+  fi
+
+  printf 'add-generic-password -U -a "%s" -s "%s" -X "%s"\n' \
+    "$USER" "$key_name" "$encoded" | security -i
+  local security_status=$?
+  unset secret encoded remainder
+  return $security_status
 }
 
 # Load a secret from macOS Keychain into an env variable
