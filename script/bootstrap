@@ -86,7 +86,11 @@ install_1password_cli() {
 
 
 setup_macos() {
-  user_ask_yn "Want to setup macOS (install default apps and plugins)?" "y"
+  if [[ -n "${DOTFILES_SETUP_MACOS:-}" ]]; then
+    user_ask_yn_result="$DOTFILES_SETUP_MACOS"
+  else
+    user_ask_yn "Want to setup macOS (install default apps and plugins)?" "y"
+  fi
   if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's do this... You may be asked for your password."
     bootstrapping=1 $HOME/.dotfiles/script/setup-osx
@@ -96,7 +100,11 @@ setup_macos() {
 }
 
 setup_development() {
-  user_ask_yn "Want to setup $(machine_type) to do development (node, ruby, etc)?" "y"
+  if [[ -n "${DOTFILES_SETUP_DEV:-}" ]]; then
+    user_ask_yn_result="$DOTFILES_SETUP_DEV"
+  else
+    user_ask_yn "Want to setup $(machine_type) to do development (node, ruby, etc)?" "y"
+  fi
   if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's go for it... You may be asked for your password.\n"
     bootstrapping=1 $HOME/.dotfiles/script/setup-dev
@@ -106,7 +114,11 @@ setup_development() {
 }
 
 setup_cli_tools() {
-  user_ask_yn "Want to install other convenient cli tools and apps?" "y"
+  if [[ -n "${DOTFILES_SETUP_CLI:-}" ]]; then
+    user_ask_yn_result="$DOTFILES_SETUP_CLI"
+  else
+    user_ask_yn "Want to install other convenient cli tools and apps?" "y"
+  fi
   if [[ "$user_ask_yn_result" == "y" ]]; then
     success "Ok, let's continue... You may be asked for your password.\n"
     bootstrapping=1 $HOME/.dotfiles/script/setup-cli-apps
@@ -152,4 +164,6 @@ _title_ '.dotfiles ready & installed!'
 
 trap finish EXIT
 
-env zsh -l
+if [[ "${DOTFILES_ASSUME_YES:-0}" != "1" ]]; then
+  env zsh -l
+fi

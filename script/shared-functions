@@ -480,6 +480,11 @@ link_files () {
 # $1: prompt
 # $2: default value
 user_ask_yn() {
+  if [[ "${DOTFILES_ASSUME_YES:-0}" == "1" ]]; then
+    user_ask_yn_result="$2"
+    return
+  fi
+
   _spinner_stop
   prefix=" [ ${YELLOW}??${NORMAL} ]"
   if [[ "$2" = "y" ]]; then

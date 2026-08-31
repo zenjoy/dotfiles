@@ -182,6 +182,8 @@ install_fundamentals() {
 }
 
 choose_cli_apps_loop() {
+  if [[ "${DOTFILES_ASSUME_YES:-0}" == "1" ]]; then return; fi
+
   user "Would you like to install [a]ll, [n]one, or [s]ome of the apps? [a/n/s]?"
   read -n 1 input
   case "$input" in
