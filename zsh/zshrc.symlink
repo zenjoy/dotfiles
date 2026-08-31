@@ -106,6 +106,15 @@ source $DOTFILES/system/eval-cache.zsh
 source_dotfiles_file script/dotfiles-env.sh
 source_dotfiles_file script/dotfiles-shell-stack.sh
 
+# compinit only runs further down (zsh-autocomplete or the fallback), but
+# .localrc may eval CLI completions that call compdef. Queue those calls and
+# replay them once completion is initialized.
+typeset -ga __dotfiles_deferred_compdefs
+if (( ! ${+functions[compdef]} )); then
+  typeset -g __dotfiles_compdef_stub=1
+  compdef() { __dotfiles_deferred_compdefs+=("${(j: :)${(q)@}}") }
+fi
+
 # use .localrc for SUPER SECRET CRAP that you don't
 # want in your public, versioned repo.
 if [[ -a ~/.localrc ]]; then
@@ -133,12 +142,30 @@ if [[ -r "$autocomplete_plugin" ]]; then
   bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 fi
 
+# Drop the pre-.localrc compdef stub if nothing replaced it yet, so the
+# fallback below sees the real state.
+if (( ${+__dotfiles_compdef_stub} )); then
+  [[ "${functions[compdef]-}" == *__dotfiles_deferred_compdefs* ]] && unfunction compdef
+  unset __dotfiles_compdef_stub
+fi
+
 # Ensure compdef is defined in case zsh-autocomplete isn't installed —
 # topic plugins (k8s, …) and the compdef calls below depend on it.
 if (( ! ${+functions[compdef]} )); then
   autoload -Uz compinit
   compinit -d "$ZSH_CACHE_DIR/.zcompdump"
 fi
+
+# Replay compdef calls that were queued while .localrc ran.
+if (( ${#__dotfiles_deferred_compdefs} )); then
+  () {
+    local call
+    for call in "${__dotfiles_deferred_compdefs[@]}"; do
+      eval "compdef $call"
+    done
+  }
+fi
+unset __dotfiles_deferred_compdefs
 
 defer_plugin="$DOTFILES/system/zsh-defer.plugin.zsh"
 if [[ -r "$defer_plugin" ]]; then
