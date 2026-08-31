@@ -210,7 +210,7 @@ function _spinner_update() {
 # Create a new spinner with the specified message
 ###
 function _spinner_start() {
-  local dir statefile msg="$1"
+  local dir statefile msg="$1" previous_pid
   tput civis
 
   # Find the directory and create it if it doesn't exist
@@ -221,6 +221,20 @@ function _spinner_start() {
 
   # Create the filename for the statefile
   statefile="$dir/$PPID"
+
+  # A spinner may already be running for this shell (e.g. check() started one
+  # and info() starts another before any success/fail stopped it). Two spinner
+  # processes sharing a statefile render the same line twice, so stop the old
+  # one before starting a new one.
+  if [[ -f $statefile ]]; then
+    previous_pid=$(cut -d' ' -f1 "$statefile" 2>/dev/null)
+    if [[ -n $previous_pid ]]; then
+      kill "$previous_pid" >/dev/null 2>&1
+      wait "$previous_pid" 2>/dev/null
+    fi
+    tput el
+    printf "\r"
+  fi
 
   touch $statefile
   if [ ! -f $statefile ]; then
