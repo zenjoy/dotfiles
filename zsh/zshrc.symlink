@@ -442,7 +442,7 @@ if [[ "$OSTYPE" == darwin* ]]; then
 else
   cx() {
     command -v codex >/dev/null 2>&1 || { echo "codex is not installed" >&2; return 1 }
-    codex "${1:-.}"
+    if (( $# )); then codex "$@"; else codex; fi
   }
   c() {
     command -v cursor >/dev/null 2>&1 || { echo "cursor is not installed" >&2; return 1 }

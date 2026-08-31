@@ -556,7 +556,7 @@ install_homebrew_linux() {
       successfully "sudo apt-get update && sudo apt-get -y install build-essential procps curl file git"
       ;;
     pacman)
-      successfully "sudo pacman -Sy --noconfirm --needed base-devel procps-ng curl file git"
+      successfully "sudo pacman -Syu --noconfirm --needed base-devel procps-ng curl file git"
       ;;
   esac
 

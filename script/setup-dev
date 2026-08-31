@@ -131,7 +131,7 @@ install_ruby() {
         successfully "sudo apt-get update && sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm-dev"
         ;;
       pacman)
-        successfully "sudo pacman -Sy --noconfirm --needed autoconf bison openssl libyaml readline zlib ncurses libffi gdbm"
+        successfully "sudo pacman -Syu --noconfirm --needed autoconf bison openssl libyaml readline zlib ncurses libffi gdbm"
         ;;
     esac
   fi

@@ -34,7 +34,7 @@ DOTFILES_ASSUME_YES=1 DOTFILES_SETUP_DEV=n DOTFILES_SETUP_CLI=n \
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/zenjoy/dotfiles/master/install.sh)"
 ```
 
-`setup-dev` stays interactive even with `DOTFILES_ASSUME_YES` set: its ssh key and git identity prompts aren't covered by that flag. Run `script/setup-dev` afterwards in a terminal if you want dev tooling.
+`setup-dev` stays interactive even with `DOTFILES_ASSUME_YES` set: its ssh key and git identity prompts aren't covered by that flag. Run `~/.dotfiles/script/setup-dev` afterwards in a terminal if you want dev tooling.
 
 ### Windows
 

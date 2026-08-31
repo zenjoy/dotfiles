@@ -35,8 +35,8 @@ install_zsh() {
     elif is_linux; then
       case "$(linux_pkg_manager)" in
         apt) successfully "sudo apt-get update && sudo apt-get -y install zsh" ;;
-        pacman) successfully "sudo pacman -Sy --noconfirm --needed zsh" ;;
-        *) fail "zsh : unsupported distro, install zsh manually" ;;
+        pacman) successfully "sudo pacman -Syu --noconfirm --needed zsh" ;;
+        *) fail "zsh : unsupported distro, install zsh manually"; exit 1 ;;
       esac
     fi
   fi
