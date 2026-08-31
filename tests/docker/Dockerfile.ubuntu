@@ -1,0 +1,25 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y sudo curl git ca-certificates locales tzdata && \
+    useradd -m -s /bin/bash tester && \
+    echo 'tester ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/tester
+USER tester
+WORKDIR /home/tester
+ENV TERM=xterm HOME=/home/tester
+COPY --chown=tester:tester . /home/tester/.dotfiles
+ENV DOTFILES_ASSUME_YES=1 DOTFILES_SETUP_DEV=n DOTFILES_SETUP_CLI=n \
+    GIT_AUTHORNAME="Docker Tester" GIT_AUTHOREMAIL="tester@example.com"
+# bootstrap sends command output to /tmp/dotfiles-setup; surface it when it fails,
+# otherwise the build log only shows "FAIL" with no reason.
+RUN bash /home/tester/.dotfiles/script/bootstrap || \
+    { echo '----- /tmp/dotfiles-setup -----'; tail -n 200 /tmp/dotfiles-setup; exit 1; }
+# Assertions: brew works, symlinks exist, doctor runs, interactive zsh starts clean.
+RUN bash -lc 'set -e; \
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
+  brew --version; \
+  test -L "$HOME/.zshrc"; \
+  "$HOME/.dotfiles/script/dotfiles-doctor" || true; \
+  out="$(zsh -i -c "echo shell-ok" 2>&1)"; \
+  echo "$out"; \
+  echo "$out" | grep -q shell-ok; \
+  ! echo "$out" | grep -q "command not found"'
+CMD ["/bin/bash"]
