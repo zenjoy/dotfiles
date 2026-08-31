@@ -158,7 +158,11 @@ source "$ROOT/zsh/zshrc.symlink"
 EOF
 
   local output
-  output="$(script -q /dev/null zsh -i -c exit 2>&1 || true)"
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    output="$(script -q /dev/null zsh -i -c exit 2>&1 || true)"
+  else
+    output="$(script -qec 'zsh -i -c exit' /dev/null 2>&1 || true)"
+  fi
 
   assert_contains "$output" "mise"
   assert_not_contains "$output" "direnv"
