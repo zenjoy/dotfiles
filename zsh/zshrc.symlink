@@ -54,9 +54,17 @@ set_homebrew_env() {
   fi
 }
 
-if [[ -f "/opt/homebrew/bin/brew" ]]; then
-  set_homebrew_env "/opt/homebrew" "/opt/homebrew"
-fi
+for __brew_prefix in /opt/homebrew /usr/local /home/linuxbrew/.linuxbrew "$HOME/.linuxbrew"; do
+  if [[ -x "$__brew_prefix/bin/brew" ]]; then
+    if [[ -d "$__brew_prefix/Homebrew" ]]; then
+      set_homebrew_env "$__brew_prefix" "$__brew_prefix/Homebrew"
+    else
+      set_homebrew_env "$__brew_prefix" "$__brew_prefix"
+    fi
+    break
+  fi
+done
+unset __brew_prefix
 
 # Load rbenv
 # if [[ -d "$HOMEBREW_PREFIX/rbenv" ]]; then
